@@ -1,0 +1,102 @@
+# Basisrekeningschema Nederland (±60 rekeningen, zelf uit te breiden), decimaal, met RGS 3.8-codes.
+# id: nl-basis
+# land: NL
+# talen: nl en de fr
+# valuta: EUR
+# naam.nl: Basis
+# naam.en: Basic
+# naam.de: Basis
+# naam.fr: De base
+# bron: sqlledger-py, eigen werk; RGS-referentiecodes: RGS 3.8 (SBR, referentiegrootboekschema.nl)
+# licentie: GPL-2.0-or-later
+# voorraad: 3001
+# omzet: 8001
+# kosten: 7001
+# koersverschil: 4910
+# btw-afdracht: 1590
+# btw-afronding: 4900
+# rgs: 3.8
+# volgorde: 3
+rekening;soort;categorie;koppeling;contra;tarief;rubriek;rgs;nl;en;de;fr
+0100;H;A;;;;;BMva;Materiële vaste activa;Tangible fixed assets;Sachanlagen;Immobilisations corporelles
+0140;A;A;AP_amount;;;;BMvaBeiVvp;Inventaris;Fixtures and fittings;Betriebs- und Geschäftsausstattung;Mobilier et agencements
+0145;A;A;;1;;;BMvaBeiCae;Cumulatieve afschrijving inventaris;Accumulated depreciation fixtures and fittings;Kumulierte Abschreibung Geschäftsausstattung;Amortissements cumulés mobilier
+0150;A;A;AP_amount;;;;BMvaTevVvp;Auto's en transportmiddelen;Motor vehicles;Fahrzeuge;Matériel de transport
+0155;A;A;;1;;;BMvaTevCae;Cumulatieve afschrijving auto's;Accumulated depreciation motor vehicles;Kumulierte Abschreibung Fahrzeuge;Amortissements cumulés matériel de transport
+0500;H;Q;;;;;BEiv;Eigen vermogen;Equity;Eigenkapital;Capitaux propres
+0510;A;Q;;;;;BEivKapOnd;Ondernemingsvermogen;Proprietor's capital;Kapital Inhaber;Capital de l'exploitant
+0520;A;Q;;;;;BEivKapPro;Privé-opnamen;Drawings;Privatentnahmen;Prélèvements de l'exploitant
+0530;A;Q;;;;;BEivKapPrs;Privé-stortingen;Capital introduced;Privateinlagen;Apports de l'exploitant
+0800;H;L;;;;;BLas;Langlopende schulden;Long-term liabilities;Langfristige Verbindlichkeiten;Dettes à long terme
+0810;A;L;;;;;BLasSakLvl;Lening bank;Bank loan;Bankdarlehen;Emprunt bancaire
+1000;H;A;;;;;BLim;Liquide middelen;Cash and bank;Flüssige Mittel;Trésorerie
+1001;A;A;AR_paid:AP_paid;;;;BLimKasKas;Kas;Cash;Kasse;Caisse
+1100;A;A;AR_paid:AP_paid;;;;BLimBanRba;Bank;Bank;Bank;Banque
+1120;A;A;AR_paid:AP_paid;;;;BLimBanSpa;Spaarrekening;Savings account;Sparkonto;Compte d'épargne
+1200;H;A;;;;;BVor;Vorderingen;Receivables;Forderungen;Créances
+1300;A;A;AR;;;;BVorDebHad;Debiteuren;Accounts receivable;Forderungen aus Lieferungen und Leistungen;Clients
+1400;A;A;;;;;BVorOvaVof;Vooruitbetaalde kosten;Prepaid expenses;Aktive Rechnungsabgrenzung;Charges constatées d'avance
+1420;A;A;;;;;BVorOvaOoa;Nog te ontvangen bedragen;Other accrued income;Sonstige noch zu erhaltende Beträge;Autres produits à recevoir
+1450;A;A;;;;;BVorOvrOvk;Overige vorderingen;Other receivables;Sonstige Forderungen;Autres créances
+1500;H;L;;;;;BSch;Kortlopende schulden;Current liabilities;Kurzfristige Verbindlichkeiten;Dettes à court terme
+1510;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.21;1A;BSchBepBla;Te betalen btw hoog;VAT payable standard rate;Umsatzsteuer Regelsatz;TVA collectée taux normal
+1520;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.09;1B;BSchBepBlv;Te betalen btw laag;VAT payable reduced rate;Umsatzsteuer ermäßigter Satz;TVA collectée taux réduit
+1530;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.21;5B;BSchBepBoo;Te vorderen btw hoog;Input VAT standard rate;Vorsteuer Regelsatz;TVA déductible taux normal
+1540;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.09;5B;BSchBepBoo;Te vorderen btw laag;Input VAT reduced rate;Vorsteuer ermäßigter Satz;TVA déductible taux réduit
+1590;A;L;;;;;BSchBepBaf;Af te dragen btw;VAT settlement;Umsatzsteuer-Zahllast;TVA à décaisser
+1600;A;L;AP;;;;BSchCreHac;Crediteuren;Accounts payable;Verbindlichkeiten aus Lieferungen und Leistungen;Fournisseurs
+1610;A;L;;;;;BSchOpaNto;Nog te ontvangen facturen;Invoices to be received;Ausstehende Eingangsrechnungen;Factures non parvenues
+1620;A;L;;;;;BSchOpaNtb;Nog te betalen kosten;Accrued expenses;Passive Rechnungsabgrenzung;Charges à payer
+1695;A;L;;;;;BSchOvsOvs;Overige schulden;Other liabilities;Sonstige Verbindlichkeiten;Autres dettes
+2000;H;A;;;;;BVorTus;Tussenrekeningen;Suspense accounts;Verrechnungskonten;Comptes d'attente
+2010;A;A;AR_paid:AP_paid;;;;BLimKruSto;Kruisposten;Transfers in transit;Geldtransit;Virements internes
+2030;A;A;;;;;BVorTusTov;Vraagposten;Suspense account;Ungeklärte Posten;Compte d'attente à régulariser
+2050;A;A;;;;;BVorTusTov;Tussenrekening beginbalans;Opening balance clearing account;Eröffnungsbilanzkonto;Compte d'attente bilan d'ouverture
+3000;H;A;;;;;BVrd;Voorraden;Inventory;Vorräte;Stocks
+3001;A;A;IC;;;;BVrdHanVoo;Voorraad handelsgoederen;Inventory goods for resale;Handelswaren;Stocks de marchandises
+4100;H;E;;;;;WBedHui;Huisvestingskosten;Premises costs;Raumkosten;Charges locatives
+4110;A;E;AP_amount:IC_expense;;;;WBedHuiBeh;Huur;Rent;Miete;Loyer
+4120;A;E;AP_amount:IC_expense;;;;WBedHuiGwe;Gas, water en elektra;Utilities;Gas, Wasser, Strom;Eau, gaz et électricité
+4190;A;E;AP_amount:IC_expense;;;;WBedHuiOhv;Overige huisvestingskosten;Other premises costs;Sonstige Raumkosten;Autres charges locatives
+4200;H;E;;;;;WBedAut;Vervoerskosten;Motor expenses;Fahrzeugkosten;Frais de véhicules
+4210;A;E;AP_amount:IC_expense;;;;WBedAutBra;Brandstof;Fuel;Kraftstoff;Carburant
+4220;A;E;AP_amount:IC_expense;;;;WBedAutRoa;Onderhoud en reparatie auto's;Vehicle repairs and maintenance;Fahrzeugreparaturen;Entretien et réparations véhicules
+4230;A;E;AP_amount:IC_expense;;;;WBedAutAsa;Verzekering auto's;Vehicle insurance;Kfz-Versicherung;Assurance véhicules
+4240;A;E;AP_amount:IC_expense;;;;WBedAutMot;Motorrijtuigenbelasting;Vehicle tax;Kfz-Steuer;Taxe sur les véhicules
+4290;A;E;AP_amount:IC_expense;;;;WBedAutOak;Overige vervoerskosten;Other motor expenses;Sonstige Fahrzeugkosten;Autres frais de véhicules
+4300;H;E;;;;;WBedKan;Kantoorkosten;Office costs;Bürokosten;Frais de bureau
+4310;A;E;AP_amount:IC_expense;;;;WBedKanKan;Kantoorbenodigdheden;Office supplies;Büromaterial;Fournitures de bureau
+4330;A;E;AP_amount:IC_expense;;;;WBedKanTef;Telefoon en internet;Telephone and internet;Telefon und Internet;Téléphone et internet
+4340;A;E;AP_amount:IC_expense;;;;WBedKanSof;Software en abonnementen;Software subscriptions;Software-Abonnements;Abonnements logiciels
+4360;A;E;AP_amount:IC_expense;;;;WBedKanCea;Contributies en lidmaatschappen;Subscriptions and memberships;Beiträge und Mitgliedschaften;Cotisations et adhésions
+4380;A;E;AP_amount:IC_expense;;;;WBedKanKak;Kleine aanschaffingen;Small equipment;Geringwertige Wirtschaftsgüter;Petit équipement
+4400;H;E;;;;;WBedVkk;Verkoopkosten;Selling costs;Vertriebskosten;Frais commerciaux
+4410;A;E;AP_amount:IC_expense;;;;WBedVkkRea;Reclame en advertenties;Advertising;Werbung;Publicité
+4420;A;E;AP_amount:IC_expense;;;;WBedVkkWeb;Websitekosten;Website costs;Website-Kosten;Frais de site web
+4430;A;E;AP_amount:IC_expense;;;;WBedVkkRep;Representatiekosten;Entertainment;Bewirtungskosten;Frais de réception
+4450;A;E;AP_amount:IC_expense;;;;WBedVkkRev;Reis- en verblijfkosten;Travel and accommodation;Reise- und Übernachtungskosten;Frais de déplacement
+4460;A;E;;;;;WBedVkkKmz;Kilometervergoeding;Mileage allowance;Kilometerpauschale;Indemnités kilométriques
+4500;H;E;;;;;WBed;Algemene kosten;General expenses;Allgemeine Verwaltungskosten;Frais généraux
+4510;A;E;AP_amount:IC_expense;;;;WBedAeaAea;Accountantskosten;Accountancy fees;Steuerberatungs- und Buchführungskosten;Honoraires comptables
+4540;A;E;AP_amount:IC_expense;;;;WBedAssBea;Bedrijfsverzekeringen;Business insurance;Betriebliche Versicherungen;Assurances professionnelles
+4550;A;E;AP_amount:IC_expense;;;;WBedAdlBan;Bankkosten;Bank charges;Bankgebühren;Frais bancaires
+4590;A;E;AP_amount:IC_expense;;;;WBedAlkOal;Overige algemene kosten;Other general expenses;Sonstige allgemeine Kosten;Autres frais généraux
+4600;H;E;;;;;WAfs;Afschrijvingen;Depreciation;Abschreibungen;Dotations aux amortissements
+4640;A;E;;;;;WAfsAmvBei;Afschrijving inventaris;Depreciation fixtures and fittings;Abschreibung Geschäftsausstattung;Amortissement mobilier
+4650;A;E;;;;;WAfsAmvTev;Afschrijving auto's;Depreciation motor vehicles;Abschreibung Fahrzeuge;Amortissement matériel de transport
+4800;H;E;;;;;WBedAdl;Overige bedrijfskosten;Other operating expenses;Sonstige betriebliche Aufwendungen;Autres charges d'exploitation
+4900;A;E;;;;;WBedAdlBov;Afrondingsverschillen;Rounding differences;Rundungsdifferenzen;Écarts d'arrondi
+4910;A;E;;;;;WFbeWisWis;Koersverschillen;Exchange differences;Kursdifferenzen;Écarts de change
+7000;H;E;;;;;WKpr;Kostprijs van de omzet;Cost of sales;Wareneinsatz;Coût des ventes
+7001;A;E;AP_amount:IC_cogs;;;;WKprInhInh;Inkoopwaarde van de omzet;Cost of goods sold;Wareneinsatz;Achats de marchandises vendues
+7010;A;E;AP_amount:IC_expense;;;;WKprKuwKuw;Uitbesteed werk;Subcontracted work;Fremdleistungen;Sous-traitance
+8000;H;I;;;;;WOmz;Omzet;Sales;Umsatzerlöse;Chiffre d'affaires
+8001;A;I;AR_amount:IC_sale:IC_income;;;;WOmzNohOlh;Omzet hoog tarief;Sales standard rate;Umsatzerlöse Regelsatz;Ventes taux normal
+8010;A;I;AR_amount:IC_sale:IC_income;;;;WOmzNohOlv;Omzet laag tarief;Sales reduced rate;Umsatzerlöse ermäßigter Satz;Ventes taux réduit
+8040;A;I;AR_amount:IC_sale:IC_income;;;;WOmzNohOlg;Omzet verlegd en vrijgesteld;Sales reverse charge and exempt;Erlöse Reverse-Charge und steuerfrei;Ventes autoliquidées et exonérées
+8050;A;I;AR_amount:IC_sale:IC_income;;;;WOmzNohOli;Omzet leveringen binnen de EU;EU sales of goods;Innergemeinschaftliche Lieferungen;Livraisons intracommunautaires
+8070;A;I;AR_amount:IC_sale:IC_income;;;;WOmzNohOln;Omzet buiten de EU (export);Sales outside the EU (exports);Ausfuhrlieferungen;Exportations hors UE
+9000;H;I;;;;;WFbe;Financiële baten;Financial income;Finanzerträge;Produits financiers
+9010;A;I;;;;;WFbeRlmObr;Rentebaten bank;Bank interest received;Zinserträge Bank;Intérêts bancaires reçus
+9100;H;E;;;;;WFbe;Financiële lasten;Financial expenses;Finanzaufwendungen;Charges financières
+9110;A;E;;;;;WFbeRlsRle;Rentelasten leningen;Loan interest;Zinsaufwand Darlehen;Intérêts des emprunts

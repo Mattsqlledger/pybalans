@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ company.name if company else _("Bestaande database koppelen") }}{% endblock %}
+{% block content %}
+{% if wizard %}{% set step = 4 %}{% include "start/_steps.html" %}
+<div class="head"><h2>{{ _("Bestaande database koppelen") }}</h2></div>
+<p class="muted">{{ _("Voor een SQL-Ledger-database die al op de databaseserver staat.") }}</p>
+{% else %}
+<div class="head"><h2>{{ company.name if company else _("Bestaande database koppelen") }}</h2><a href="/systeem/administraties">{{ _("Alle administraties") }}</a></div>
+{% endif %}
+{% include "help/sys_company_edit.html" %}
+{% if company and not company.access %}<p class="notice warning" role="status">{{ _("Niemand heeft toegang tot deze administratie. Geef toegang bij Systeem > Gebruikers, of zet hieronder het vinkje om uzelf beheerder te maken.") }}</p>{% endif %}
+<form method="post" action="{{ action }}" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="grid">
+    <label>{{ _("Naam") }} <input name="name" value="{{ values.name or '' }}" required></label>
+    <label>{{ _("Code") }} <input name="code" value="{{ values.code or '' }}" maxlength="12" autocomplete="off">
+      <span class="muted small">{{ _("Kort nummer of letters, in de kopregel en het keuzemenu (bv. 108220). Mag leeg.") }}</span></label>
+    <label>{{ _("Databasenaam") }} <input name="dbname" value="{{ values.dbname or '' }}" required></label>
+    <label>{{ _("Server") }} <input name="dbhost" value="{{ values.dbhost or '' }}" placeholder="{{ ctx.settings.db_host }}"></label>
+    <label>{{ _("Poort") }} <input name="dbport" value="{{ values.dbport or '' }}" inputmode="numeric" placeholder="{{ ctx.settings.db_port }}"></label>
+  </div>
+  <p><button type="button" class="secondary" hx-post="/systeem/administraties/test" hx-include="closest form" hx-target="#probe">{{ _("Verbinding testen") }}</button></p>
+  <div id="probe" aria-live="polite"></div>
+  <fieldset>
+    <legend>{{ _("Modules") }}</legend>
+    {% for k, v in MODULES.items() %}
+    <label class="check"><input type="checkbox" name="mod_{{ k }}" value="1"{% if k in (values.modules or []) %} checked{% endif %}> {{ _(v) }}</label>
+    {% endfor %}
+  </fieldset>
+  <label class="check"><input type="checkbox" name="active" value="1"{% if values.active %} checked{% endif %}> {{ _("Actief") }}</label>
+  {% if not company or not company.access %}<label class="check"><input type="checkbox" name="add_me" value="1"{% if values.add_me %} checked{% endif %}> {{ _("Mij als beheerder van deze administratie toevoegen") }}</label>{% endif %}
+  <div class="actions"><button>{{ _("Opslaan") }}</button>
+    {% if wizard %}<a class="button secondary" href="/welkom/administratie">{{ _("Terug") }}</a>{% endif %}</div>
+</form>
+{% if company and not wizard %}
+<h3>{{ _("Ontkoppelen") }}</h3>
+{% if not company.active %}<p>{{ _("Haalt de administratie uit deze app. De database blijft op de databaseserver staan.") }}</p>
+<p><a class="button secondary" href="/systeem/administraties/{{ company.id }}/ontkoppelen">{{ _("Administratie ontkoppelen") }}</a></p>
+{% else %}<p class="muted small">{{ _("Ontkoppelen kan alleen als de administratie uit staat. Zet het vinkje Actief uit en sla op.") }}</p>{% endif %}
+{% endif %}
+{% endblock %}

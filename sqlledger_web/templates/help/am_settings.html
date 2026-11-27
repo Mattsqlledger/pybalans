@@ -1,0 +1,32 @@
+{# Beheer > Instellingen (HELP_ANALYSE golf 3, tekst A1) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De vaste gegevens van deze administratie: uw bedrijfsgegevens, de documenttaal, hoe het programma rekent en nummert, en een paar keuzes voor de btw. Alleen de beheerder ziet dit scherm.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Pas aan wat nodig is. U hoeft niet alles na te lopen.") }}</li>
+  <li>{{ ht("Klik onderaan op {b}.", b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{a}, {b}, {c}, {d}, {e}, {f}: deze staan op uw facturen en andere documenten en boven rapporten. Het btw-nummer vult u in bij {m}; dat staat op uw documenten en op de btw-aangifte en de ICP-opgaaf.", a=hl("Bedrijfsnaam"), b=hl("Adres"), c=hl("Telefoon"), d=hl("E-mail"), e=hl("Website"), f=hl("KvK-nummer"), m=hm("Beheer", "Documentinstellingen")) }}</li>
+  <li>{{ ht("{f}: de taal van facturen, orders en andere documenten, als de relatie of het document geen eigen taal heeft.", f=hl("Documenttaal")) }}</li>
+  <li>{{ ht("{f}: op hoeveel decimalen bedragen worden afgerond, meestal 2.", f=hl("Precisie (decimalen)")) }}</li>
+  <li>{{ ht("{f}: hierop boekt het programma het verschil als een factuur in vreemde valuta tegen een andere koers wordt betaald. U kiest uit de opbrengst- en kostenrekeningen.", f=hl("Rekening koersverschillen")) }}</li>
+  <li>{{ ht("{f}: de laatste maand van het boekjaar, meestal december. Het bepaalt de keuze {b} in de rapporten, het resultaat op het dashboard en de voorgestelde datum bij de {j}. De btw-aangifte en de ICP-opgaaf blijven per kalendertijdvak.", f=hl("Boekjaar eindigt in"), b=hl("Boekjaar"), j=hm("Beheer", "Jaarafsluiting")) }}</li>
+  <li>{{ ht("{f}: hoe groot een bijlage (PDF, JPG, PNG) mag zijn. Leeg is 10 MB, hoogstens 25 MB.", f=hl("Maximale uploadgrootte (MB)")) }}</li>
+  <li>{{ ht("{f}: {k}, {m} of {j}. Dit bepaalt de herinnering op het dashboard en de tijdvakken op {a}. Met {g} verdwijnt ook het menu-item {n}.", f=hl("Btw-aangifte per"), k=hl("kwartaal"), m=hl("maand"), j=hl("jaar"), a=hm("Btw", "Btw-aangifte"), g=hl("geen herinnering"), n=hm("Btw", "Btw-aangifte")) }}</li>
+  <li>{{ ht("{f}: geeft een klant of leverancier contante korting op een factuur zonder {b}, dan wordt ook de btw over de korting teruggeboekt.", f=hl("Contante korting met btw-correctie"), b=hl("Btw inbegrepen")) }}</li>
+  <li>{{ ht("{f}: aangevinkt staat {s} in de rapporten eerst op {k}. Per rapport kunt u het onder {m} wijzigen.", f=hl("Rapporten standaard op kasbasis"), s=hl("Stelsel"), k=hl("Kasstelsel"), m=hl("Meer opties")) }}</li>
+  <li>{{ ht("{f}: keuzelijsten van klanten en leveranciers, en de lijsten bij ontvangsten en betalingen, staan op nummer in plaats van op naam.", f=hl("Relaties sorteren op nummer")) }}</li>
+  <li>{{ ht("{f}: wat een nieuwe klant of leverancier standaard is, {b} of {p}.", f=hl("Soort relatie:"), b=hl("bedrijf"), p=hl("persoon")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{f}: het volgende nummer is dit nummer plus één. Met {v} bij {g} of {s} kan het nummer van een opgeslagen boeking niet meer veranderen; een kopie krijgt een nieuw nummer. Met {v} bij {k} of {l} ligt het nummer van een bestaande klant of leverancier vast.", f=hl("Laatst gebruikte nummers"), v=hl("Vast"), g=hl("Memoriaal"), s=hl("Verkoop"), k=hl("Klanten"), l=hl("Leveranciers")) }}</li>
+  <li>{{ ht("Wijzigt u {f} terwijl er al jaarafsluitingen zijn, dan blijven die staan. Het eerste boekjaar daarna loopt van de dag na de laatste afsluiting tot het nieuwe einde: een verkort of verlengd overgangsjaar. Sluit dat af met de datum van uw keuze bij {m}. De wijziging staat in de audittrail.", f=hl("Boekjaar eindigt in"), m=hm("Beheer", "Jaarafsluiting")) }}</li>
+  <li>{{ _("Alleen wat u wijzigt wordt opgeslagen. Werkt iemand anders tegelijk in de administratie, dan blijven bijvoorbeeld de nummers die intussen zijn opgehoogd gewoon staan.") }}</li>
+  <li>{{ ht("Het btw-nummer in de voet van uw facturen vult u in bij {m}.", m=hm("Beheer", "Documentinstellingen")) }}</li>
+  <li>{{ ht("{i} ziet u alleen als er een btw-rekening of klant op rubriek 3B staat. {p} ziet u alleen als de module Artikelen aan staat.", i=hl("ICP-opgaaf per"), p=hl("Productie (samengestelde artikelen) tonen")) }}</li>
+</ul>
+</details>

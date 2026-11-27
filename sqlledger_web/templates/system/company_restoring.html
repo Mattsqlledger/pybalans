@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Back-up inlezen") }}{% endblock %}
+{% block content %}
+{% if wizard %}{% include "start/_steps.html" %}{% endif %}
+<noscript><meta http-equiv="refresh" content="3"></noscript>
+<div class="head"><h2>{{ _("Back-up inlezen") }}</h2></div>
+<p>{{ _("{name} wordt ingelezen in database {dbname}.").format(name=job.name, dbname=job.dbname) }}</p>
+<div class="progress-block" data-job-status="{{ status_url }}">
+  <ol class="phases">{% for p in phases %}<li class="{{ p.state }}"{% if p.state == "now" %} aria-current="step"{% endif %}>{{ p.label }}</li>{% endfor %}</ol>
+  <progress class="progressbar" max="100" value="{{ job.percent }}" aria-label="{{ _('Voortgang') }}">{{ job.percent }}%</progress>
+  <p aria-live="polite" role="status" data-progress-text>{{ job.text }}</p>
+</div>
+<p class="muted small">{{ _("U kunt dit venster sluiten: het inlezen loopt op de server door. Kom terug via Systeem > Back-up inlezen om de stand of het resultaat te zien.") }}</p>
+<script src="/static/restore.js" defer></script>
+{% endblock %}

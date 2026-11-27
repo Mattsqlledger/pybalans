@@ -1,0 +1,25 @@
+{# Assembleren, één samengesteld artikel (HELP_ANALYSE golf 4, tekst A7) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Van onderdelen een samengesteld artikel maken (assembleren) of het weer uit elkaar halen (demonteren). De voorraad van het product gaat omhoog en die van de onderdelen omlaag, of andersom.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies {a} of {d}.", a=hl("assembleren (onderdelen → product)"), d=hl("demonteren (product → onderdelen)")) }}</li>
+  <li>{{ ht("Vul het {a} en de {d} in, en zo nodig een {k} en {r}.", a=hl("Aantal"), d=hl("Datum"), k=hl("Kenmerk"), r=hl("Reden/notitie")) }}</li>
+  <li>{{ ht("Klik op {b} om in de tabel te zien wat er met de voorraad van elk onderdeel gebeurt.", b=hl("Bijwerken")) }}</li>
+  <li>{{ ht("Klik op {u}. De actie staat daarna onderaan bij {p}.", u=hl("Uitvoeren"), p=hl("Productiehistorie")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("De tabel met onderdelen toont per onderdeel de {n} en de {d}. Een dienst in de stuklijst heeft geen voorraad en telt niet mee.", n=hl("Voorraad nu"), d=hl("Voorraad daarna")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Is er te weinig voorraad van een onderdeel, dan vraagt het programma of u toch wilt assembleren ({j}); de voorraad van dat onderdeel wordt dan negatief. Staat bij dat onderdeel {c} aan, dan kan het niet.", j=hl("Ja, toch assembleren"), c=hl("Voorraad controleren bij verkoop")) }}</li>
+  <li>{{ _("Alleen de directe onderdelen bewegen. Zit er een samengesteld onderdeel in, assembleer dat dan eerst.") }}</li>
+  <li>{{ _("Demonteren kan niet verder dan de voorraad van het product. Een vervallen artikel kunt u alleen nog demonteren.") }}</li>
+  <li>{{ ht("De datum moet na de afsluitdatum liggen ({m}); een datum in een afgesloten periode wordt geweigerd.", m=hm("Beheer", "Afsluiten")) }}</li>
+  <li>{{ _("Er wordt niets in het grootboek geboekt. De kostprijs komt bij verkoop uit de onderdelen.") }}</li>
+  <li>{{ _("Vergist? Demonteer hetzelfde aantal. Beide acties blijven in de productiehistorie staan.") }}</li>
+</ul>
+</details>

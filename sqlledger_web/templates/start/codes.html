@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Eenmalige codes") }}{% endblock %}
+{% block content %}
+{% include "start/_steps.html" %}
+<h2>{{ _("Eenmalige codes") }}</h2>
+{% include "start/_codes.html" %}
+<form method="post" action="/welkom/klaar" class="actions">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="company_id" value="{{ company.id }}">
+  <button>{{ _("Klaar, naar het dashboard") }}</button>
+</form>
+<p class="small"><a href="/welkom/gebruikers?administratie={{ company.id }}">{{ _("Nog meer gebruikers uitnodigen") }}</a></p>
+{% endblock %}

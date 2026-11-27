@@ -1,0 +1,27 @@
+{# Grootboek > Boekingen zoeken (HELP_ANALYSE golf 2, tekst 7) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Alle boekingen terugzoeken: memoriaal, verkoop, inkoop en betalingen. U ziet per boeking de journaalregels met debet en credit.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {p}.", p=hl("Periode")) }}</li>
+  <li>{{ ht("Vul in wat u weet, bijvoorbeeld een deel van het {n}, de {o} of de {r}. Hoofdletters maken niet uit; een deel van het woord is genoeg.", n=hl("Nummer"), o=hl("Omschrijving"), r=hl("Relatie")) }}</li>
+  <li>{{ ht("Zoekt u alleen in één rekening? Kies die bij {r}.", r=hl("Rekening")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Toon")) }}</li>
+  <li>{{ _("Klik op een nummer om de boeking te openen.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{p}: aan (standaard) groepeert de regels per rekening, met een lopend {s}. Uit geeft één lijst op datum.", p=hl("Per rekening"), s=hl("Saldo")) }}</li>
+  <li>{{ ht("{r}: met één rekening ziet u ook het {b} en het saldo na elke regel.", r=hl("Rekening"), b=hl("Beginsaldo")) }}</li>
+  <li>{{ ht("{v} en {t} (onder {m}): zoekt op het bedrag van een journaalregel, positief of negatief maakt niet uit. Handig als u alleen het bedrag weet.", v=hl("Bedrag vanaf"), t=hl("Bedrag t/m"), m=hl("Meer opties")) }}</li>
+  <li>{{ ht("{k} (onder {m}): bijvoorbeeld het nummer van een bankafschrift of een betaling.", k=hl("Kenmerk"), m=hl("Meer opties")) }}</li>
+  <li>{{ ht("{k} (onder {m}): extra kolommen, zoals {x}, {y} of {z}.", k=hl("Kolommen"), m=hl("Meer opties"), x=hl("Relatie"), y=hl("Rekening"), z=hl("Tegenrekening")) }}</li>
+  <li>{{ ht("{s} en {v} (onder {m}): met {t} ziet u een subtotaal per datum, nummer enz.", s=hl("Sorteren op"), v=hl("Volgorde"), m=hl("Meer opties"), t=hl("Subtotaal per sorteerwaarde")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een boeking openen vanuit deze lijst opent het gewone bewerkscherm. Wat daar mag (wijzigen, verwijderen) hangt af van de afgesloten periode.") }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

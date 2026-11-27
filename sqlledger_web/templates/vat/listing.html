@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% import "reports/_macros.html" as m with context %}
+{% block title %}{{ _("Klantenlisting") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Jaarlijkse klantenlisting") }}</h2>
+<p class="muted small">{{ _("België: per Belgische btw-plichtige klant de omzet zonder btw en de btw van het kalenderjaar, als de omzet meer dan {threshold} euro is. Indienen vóór 31 maart via Intervat; zijn er geen klanten, dan dient u een nihil-listing in.").format(threshold=amount(threshold)) }}</p>
+<form method="get" action="/btw/klantenlisting" class="report-form noprint">
+  <div class="filters">
+    <label>{{ _("Jaar") }}
+      <select name="jaar">{% for y in years %}<option value="{{ y }}"{% if y == year %} selected{% endif %}>{{ y }}</option>{% endfor %}</select></label>
+  </div>
+  <div class="actions"><button>{{ _("Toon") }}</button></div>
+</form>
+<div class="report-head">
+  <div>
+    <strong>{{ company_name }}</strong>
+    <div>{{ title }}</div>
+    {% for line in head %}<div class="muted">{{ line }}</div>{% endfor %}
+  </div>
+  <div class="actions noprint">
+    <a class="button secondary" href="/btw/aangifte">{{ _("Btw-aangifte") }}</a>
+    <a class="button secondary" href="/btw/klantenlisting?jaar={{ year }}&amp;export=xlsx">Excel</a>
+    <a class="button secondary" href="/btw/klantenlisting?jaar={{ year }}&amp;export=pdf" target="_blank" rel="noopener">PDF</a>
+    <button type="button" class="secondary" data-print>{{ _("Afdrukken") }}</button>
+  </div>
+</div>
+{% if rep.nil %}
+<p class="notice">{{ _("Geen klanten boven de drempel: dien een nihil-listing in.") }}</p>
+{% endif %}
+<div class="vatreturn">{{ m.table(table, cell) }}</div>
+<div class="small muted">
+  <p>{{ _("Bedragen in hele euro's, omlaag afgerond; creditnota's zijn afgetrokken. Een btw-nummer zonder landcode van 10 cijfers dat met 0 of 1 begint, telt als Belgisch.") }}</p>
+  {% if rep.below %}<p>{{ _("{n} Belgische klanten met een omzet van niet meer dan {threshold} euro staan niet op de lijst.").format(n=rep.below|length, threshold=amount(threshold)) }}</p>{% endif %}
+</div>
+{% if rep.problems %}
+<div class="notice warning">
+  <p>{{ _("Klanten met een ongeldig Belgisch btw-nummer; verbeter het nummer, anders ontbreken ze op de lijst:") }}</p>
+  <ul>{% for p in rep.problems %}<li><a href="/klanten/{{ p.id }}">{{ p.name or p.id }}</a> {{ p.taxnumber }} — {{ _(problem_labels[p.problem]) }} ({{ amount(p.base, 2) }})</li>{% endfor %}</ul>
+</div>
+{% endif %}
+<script src="/static/reports.js" defer></script>
+{% endblock %}

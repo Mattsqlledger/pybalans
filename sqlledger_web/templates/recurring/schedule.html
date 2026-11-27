@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Herhaalschema") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Herhaalschema") }} <span class="muted">{{ _(type_label) }} {{ kind.number or "" }}{% if vc_name %} · {{ vc_name }}{% endif %}</span></h2>
+  <p class="actions noprint">
+    <a href="/terugkerend">{{ _("Terugkerende boekingen") }}</a>
+  </p>
+</div>
+{% include "help/recurring_schedule.html" %}
+{% if supported %}
+{% if kind.module == "oe" %}
+<p class="muted small">{{ _("Bij verwerken (menu Terugkerende boekingen) wordt een kopie van deze order gemaakt op de volgende datum: zelfde regels en omschrijving, een nieuw nummer, de leverdatum even ver na de orderdatum als bij deze order. Een maandeinde blijft een maandeinde (31-01, 28-02, 31-03).") }}</p>
+{% else %}
+<p class="muted small">{{ _("Bij verwerken (menu Terugkerende boekingen) wordt een kopie van deze boeking gemaakt op de volgende datum: zelfde regels en omschrijving, een nieuw nummer, de vervaldatum even ver na de boekdatum als bij deze boeking. Een maandeinde blijft een maandeinde (31-01, 28-02, 31-03).") }}</p>
+{% endif %}
+{% if kind.invoice or kind.module == "oe" %}
+<p class="muted small">{{ _("Artikelen: de kopie krijgt de prijzen en kortingen van deze {kind}; de btw volgt de instellingen op de nieuwe datum. Leverdatums schuiven evenveel dagen mee.").format(kind=_("factuur") if kind.invoice else _("order")) }}
+{% if kind.module == "oe" %}{{ _("De kopie is een nieuwe open order, ook als deze order al gefactureerd of gesloten is.") }}{% elif kind.vc == "customer" %}{{ _("Is er te weinig voorraad van een artikel met “voorraad controleren”, dan wordt de termijn overgeslagen.") }}{% endif %}</p>
+{% endif %}
+
+{% endif %}
+
+{% if not supported %}
+<p class="notice">{{ _("Offertes en offerteaanvragen kunnen geen herhaalschema krijgen; zet ze eerst om naar een order.") }}
+{% if schedule %}{{ _("Bestaand schema: elke {repeat} {unit}, volgende {nextdate}.").format(repeat=schedule.repeat, unit=_(units.get(schedule.unit, schedule.unit)), nextdate=fmt(schedule.nextdate) or _("geen (afgelopen)")) }}{% endif %}</p>
+{% else %}
+<form method="post" action="/herhalen/{{ kind.id }}" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="grid">
+    <label>{{ _("Kenmerk") }}
+      <input name="reference" value="{{ f.reference }}" maxlength="100" placeholder="{{ _('volgend nummer') }}">
+      <span class="muted small">{{ _("Wordt het nummer van de eerste kopie als dat nog niet bestaat; daarna steeds het volgende nummer.") }}</span></label>
+    <label>{{ _("Omschrijving in de lijst") }}
+      <input name="description" value="{{ f.description }}" maxlength="500"></label>
+    <label>{{ _("Startdatum") }} *
+      <input type="date" name="startdate" value="{{ f.startdate }}" required></label>
+    {% if schedule %}
+    <label>{{ _("Volgende datum") }}
+      <input type="date" name="nextdate" value="{{ f.nextdate }}">
+      <span class="muted small">{{ _("Leeg: eerste termijn na de boekdatum.") }}</span></label>
+    {% endif %}
+  </div>
+  <fieldset class="grid">
+    <legend>{{ _("Herhalen") }}</legend>
+    {# korte getalvelden in één zin (v1.0.1 PB15): Elke [1] [maand(en)] – [24] keer in totaal #}
+    <div class="inline-fields wide">
+      <label for="rep-repeat">{{ _("Elke") }} *</label>
+      <input type="number" id="rep-repeat" name="repeat" value="{{ f.repeat }}" min="1" max="999" required class="num">
+      <select name="unit" aria-label="{{ _('Eenheid') }}">
+        {% for u, label in units.items() %}<option value="{{ u }}"{% if u == f.unit %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}
+      </select>
+      <span aria-hidden="true">–</span>
+      <input type="number" id="rep-howmany" name="howmany" value="{{ f.howmany }}" min="1" max="9999" required class="num"
+             aria-label="{{ _('Aantal keer (totaal, inclusief de eerste)') }}">
+      <label for="rep-howmany">{{ _("keer in totaal (inclusief de eerste)") }} *</label>
+    </div>
+    {% if kind.module in ("ar", "ap") %}
+    <label class="check"><input type="checkbox" name="payment" value="1"{% if f.payment %} checked{% endif %}>
+      {{ _("Betaling meenemen") }}</label>
+    {% endif %}
+  </fieldset>
+  {% if choices %}
+  <fieldset class="outputs">
+    <legend>{{ _("Na verwerken: mailen") }}</legend>
+    <p class="muted small">{{ _("Elk nieuw document gaat als PDF in een eigen mail naar het e-mailadres van de relatie (met cc/bcc), onderwerp zoals in Beheer > E-mail. Lukt het mailen niet, dan blijft de boeking staan en schuift het schema toch door; de fout staat in het resultaat en u kunt het document vanaf de boeking opnieuw mailen.") }}</p>
+    {% for c in choices %}
+    <label class="check"><input type="checkbox" name="email" value="{{ c.formname }}"{% if c.formname in f.email %} checked{% endif %}>
+      {{ _(c.label) }}</label>
+    {% endfor %}
+    <label class="wide">{{ _("Bericht (leeg: standaardtekst uit Beheer > E-mail)") }}
+      <textarea name="message" rows="5" maxlength="{{ max_message }}">{{ f.message }}</textarea>
+      <span class="muted small">{{ _("Plaatshouders:") }} {% for p in placeholders %}<code>{{ "{" ~ p ~ "}" }}</code>{% if not loop.last %} {% endif %}{% endfor %}.</span></label>
+  </fieldset>
+  <fieldset class="outputs">
+    <legend>{{ _("Na verwerken: PDF") }}</legend>
+    <p class="muted small">{{ _("De nieuwe documenten van alle verwerkte schema's komen samen in één PDF, te downloaden op de resultaatpagina (een printer wordt niet gebruikt).") }}</p>
+    {% for c in choices %}
+    <label class="check"><input type="checkbox" name="print" value="{{ c.formname }}"{% if c.formname in f.print %} checked{% endif %}>
+      {{ _(c.label) }}</label>
+    {% endfor %}
+  </fieldset>
+  {% if kept %}<p class="muted small">{{ _("Uit SQL-Ledger overgenomen en bewaard, maar hier niet uitgevoerd: {list}.").format(list=kept | join(", ")) }}</p>{% endif %}
+  {% elif kind.module == "gl" %}
+  <p class="muted small">{{ _("Een memoriaalboeking heeft geen document om te mailen of als PDF te maken.") }}</p>
+  {% endif %}
+  {% if schedule %}
+  <p class="muted">{{ _("Opgeslagen: einddatum {date};").format(date=enddate) }}
+    {% if upcoming %}{{ _("volgende termijnen: {dates}").format(dates=upcoming | join(", ")) }}{% else %}{{ _("afgelopen, geen volgende datum") }}{% endif %}.</p>
+  {% endif %}
+  <p class="actions">
+    <button name="action" value="save">{{ _("Schema opslaan") }}</button>
+    {% if schedule %}<button name="action" value="delete" class="secondary danger" formnovalidate>{{ _("Schema verwijderen") }}</button>{% endif %}
+    <a class="button secondary" href="{{ back }}">{{ _("Terug naar de boeking") }}</a>
+  </p>
+</form>
+{% endif %}
+{% endblock %}

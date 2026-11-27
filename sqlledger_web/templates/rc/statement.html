@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Afletteren") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Afletteren") }}</h2>
+  <p class="actions noprint">
+    <a href="/afletteren/rapport{% if s.rekening %}?{{ s.params() }}{% endif %}">{{ _("Afgeletterde posten") }}</a>
+  </p>
+</div>
+{% include "help/rc.html" %}
+{% set action = "/afletteren" %}{% set tot_label = N_("Tot en met (afschriftdatum)") %}
+{% include "rc/_select.html" %}
+
+{% if v %}{% set st = v.st %}
+{% if st.previous %}
+<p class="muted small">{{ _("Vorige afletterronde: {date}, afschriftsaldo {balance} ({login}).").format(date=st.previous.statementdate, balance=amount(st.previous.statementbalance), login=st.previous.login) }}</p>
+{% endif %}
+{% for w in st.warnings %}<p class="notice warn" role="alert">{{ _("Het beginsaldo wijkt af van het afschriftsaldo van de vorige ronde; is er intussen iets uitgevinkt of geboekt?") }} <span class="small">({{ libmsg(w) }})</span></p>{% endfor %}
+
+<form method="post" action="/afletteren" class="rcform">
+  <p class="error" role="alert" id="rc-error"{% if not calc_error %} hidden{% endif %}>{{ calc_error or "" }}</p>
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% for name in ["rekening", "van", "tot", "weergave"] %}<input type="hidden" name="{{ name }}" value="{{ s[name] }}">{% endfor %}
+  <input type="hidden" name="koers" value="{{ '1' if s.koers else '0' }}">
+  <input type="hidden" name="alle" value="{{ '1' if s.alle else '' }}">
+
+  <h3>{{ st.accno }} {{ st.description }}</h3>
+  <div class="table-wrap">
+  <table class="list report gllines rclines">
+    <thead><tr>
+      <th>{{ _("Datum") }}</th><th>{{ _("Kenmerk") }}</th><th>{{ _("Omschrijving") }}</th>
+      <th><input type="checkbox" data-allbox aria-label="{{ _('Alles aan- of uitvinken') }}"{% if st.lines and v.groups|length == (st.lines|map(attribute='group')|unique|list|length) %} checked{% endif %} hidden>
+          {{ _("Afgeletterd") }}</th>
+      <th class="num">{{ _("Debet") }}</th><th class="num">{{ _("Credit") }}</th><th class="num">{{ _("Saldo") }}</th>
+    </tr></thead>
+    <tbody>
+      <tr class="k-balance"><td></td><td></td><td>{{ _("Beginsaldo") }}</td><td></td><td></td><td></td>
+        <td class="num">{{ amount(st.beginbalance) }}</td></tr>
+    {% for ln in st.lines %}{% set on = ln.group in v.groups %}
+      <tr{% if on %} class="checked"{% endif %}>
+        <td class="nowrap">{% if not ln.fx or st.summary %}{{ ln.transdate }}{% endif %}</td>
+        <td>{% if not ln.fx or st.summary %}{% if ln.trans_ids|length == 1 %}<a href="/boekingen/{{ ln.trans_ids[0] }}" target="_blank">{{ ln.source or "–" }}</a>{% else %}{{ ln.source }}{% endif %}{% endif %}</td>
+        <td>{% if ln.fx and not st.summary %}<span class="muted">{{ _("koersverschil") }}</span>{% else %}{{ ln.names | join(", ") }}{% endif %}
+          {% if ln.trans_ids|length > 1 %}<span class="muted small">({{ ln.trans_ids|length }} {{ _("boekingen") }})</span>{% endif %}</td>
+        <td><input type="checkbox" name="sel" value="{{ ln.tokens }}" data-calc data-group="{{ ln.group }}"{% if on %} checked{% endif %}
+                   aria-label="{{ _('Afgeletterd') }} {{ ln.transdate }} {{ ln.source }}">
+          {% if ln.cleared and on %}<span class="muted small">{{ ln.cleared }}</span>{% elif ln.partly and not on %}<span class="muted small" title="{{ _('Een deel van deze regel is al afgeletterd; dat deel blijft staan. Aanvinken lettert de rest af.') }}">{{ _("deels") }}</span>{% endif %}</td>
+        <td class="num">{{ amount(ln.debit, "") }}</td><td class="num">{{ amount(ln.credit, "") }}</td>
+        <td class="num">{{ amount(ln.balance) }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7" class="muted">{{ _("Geen regels in deze periode.") }}</td></tr>
+    {% endfor %}
+      <tr class="k-total"><td></td><td></td><td>{{ _("Totaal") }}</td><td></td>
+        <td class="num">{{ amount(st.total_debit) }}</td><td class="num">{{ amount(st.total_credit) }}</td><td></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="muted small">{{ _("Regels van dezelfde boeking met dezelfde datum en hetzelfde kenmerk worden samen afgeletterd.") }}</p>
+
+  <div class="filters">
+    <label>{{ _("Afschriftdatum") }} <input value="{{ st.statementdate }}" disabled></label>
+    <label>{{ _("Afschriftsaldo") }} * <input name="statementbalance" value="{{ v.balance_text }}" class="num" inputmode="decimal" data-calc></label>
+  </div>
+  <div id="rc-sum">
+  <table class="list report rcsum">
+    <tbody>
+      <tr><td>{{ _("Beginsaldo") }}</td><td class="num">{{ amount(st.beginbalance) }}</td></tr>
+      <tr><td>{{ _("Aangevinkt") }}</td><td class="num">{{ amount(v.cleared_total) }}</td></tr>
+      <tr><td>{{ _("Afgeletterd saldo") }}</td><td class="num">{{ amount(v.cleared_balance) }}</td></tr>
+      <tr><td>{{ _("Afschriftsaldo") }}</td><td class="num">{{ amount(v.balance) if v.balance is not none else "" }}</td></tr>
+      <tr class="k-total"><td>{{ _("Verschil") }}</td>
+        <td class="num{% if v.difference %} neg{% endif %}" id="rc-diff">{{ amount(v.difference) if v.difference is not none else "?" }}</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p class="actions glbuttons">
+    <button name="action" value="save">{{ _("Opslaan") }}</button>
+    <button name="action" value="update" class="secondary" data-update>{{ _("Bijwerken") }}</button>
+    <button name="action" value="select_all" class="secondary" data-nojs>{{ _("Alles aanvinken") }}</button>
+    <button name="action" value="deselect_all" class="secondary" data-nojs>{{ _("Alles uitvinken") }}</button>
+  </p>
+  <p class="muted small">{{ _("Opslaan kan alleen als het verschil 0 is. Nieuw aangevinkte regels krijgen de afschriftdatum als afletterdatum; regels die al afgeletterd waren houden hun datum.") }}</p>
+</form>
+<script src="/static/rc.js" defer></script>
+{% elif s.rekening == "" %}
+<p class="muted">{{ _("Kies een rekening en de periode van het afschrift.") }}</p>
+{% endif %}
+{% endblock %}

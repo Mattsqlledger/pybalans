@@ -1,0 +1,24 @@
+{# Kas en bank > Overzicht ontvangsten en Kas en bank > Overzicht betalingen (HELP_ANALYSE golf 2, tekst 5) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Alle ontvangsten (geld erbij) of betalingen (geld eraf) op uw bank- en kasrekeningen in een periode, per rekening.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {p}.", p=hl("Periode")) }}</li>
+  <li>{{ ht("Laat bij {f} alles aangevinkt, of alleen de rekening die u wilt zien.", f=hl("Betaalrekeningen")) }}</li>
+  <li>{{ ht("Vul zo nodig een deel van de naam bij {k} of {l} in.", k=hl("Klant"), l=hl("Leverancier")) }}</li>
+  <li>{{ ht("Klik op {b}. U ziet per rekening de regels met een totaal. Klik op een nummer om de boeking te openen.", b=hl("Toon")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f} (onder {m}): zoek op het kenmerk van de betaling, bijvoorbeeld het nummer van een bankafschrift.", f=hl("Kenmerk"), m=hl("Meer opties")) }}</li>
+  <li>{{ ht("{f} (onder {m}): alleen van belang bij betalingen in een vreemde valuta.", f=hl("Inclusief koersverschillen"), m=hl("Meer opties")) }}</li>
+  <li>{{ ht("{f} (onder {m}): op datum, relatie of medewerker, eventueel met {s}.", f=hl("Sorteren op"), m=hl("Meer opties"), s=hl("Subtotaal per sorteerwaarde")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Zonder naam ziet u ook memoriaalboekingen op de rekening, zoals bankkosten of een overboeking tussen eigen rekeningen. Vult u een naam in, dan alleen ontvangsten van klanten of betalingen aan leveranciers.") }}</li>
+  <li>{{ ht("De bedragen zijn in uw standaardvaluta. De kolom {v} toont in welke valuta de factuur was.", v=hl("Valuta")) }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

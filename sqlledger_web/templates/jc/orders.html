@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Verkooporders uit uren") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Verkooporders uit uren") }}</h2><a href="/uren/tijdkaarten">{{ _("Tijdkaarten") }}</a></div>
+{% include "help/jc_orders.html" %}
+{% if orders %}
+<div class="notice" role="status"><p>{{ _("Verkooporders gemaakt:") }}</p><ul>
+  {% for o in orders %}<li><a href="/verkooporder/{{ o.id }}">{{ o.ordnumber }}</a> – {{ o.name }} – {{ o.amount | amount(ctx.user.numberformat, places) }}</li>{% endfor %}</ul></div>
+{% endif %}
+<form method="get" action="/uren/verkooporders" class="filters">
+  <label>{{ _("Project") }} <select name="project"><option value="">{{ _("alle") }}</option>
+    {% for p in links.projects if p.kind != "internal" %}<option value="{{ p.id }}"{% if p.id|string == q.project %} selected{% endif %}>{{ p.projectnumber }}</option>{% endfor %}</select></label>
+  <label>{{ _("Medewerker") }} <select name="employee"><option value="">{{ _("alle") }}</option>
+    {% for e in links.employees %}<option value="{{ e.id }}"{% if e.id|string == q.employee %} selected{% endif %}>{{ e.name }}</option>{% endfor %}</select></label>
+  <label>{{ _("Van") }} <input type="date" name="van" value="{{ q.van or '' }}"></label>
+  <label>{{ _("Tot en met") }} <input type="date" name="tot" value="{{ q.tot or '' }}"></label>
+  <label class="check"><input type="checkbox" name="samenvatten" value="1"{% if q.samenvatten == "1" %} checked{% endif %}> {{ _("Samenvatten per project, klant en dienst") }}</label>
+  <button class="secondary">{{ _("Tonen") }}</button>
+</form>
+<p class="muted small">{{ _("Uren die nog niet op een verkooporder staan. Per klant komt er één verkooporder met de aangevinkte regels; daarna factureert u vanuit de order.") }} {{ _("Uren op interne projecten worden niet gefactureerd en staan hier niet.") }}</p>
+<form method="post" action="/uren/verkooporders">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% for k in ("project", "employee", "van", "tot", "samenvatten") %}<input type="hidden" name="{{ k }}" value="{{ q[k] or '' }}">{% endfor %}
+  <div class="table-wrap"><table class="list">
+    <thead><tr><th><span class="visually-hidden">{{ _("Kiezen") }}</span></th><th>{{ _("Project") }}</th><th>{{ _("Klant") }}</th>{% if q.samenvatten != "1" %}<th>{{ _("Datum") }}</th>{% endif %}<th>{{ _("Dienst") }}</th><th>{{ _("Omschrijving") }}</th><th>{{ _("Medewerker") }}</th><th class="num">{{ _("Uren") }}</th><th class="num">{{ _("Bedrag") }}</th></tr></thead>
+    <tbody>
+    {% for it in items %}{% set n = loop.index %}
+    <tr><td><input type="checkbox" name="row" value="{{ n }}" aria-label="{{ _('Regel') }} {{ n }}"{% if chosen is none or n in chosen %} checked{% endif %}{% if not can_edit %} disabled{% endif %}></td>
+      <td>{{ it.projectnumber }}</td>
+      <td>{% if it.customer_id %}{{ it.customer }}{% else %}<select name="customer_{{ n }}" aria-label="{{ _('Klant') }}"><option value="">{{ _("— kies een klant —") }}</option>{% for c in customers %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>{% endif %}</td>
+      {% if q.samenvatten != "1" %}<td>{{ it.transdate | userdate(ctx.user.dateformat) }}</td>{% endif %}
+      <td>{{ it.partnumber }}</td><td>{{ it.description }}</td><td>{{ it.employee }}</td>
+      <td class="num">{{ it.qty | amount(ctx.user.numberformat, places) }}</td><td class="num">{{ it.amount | amount(ctx.user.numberformat, places) }}</td></tr>
+    {% else %}<tr><td colspan="9" class="muted">{{ _("Geen open uren gevonden.") }}</td></tr>{% endfor %}
+    </tbody></table></div>
+  {% if items and can_edit %}<p class="actions"><button name="action" value="generate">{{ _("Verkooporders maken") }}</button></p>{% endif %}
+</form>
+{% endblock %}

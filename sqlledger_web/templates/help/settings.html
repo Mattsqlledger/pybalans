@@ -1,0 +1,24 @@
+{# Mijn instellingen, via de eigen naam rechtsboven (HELP_ANALYSE golf 3, tekst C14) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Uw eigen gegevens, notatie, taal, wachtwoord en tweestapsverificatie. Geldt voor u in alle administraties.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Pas onder {s} aan wat u wilt en klik op {b}.", s=hl("Gegevens en notatie"), b=hl("Opslaan")) }}</li>
+  <li>{{ ht("Nieuw wachtwoord: vul {h}, {n} en {r} in en klik op {b}.", h=hl("Huidig wachtwoord"), n=hl("Nieuw wachtwoord"), r=hl("Herhaal"), b=hl("Wijzigen")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: staat rechtsboven en kan op documenten komen.", f=hl("Naam")) }}</li>
+  <li>{{ ht("{f}: bij e-mail die u vanuit de app verstuurt, gaan antwoorden naar dit adres als de administratie geen eigen antwoordadres heeft.", f=hl("E-mail")) }}</li>
+  <li>{{ ht("{g} en {d}: hoe u bedragen en datums ziet en intypt, op het scherm en in rapporten.", g=hl("Getalnotatie"), d=hl("Datumnotatie")) }}</li>
+  <li>{{ ht("{f}: de taal van de schermen. Facturen en andere documenten volgen de documenttaal van de administratie ({m}).", f=hl("Taal"), m=hm("Beheer", "Instellingen")) }}</li>
+  <li>{{ ht("{f}: komt onder elke e-mail die u vanuit de app verstuurt (facturen, aanmaningen).", f=hl("Handtekening onder e-mails")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een nieuw wachtwoord heeft minstens 12 tekens. Na het wijzigen wordt u op andere apparaten uitgelogd.") }}</li>
+  <li>{{ ht("Tweestapsverificatie: met {a} of {n} koppelt u een authenticator-app. Voor beheerders en systeembeheerders is het verplicht en ontbreekt {u}.", a=hl("Aanzetten"), n=hl("Nieuwe telefoon/app koppelen"), u=hl("Uitzetten")) }}</li>
+  <li>{{ ht("Ingelogd op een apparaat dat u niet meer gebruikt? Klik op {b}.", b=hl("Andere sessies beëindigen")) }}</li>
+</ul>
+</details>

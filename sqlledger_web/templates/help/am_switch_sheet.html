@@ -1,0 +1,18 @@
+{# Beheer > Ingebruikname > Controleblad (HELP_ANALYSE golf 3, tekst A3) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Eén blad met de cijfers van de ingelezen administratie, om naast de laatste cijfers uit SQL-Ledger te leggen. U opent het met {b} op {m}.", b=hl("Controleblad"), m=hm("Beheer", "Ingebruikname")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {p} en klik op {b}. Standaard is dat de laatste boekdatum op het moment van inlezen.", p=hl("Peildatum"), b=hl("Toon")) }}</li>
+  <li>{{ _("Vergelijk proefbalans, winst en verlies, balans, de saldi van kas en bank en de openstaande posten met dezelfde overzichten uit SQL-Ledger op dezelfde datum. Kijk ook de controles bovenaan na.") }}</li>
+  <li>{{ ht("Klopt alles? Klik onderaan op {b}. Het punt op de overstaplijst wordt afgevinkt, met datum en uw naam.", b=hl("Cijfers kloppen – akkoord")) }}</li>
+  <li>{{ ht("Klopt er iets niet? Schrijf bij {f} wat er mis is en klik op {b}. Het punt blijft open, met uw notitie erbij.", f=hl("Wat klopt er niet?"), b=hl("Er klopt iets niet")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Een controle met de uitkomst {n} hoeft geen fout te zijn: het kan een oude eigenaardigheid in de gegevens uit SQL-Ledger zijn. Klik op een kenmerk om de boeking te openen.", n=hl("nakijken")) }}</li>
+  <li>{{ _("Proefbalans en winst en verlies lopen van het begin van het boekjaar van de peildatum (meestal 1 januari) tot en met de peildatum.") }}</li>
+  <li>{{ ht("Met PDF of {a} neemt u het blad mee. {t} brengt u terug naar de lijst.", a=hl("Afdrukken"), t=hl("Terug naar Ingebruikname")) }}</li>
+</ul>
+</details>

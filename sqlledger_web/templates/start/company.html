@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Administratie") }}{% endblock %}
+{% block content %}
+{% include "start/_steps.html" %}
+<h2>{{ _("Eerste administratie") }}</h2>
+<p>{{ _("Een administratie is de boekhouding van één bedrijf. Hoe wilt u beginnen?") }}</p>
+<ul class="tiles">
+  <li><a class="tile" href="/welkom/administratie/nieuw"><strong>{{ _("Nieuwe administratie") }}</strong>
+    <span>{{ _("Lege boekhouding met een standaardrekeningschema voor uw land.") }}</span></a></li>
+  <li><a class="tile" href="/welkom/administratie/back-up"><strong>{{ _("Back-up inlezen") }}</strong>
+    <span>{{ _("Een back-up uit SQL-Ledger inlezen.") }}</span></a></li>
+  <li><a class="tile" href="/welkom/administratie/koppelen"><strong>{{ _("Bestaande database koppelen") }}</strong>
+    <span>{{ _("Een SQL-Ledger-database die al op de databaseserver staat.") }}</span></a></li>
+</ul>
+<p class="small"><a href="/systeem/administraties">{{ _("Later via Systeem") }}</a></p>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Assembleren") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Assembleren") }} <span class="muted">{{ p.partnumber }} {{ p.description }}</span></h2>
+  <p class="actions noprint"><a href="/artikelen/{{ p.id }}/stuklijst">{{ _("Stuklijst uitgeklapt") }}</a>
+    <a href="/artikelen-assembleren">{{ _("Overzicht assembleren") }}</a></p>
+</div>
+{% include "help/ic_build.html" %}
+<p>{{ _("Op voorraad") }}: <strong>{{ onhand }}</strong> {{ p.unit }}</p>
+{% if p.obsolete %}<p class="notice warning">{{ _("Dit artikel is vervallen: alleen demonteren is nog mogelijk.") }}</p>{% endif %}
+{% if warning %}
+<div class="confirm" role="alert">
+  <p><strong>{{ _("Te weinig voorraad van:") }}</strong>
+    {% for s in warning %}{{ s.partnumber }} ({{ s.description }}){% if not loop.last %}, {% endif %}{% endfor %}.
+    {{ _("De voorraad van deze onderdelen wordt negatief. Toch assembleren?") }}</p>
+</div>
+{% endif %}
+{% if can_edit %}
+<form method="post" action="/artikelen/{{ p.id }}/assembleren" class="report-form">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="filters">
+    <fieldset><legend>{{ _("Wat") }}</legend>
+      <label class="check"><input type="radio" name="mode" value="build"{% if values.mode != "unbuild" %} checked{% endif %}> {{ _("assembleren (onderdelen → product)") }}</label>
+      <label class="check"><input type="radio" name="mode" value="unbuild"{% if values.mode == "unbuild" %} checked{% endif %}> {{ _("demonteren (product → onderdelen)") }}</label>
+    </fieldset>
+    <label>{{ _("Aantal") }} <input name="qty" value="{{ values.qty }}" class="num" inputmode="decimal" placeholder="1" required></label>
+    <label>{{ _("Datum") }} <input type="date" name="transdate" value="{{ values.transdate }}" required></label>
+    <label>{{ _("Kenmerk") }} <input name="reference" value="{{ values.reference }}" maxlength="100" class="short"></label>
+    <label class="wide">{{ _("Reden/notitie") }} <input name="notes" value="{{ values.notes }}" maxlength="300"></label>
+  </div>
+  <p class="muted small">{{ _("Assembleren en demonteren wijzigen alleen de voorraad van product en onderdelen; er wordt niets in het grootboek geboekt. De kostprijs komt bij verkoop uit de onderdelen.") }}</p>
+  <div class="actions">
+    {% if warning %}
+    <button name="action" value="build_confirmed" class="danger">{{ _("Ja, toch assembleren") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Terug") }}</button>
+    {% else %}
+    <button name="action" value="build">{{ _("Uitvoeren") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Bijwerken") }}</button>
+    {% endif %}
+    <a class="button secondary" href="/artikelen/{{ p.id }}">{{ _("Terug naar het artikel") }}</a>
+  </div>
+</form>
+{% else %}
+<p class="actions noprint"><a class="button secondary" href="/artikelen/{{ p.id }}">{{ _("Terug naar het artikel") }}</a></p>
+{% endif %}
+<h3>{{ _("Onderdelen voor {qty} stuk(s)").format(qty=qty) }}</h3>
+{% if shortages and not warning %}<p class="notice warning">{{ _("Te weinig voorraad van:") }} {% for s in shortages %}{{ s.partnumber }} ({{ s.description }}){% if not loop.last %}, {% endif %}{% endfor %}.</p>{% endif %}
+<div class="table-wrap">
+<table class="list report">
+  <thead><tr>{% for c in table.columns %}<th{% if c.kind == 'amount' %} class="num"{% endif %}>{{ _(c.label) }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for r in table.rows %}
+  <tr class="{{ r.kind }}">{% for c in table.columns %}{% set txt = cell(c, r) %}{% set url = r.links.get(c.key) %}
+    <td class="{{ 'num' if c.kind == 'amount' }}">{% if url %}<a href="{{ url }}">{{ txt }}</a>{% else %}{{ txt }}{% endif %}</td>{% endfor %}</tr>
+  {% else %}
+  <tr><td colspan="{{ table.columns|length }}" class="muted">{{ _("Dit artikel heeft geen stuklijst.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<h3>{{ _("Productiehistorie") }}</h3>
+<div class="table-wrap">
+<table class="list report">
+  <thead><tr>{% for c in history.columns %}<th{% if c.kind == 'amount' %} class="num"{% endif %}>{{ _(c.label) }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for r in history.rows %}
+  <tr>{% for c in history.columns %}{% set txt = cell(c, r) %}{% set url = r.links.get(c.key) %}
+    <td class="{{ 'num' if c.kind == 'amount' }}{{ ' nowrap' if c.kind == 'date' }}">{% if url %}<a href="{{ url }}">{{ txt }}</a>{% else %}{{ txt }}{% endif %}</td>{% endfor %}</tr>
+  {% else %}
+  <tr><td colspan="{{ history.columns|length }}" class="muted">{{ _("Nog niet geassembleerd.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

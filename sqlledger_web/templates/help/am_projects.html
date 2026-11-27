@@ -1,0 +1,29 @@
+{# Afdelingen en projecten > Projecten (HELP_ANALYSE golf 4, tekst B4) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Projecten om omzet, kosten en uren per opdracht te volgen. U kiest een project per regel op een boeking, factuur of order, en op elke tijdkaart.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Klik op {b}.", b=hl("Project toevoegen")) }}</li>
+  <li>{{ ht("Laat {n} leeg voor het volgende nummer, en vul de {o} in.", n=hl("Nummer"), o=hl("Omschrijving")) }}</li>
+  <li>{{ ht("Kies bij {s}:", s=hl("Soort project")) }}
+    <ul>
+      <li>{{ ht("Klantproject: kies hierboven de {k}. De uren gaan via {m} naar een order en factuur.", k=hl("Klant"), m=hm("Verkooporders uit uren")) }}</li>
+      <li>{{ ht("Intern project: laat {k} leeg en kies een {p}, of typ een nieuwe bij {n}.", k=hl("Klant"), p=hl("Kostenplaats"), n=hl("of nieuwe kostenplaats")) }}</li>
+    </ul>
+  </li>
+  <li>{{ ht("Vul zo nodig een {s} en {e} in en klik op {b}.", s=hl("Startdatum"), e=hl("Einddatum"), b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{s} en {e}: een project is alleen te kiezen op boekingen en tijdkaarten met een datum daartussen.", s=hl("Startdatum"), e=hl("Einddatum")) }}</li>
+  <li>{{ ht("{f}: alleen bij een intern project. Een nieuwe kostenplaats wordt meteen een afdeling van het soort kostenplaats.", f=hl("Kostenplaats")) }}</li>
+  <li>{{ ht("{f} (boven de lijst): {a} zijn projecten zonder einddatum of met een einddatum vanaf vandaag; {o} zijn projecten zonder boekingen of uren. Klik op {b}.", f=hl("Status"), a=hl("actief"), o=hl("ongebruikt"), b=hl("Tonen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{n} in de kolom {s}: een project uit SQL-Ledger of van vóór deze versie zonder klant. Het werkt zoals voorheen. Open het om het als klantproject of intern project in te delen.", n=hl("niet ingedeeld"), s=hl("Soort")) }}</li>
+  <li>{{ ht("Uren op een intern project worden nooit gefactureerd; ze tellen mee in het rapport {m}.", m=hm("Uren per project")) }}</li>
+  <li>{{ _("Een project dat gebruikt wordt, kunt u niet verwijderen. Zet dan een einddatum.") }}</li>
+</ul>
+</details>

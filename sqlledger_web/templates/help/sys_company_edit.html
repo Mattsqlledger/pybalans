@@ -1,0 +1,27 @@
+{# Systeem > Administraties > Bestaande database koppelen / administratie bewerken (HELP_ANALYSE golf 3, tekst C7) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een SQL-Ledger-database die al op de databaseserver staat als administratie gebruiken, of van een bestaande administratie de naam, code, modules en status wijzigen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul {n} en {d} in. {s} en {p} alleen als de database op een andere server staat dan de standaard (die staat grijs in het veld).", n=hl("Naam"), d=hl("Databasenaam"), s=hl("Server"), p=hl("Poort")) }}</li>
+  <li>{{ ht("Klik op {b}. U ziet de bedrijfsnaam en de SQL-Ledger-versie uit de database, of waarom het niet lukt.", b=hl("Verbinding testen")) }}</li>
+  <li>{{ ht("Kies de {f} en klik op {b}.", f=hl("Modules"), b=hl("Opslaan")) }}</li>
+  <li>{{ ht("Laat {f} aan staan als u zelf toegang wilt. Anderen geeft u toegang bij {m}.", f=hl("Mij als beheerder van deze administratie toevoegen"), m=hm("Systeem", "Gebruikers")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: wat uit staat, verdwijnt uit het menu van deze administratie. De gegevens blijven bestaan.", f=hl("Modules")) }}</li>
+  <li>{{ ht("{f}: uit = de administratie staat niet meer in de keuzelijst van de gebruikers en niemand kan haar openen. Handig voor een oude administratie na een vervanging.", f=hl("Actief")) }}</li>
+  <li>{{ ht("{f}: zie {s}.", f=hl("Code"), s=hl("Nieuwe administratie")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Een database van een SQL-Ledger-versie ouder dan 3.2.4 wordt geweigerd. Lees in dat geval een back-up in via {b}; die werkt de database bij.", b=hl("Back-up inlezen")) }}</li>
+  <li>{{ _("Een database van SQL-Ledger 4.x (versie nieuwer dan 3.2.4) kunt u koppelen, maar die wordt niet ondersteund: gebruik op eigen risico. Een back-up van 4.x inlezen kan niet.") }}</li>
+  <li>{{ _("Een database hoort bij één administratie: een database die al bij een andere administratie hoort, wordt geweigerd.") }}</li>
+  <li>{{ ht("Een andere {f}, {s} of {p} bij een bestaande administratie laat de administratie naar die andere database wijzen. Die moet bereikbaar zijn. U ziet eerst de oude en de nieuwe database met de bedrijfsnaam uit elk; pas na {b} wordt het opgeslagen. Er wordt niets gekopieerd; de oude waarden staan in het logboek.", f=hl("Databasenaam"), s=hl("Server"), p=hl("Poort"), b=hl("Ja, andere database gebruiken")) }}</li>
+  <li>{{ ht("{b} staat onderaan zodra de administratie uit staat en er geen back-up wordt ingelezen. U typt eerst de naam over. Weg gaan de toegang van alle gebruikers, de eigen sjablonen en het logo, de e-mailinstellingen en de map met opgeslagen mails; de database blijft op de databaseserver en de naam blijft leesbaar in het logboek. Wilt u de gegevens bewaren, maak dan eerst een back-up.", b=hl("Administratie ontkoppelen")) }}</li>
+  <li>{{ ht("Heeft niemand toegang tot de administratie, dan staat dat bovenaan het scherm. Met het vinkje {f} maakt u uzelf beheerder.", f=hl("Mij als beheerder van deze administratie toevoegen")) }}</li>
+</ul>
+</details>

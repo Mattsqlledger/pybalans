@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% from "_file.html" import filepick with context %}
+{% block title %}{{ _("Huisstijl") }}{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="/lettertypen/lettertypen.css">
+<div class="head style-head"><h2>{{ _("Huisstijl") }}</h2>
+  {% if companies %}
+  <details class="more style-copy"{% if source %} open{% endif %}><summary>{{ _("Overnemen van …") }}</summary>
+    <form method="post" action="/beheer/huisstijl" class="inline">
+      <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+      <label>{{ _("Administratie") }}
+        <select name="bron">{% for c in companies %}<option value="{{ c.id }}"{% if source and source.id == c.id %} selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></label>
+      <button name="action" value="load" class="secondary">{{ _("Laden") }}</button>
+    </form>
+  </details>
+  {% endif %}
+</div>
+{% include "help/am_style.html" %}
+<p class="muted">{{ _("Logo, kleur en lettertype van facturen, orders, pakbonnen, aanmaningen en andere documenten van deze administratie. Wijzigingen ziet u meteen in het voorbeeld; ze gelden pas na Opslaan.") }}
+  <a href="/beheer/documentinstellingen">{{ _("Teksten, bank en kolommen: Documentinstellingen") }}</a></p>
+
+{% if source %}
+<div class="notice warning" role="status">
+  <strong>{{ _("Huisstijl van {naam} geladen — nog niet opgeslagen.").format(naam=source.name) }}</strong>
+  {% if not logo and own_logo %}{{ _("Let op: uw eigen logo wordt verwijderd.") }}{% endif %}
+  <span class="actions"><button form="styleform" name="action" value="save">{{ _("Opslaan") }}</button>
+    <a href="/beheer/huisstijl">{{ _("Annuleren") }}</a></span>
+</div>
+{% endif %}
+
+<div class="style-layout">
+<div class="style-settings">
+  <section class="style-box">
+    <h3>{{ _("Logo") }}</h3>
+    <p data-logo-preview data-alt="{{ _('Logo') }}">{% if logo %}<img src="{{ logo }}" alt="{{ _('Logo') }}" class="logo-preview">{% else %}<span class="muted">{{ _("Geen logo.") }}</span>{% endif %}</p>
+    {% if not source %}
+    {# PB11: kiezen of slepen slaat meteen op (static/style.js, fetch); zonder JavaScript de knop Logo opslaan #}
+    <form method="post" action="/beheer/huisstijl" enctype="multipart/form-data" class="stack logoform" data-logoform
+          data-max-bytes="{{ max_logo_kb * 1024 }}" data-too-large="{{ _('Het logo is te groot (maximaal 1 MB).') }}"
+          data-failed="{{ _('Het logo kon niet worden opgeslagen. Probeer het opnieuw of gebruik de knop Logo opslaan.') }}"
+          data-busy="{{ _('Logo opslaan…') }}"
+          data-unsaved="{{ _('Het gekozen logo is nog niet opgeslagen. Toch opslaan zonder dit logo?') }}">
+      <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+      <label class="dropzone" data-logo-drop>
+        {{ filepick("logo", "image/png,image/jpeg,image/svg+xml") }}
+        <span>{{ _("Sleep het logo hierheen of kies een bestand") }}</span>
+        <span class="muted small">{{ _("PNG, JPEG of SVG, maximaal {n} kB").format(n=max_logo_kb) }}</span>
+      </label>
+      <p class="small logostatus" data-logo-status role="status" aria-live="polite" hidden></p>
+      <p class="actions"><button name="action" value="logo" class="secondary" data-logo-save>{{ _("Logo opslaan") }}</button>
+        <button name="action" value="logo_delete" class="secondary danger" data-logo-delete{% if not own_logo %} hidden{% endif %}>{{ _("Logo verwijderen") }}</button></p>
+      <p class="muted small">{{ _("Het logo wordt meteen opgeslagen; het is hetzelfde logo als bij Sjablonen.") }}</p>
+    </form>
+    {% endif %}
+  </section>
+
+  <form method="post" action="/beheer/huisstijl" id="styleform" class="stack" data-preview="/beheer/huisstijl/voorbeeld"
+        data-min-contrast="{{ min_contrast }}">
+    <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+    <input type="hidden" name="bron" value="{{ source.id if source else '' }}">
+    <input type="hidden" name="has_logo" value="{{ '1' if logo else '' }}">
+    <input type="hidden" name="has_footer_text" value="{{ '1' if footer_text else '' }}">
+
+    <fieldset class="style-box"><legend>{{ _("Grootte en ligging van het logo") }}</legend>
+      <div class="choices"><span class="label">{{ _("Grootte") }}</span>
+        {% for k, label in sizes.items() %}<label class="check"><input type="radio" name="logo_size" value="{{ k }}"{% if s.logo_size == k %} checked{% endif %} data-default="{{ '1' if default.logo_size == k else '' }}"> {{ _(label) }}</label>{% endfor %}</div>
+      <div class="choices"><span class="label">{{ _("Ligging") }}</span>
+        {% for k, label in positions.items() %}<label class="check"><input type="radio" name="logo_pos" value="{{ k }}"{% if s.logo_pos == k %} checked{% endif %} data-default="{{ '1' if default.logo_pos == k else '' }}"> {{ _(label) }}</label>{% endfor %}</div>
+      <p class="muted small">{{ _("Het logo staat naast de bedrijfsgegevens, zodat het adres van de klant in het venster van de envelop valt.") }}</p>
+    </fieldset>
+
+    <fieldset class="style-box"><legend>{{ _("Kleur en letter") }}</legend>
+      <label>{{ _("Accentkleur (titel, lijnen en kolomkoppen)") }}
+        <span class="colorpick"><input type="color" value="{{ s.color }}" data-color-picker aria-label="{{ _('Kleur kiezen') }}">
+          <input name="color" value="{{ s.color }}" maxlength="7" size="8" pattern="#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?" data-default="{{ default.color }}" spellcheck="false"></span></label>
+      <div class="swatches" role="group" aria-label="{{ _('Snelkeuze kleur') }}">
+        {% for c, label in swatches %}<button type="button" class="swatch" data-swatch="{{ c }}" title="{{ _(label) }}" aria-label="{{ _(label) }}"></button>{% endfor %}</div>
+      <p class="error small" data-contrast-error hidden>{{ _("Deze kleur is te licht voor tekst op wit papier; kies een donkerdere tint.") }}</p>
+      <label>{{ _("Lettertype") }}
+        <select name="font" data-default="">
+          {% for f in fonts %}<option value="{{ f.key }}"{% if s.font == f.key %} selected{% endif %} class="font-{{ f.key or 'standard' }}">{{ f.label }}</option>{% endfor %}
+        </select></label>
+      <p class="muted small">{{ _("Lettertypen onder de SIL Open Font License 1.1.") }} <a href="/lettertypen">{{ _("Licenties en makers") }}</a></p>
+    </fieldset>
+
+    <fieldset class="style-box"><legend>{{ _("Adres") }}</legend>
+      <label class="check"><input type="radio" name="address_pos" value="left"{% if s.address_pos == 'left' %} checked{% endif %} data-default="1"> {{ _("Links (venster links: Nederland, Duitsland)") }}</label>
+      <label class="check"><input type="radio" name="address_pos" value="right"{% if s.address_pos == 'right' %} checked{% endif %} data-default=""> {{ _("Rechts (venster rechts: Zwitserland)") }}</label>
+    </fieldset>
+
+    <fieldset class="style-box"><legend>{{ _("Kop en voet") }}</legend>
+      <input type="hidden" name="show_head" value="0">
+      <label class="check"><input type="checkbox" name="show_head" value="1"{% if s.show_head %} checked{% endif %} data-default="1"> {{ _("Bedrijfsgegevens in de kop tonen") }}</label>
+      <input type="hidden" name="show_footer" value="0">
+      <label class="check"><input type="checkbox" name="show_footer" value="1"{% if s.show_footer %} checked{% endif %} data-default="1"> {{ _("Voetregel tonen") }}</label>
+      <p class="muted small">{{ _("Zet de kop uit bij voorbedrukt briefpapier.") }}</p>
+    </fieldset>
+
+    <ul class="style-warnings" aria-live="polite">
+      <li data-warn="head" hidden>{{ _("Kop te hoog voor de vensterenvelop; kies een kleiner logo of zet de bedrijfsgegevens uit.") }}</li>
+      <li data-warn="logo" hidden>{{ _("Logo wordt niet getoond: bedrijfsgegevens in de kop staan uit.") }}</li>
+      <li data-warn="footer" hidden>{{ _("De eigen voettekst uit Documentinstellingen wordt niet getoond: de voetregel staat uit.") }}</li>
+      <li data-warn="legal" hidden>{{ _("Zorg dat KvK- en btw-nummer op uw briefpapier staan.") }}</li>
+    </ul>
+
+    <p class="actions">
+      <button name="action" value="save" data-save>{{ _("Opslaan") }}</button>
+      <a href="/beheer/huisstijl/voorbeeld?pdf=1" class="button secondary" target="_blank" rel="noopener" data-pdf>{{ _("PDF bekijken") }}</a>
+      <button type="button" class="secondary" data-reset>{{ _("Standaard herstellen") }}</button>
+    </p>
+    <p class="muted small">{{ _("Standaard herstellen zet het formulier terug op de standaardopmaak; dat geldt pas na Opslaan. Het logo blijft staan.") }}</p>
+  </form>
+</div>
+
+<div class="style-preview">
+  {% if own.base or own.kinds %}
+  <div class="notice warning small">
+    {% if own.base == "own" %}<p>{{ _("U heeft een eigen basissjabloon. De huisstijl geldt daardoor voor geen enkel document, tenzij uw sjabloon de huisstijlvariabelen gebruikt.") }}</p>
+    {% elif own.base == "uses" %}<p>{{ _("U heeft een eigen basissjabloon (gebruikt de huisstijl).") }}</p>{% endif %}
+    {% if own.kinds %}<p>{{ _("Voor deze documenten heeft u een eigen sjabloon; daar geldt de huisstijl alleen als het sjabloon de huisstijlvariabelen gebruikt:") }}
+      {% for k in own.kinds %}{{ k.label }}{% if k.uses %} ({{ _("gebruikt de huisstijl") }}){% endif %}{% if not loop.last %}, {% endif %}{% endfor %}.</p>{% endif %}
+    <p><a href="/beheer/sjablonen">{{ _("Naar Sjablonen") }}</a></p>
+  </div>
+  {% endif %}
+  <div class="sheet" data-sheet>
+    <iframe src="/beheer/huisstijl/voorbeeld?{{ preview_qs }}" title="{{ _('Voorbeeld') }}" data-frame tabindex="-1"></iframe>
+  </div>
+  <p class="muted small">{{ _("Voorbeeld met de laatste verkoopfactuur (of een voorbeeldfactuur). Orders, pakbonnen, aanmaningen en andere documenten volgen dezelfde huisstijl. De stippellijn is het venster van de envelop; die staat niet in de PDF.") }}</p>
+</div>
+</div>
+<script src="/static/style.js" defer></script>
+{% endblock %}

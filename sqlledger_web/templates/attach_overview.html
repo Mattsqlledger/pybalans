@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{# Rapporten > Bijlagen (fase 4 stap 6c, RB3): alle bijlagen die je mag zien #}
+{% block title %}{{ _("Bijlagen") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Bijlagen") }}</h2></div>
+{% include "help/attach_overview.html" %}
+<form method="get" action="/bijlagen" class="report-form noprint">
+  <div class="filters">
+    <label>{{ _("Omschrijving of bestandsnaam") }} <input name="text" value="{{ v.text }}"></label>
+    <label>{{ _("Soort") }} <select name="kind"><option value="">{{ _("alle") }}</option>
+      {% for key, label in kinds %}<option value="{{ key }}"{% if key == v.kind %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}
+    </select></label>
+    <label>{{ _("Gekoppeld aan") }} <input name="linked" value="{{ v.linked }}" placeholder="{{ _('nummer of naam') }}"></label>
+    <label>{{ _("Toegevoegd van") }} <input type="date" name="datefrom" value="{{ v.datefrom }}"></label>
+    <label>{{ _("tot en met") }} <input type="date" name="dateto" value="{{ v.dateto }}"></label>
+  </div>
+  {% if v.zonderdatum == "1" %}<input type="hidden" name="zonderdatum" value="1">{% endif %}
+  <div class="actions"><button>{{ _("Zoeken") }}</button></div>
+</form>
+
+<div class="report-head">
+  <div class="muted">{{ _("{count} gevonden").format(count=total) }}{% if total > limit %} · {{ _("de nieuwste {limit} getoond; verfijn de zoekopdracht").format(limit=limit) }}{% endif %}</div>
+  {% if hidden %}<p class="notice small" role="status">{{ _("Bijlagen zonder datum (uit SQL-Ledger) niet getoond: {n}.").format(n=hidden) }} <a href="{{ show_undated }}">{{ _("Tonen") }}</a></p>{% endif %}
+  {% if hide_undated %}<p class="muted small">{{ _("Bijlagen zonder datum (uit SQL-Ledger) worden ook getoond.") }} <a href="{{ hide_undated }}">{{ _("Verbergen") }}</a></p>{% endif %}
+</div>
+{% if rows %}
+<div class="tablewrap">
+<table class="list attoverview">
+  <thead><tr><th>{{ _("Toegevoegd") }}</th><th>{{ _("Bestand") }}</th><th>{{ _("Gekoppeld aan") }}</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr>
+    <td class="nowrap">{{ when(r.added) }}{% if r.added_by %}<br><span class="muted small">{{ r.added_by }}</span>{% endif %}</td>
+    <td><a href="/bijlage/{{ r.archive_id }}" target="_blank" rel="noopener">{{ r.filename }}</a>
+      {% if r.confidential %}<span class="tag">{{ _("vertrouwelijk") }}</span>{% endif %}
+      {% if r.description and r.description != r.filename %}<br>{{ r.description }}{% endif %}
+      <br><a href="/bijlage/{{ r.archive_id }}?download=1" class="small">{{ _("downloaden") }}</a>
+      {% if r.loose and is_admin %}
+      <form method="post" action="/bijlagen/los/{{ r.archive_id }}/verwijderen" class="inline"
+            data-confirm="{{ _('Bijlage {name} verwijderen?').format(name=r.filename) }}">
+        <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+        <button class="link danger small">{{ _("verwijderen") }}</button>
+      </form>{% endif %}</td>
+    <td>{% if r.loose %}<span class="muted">{{ _("Los document (zonder koppeling)") }}</span>
+      {% else %}{% set url = attach_url(r.formname, r.trans_id) %}
+      {% if url %}<a href="{{ url }}">{% endif %}{{ attach_label(r.formname) }} {{ r.number }}{% if url %}</a>{% endif %}
+      {% if r.name and r.name != r.number %}<span class="muted">({{ r.name }})</span>{% endif %}{% endif %}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="muted">{{ _("Geen bijlagen.") }}</p>
+{% endif %}
+<script src="/static/attach.js" defer></script>
+{% endblock %}

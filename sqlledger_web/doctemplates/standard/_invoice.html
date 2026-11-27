@@ -1,0 +1,72 @@
+{% extends "_base.html" %}
+{#- Factuur, creditfactuur, inkoopfactuur en debetnota (doc/templates/Dutch/invoice.tex als voorbeeld).
+    Een sjabloon dat dit uitbreidt zet doc_title, show_shipto, show_duedate, show_payinfo en closing_text
+    (standaard "Dank voor uw bestelling."). Kolommen en teksten: Beheer > Documentinstellingen (doc.*). -#}
+{% set closing_text = closing_text if closing_text is defined else 'Dank voor uw bestelling.' %}
+{% block title %}{{ t(doc_title) }} {{ invnumber }}{% endblock %}
+{% block body %}
+<div class="parties">
+<div class="addr">
+  {% if doc.return_line %}<div class="return">{% if doc.return_text %}{{ doc.return_text }}{% else %}{{ company }}{% for l in address|lines %} · {{ l }}{% endfor %}{% endif %}</div>{% endif %}
+  {{ name }}<br>
+  {% if contact and contact.strip() %}{{ t('t.a.v.') }} {{ contact }}<br>{% endif %}
+  {{ address1 }}<br>
+  {% if address2 %}{{ address2 }}<br>{% endif %}
+  {{ zipcode }} {{ city }}{% if state %} {{ state }}{% endif %}<br>
+  {% if country %}{{ country }}{% endif %}
+</div>
+{% if show_shipto and shiptoname and (shiptoname != name or shiptoaddress1 != address1) %}
+<div class="shipto">
+  <h4>{{ t('Afleveradres') }}</h4>
+  {{ shiptoname }}<br>{{ shiptoaddress1|nl2br }}<br>
+  {% if shiptoaddress2 %}{{ shiptoaddress2 }}<br>{% endif %}
+  {{ shiptozipcode }} {{ shiptocity }}{% if shiptocountry %}<br>{{ shiptocountry }}{% endif %}
+</div>
+{% endif %}
+</div>
+
+<div class="titlebar">
+  <h1>{{ t(doc_title) }}</h1>
+  <table>
+    <tr><td>{{ t('Factuurdatum') }}</td><td>{{ invdate }}</td></tr>
+    <tr><td>{{ t('Factuurnummer') }}</td><td>{{ invnumber }}</td></tr>
+    {% if vc == 'customer' or customernumber is defined %}
+      {% if customernumber %}<tr><td>{{ t('Klantnummer') }}</td><td>{{ customernumber }}</td></tr>{% endif %}
+    {% endif %}
+    {% if vendornumber %}<tr><td>{{ t('Leveranciersnummer') }}</td><td>{{ vendornumber }}</td></tr>{% endif %}
+    {% if show_duedate and duedate and duedate != invdate %}<tr><td>{{ t('Vervaldatum') }}</td><td>{{ duedate }}</td></tr>{% endif %}
+    {% if ponumber %}<tr><td>{{ t('Uw referentie') }}</td><td>{{ ponumber }}</td></tr>{% endif %}
+    {% if ordnumber %}<tr><td>{{ t('Ordernummer') }}</td><td>{{ ordnumber }}</td></tr>{% endif %}
+    {% if customertaxnumber %}<tr><td>{{ t('Btw-nummer') }}</td><td>{{ customertaxnumber }}</td></tr>{% endif %}
+  </table>
+</div>
+
+{% from "_lines.html" import line_table, weight_table with context %}
+{{ line_table(doc.columns, doc.notes, lines, note_date=invdate) }}
+
+<div class="totals"><table>
+  <tr><td>{{ t('Subtotaal') }}</td><td class="r">{{ subtotal }}</td></tr>
+  {% for x in taxes %}
+  <tr><td>{{ x.taxdescription }} {{ t('over') }} {{ x.taxbase }}</td><td class="r">{{ x.tax }}</td></tr>
+  {% endfor %}
+  <tr class="grand"><td>{{ t('Totaal') }}</td><td class="r">{{ invtotal }}</td></tr>
+  {% if paid and paid not in ['0,00', '0.00'] %}
+  <tr><td>{{ t('Betaald') }}</td><td class="r">{{ paid }}</td></tr>
+  <tr class="grand"><td>{{ t('Te betalen') }}</td><td class="r">{{ total }}</td></tr>
+  {% endif %}
+</table></div>
+<div class="currency">{{ t('Alle bedragen in') }} <strong>{{ currency }}</strong>.</div>
+{% if doc.note %}<div class="docnote">{{ doc.note }}</div>{% endif %}
+{% if doc.weights %}{{ weight_table(lines) }}{% endif %}
+
+{% if notes %}<div class="notes">{{ notes|nl2br }}</div>{% endif %}
+
+{% if show_payinfo and doc.payinfo and total not in ['0,00', '0.00', ''] and iban %}
+<div class="payinfo">
+  {{ t('Graag betalen vóór') }} <strong>{{ duedate }}</strong> {{ t('op rekening') }} <strong>{{ iban }}</strong>{% if doc.bankname %} {{ t('bij') }} {{ doc.bankname }}{% endif %}{% if bic %} (BIC {{ bic }}){% endif %}
+  {{ t('t.n.v.') }} {{ company }}, {{ t('onder vermelding van') }} <strong>{{ dcn or invnumber }}</strong>.
+</div>
+{% endif %}
+
+{% block closing %}{% if doc.closing %}<div class="closing">{{ doc.closing }}</div>{% elif closing_text %}<div class="closing">{{ t(closing_text) }}</div>{% endif %}{% endblock %}
+{% endblock %}

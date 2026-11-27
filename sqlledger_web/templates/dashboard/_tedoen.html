@@ -1,0 +1,15 @@
+<section class="card dash-tedoen">
+  <h3>{{ _("Te doen") }} <small>{{ items|length }}</small></h3>
+  {% if items %}
+  <ul class="todo">
+    {% for i in items %}
+    <li><span class="dot {{ i.level }}"></span>
+      {% if i.href %}<a href="{{ i.href }}">{{ i.text }}</a>{% else %}<span>{{ i.text }}</span>{% endif %}
+      {% if i.done %}<form method="post" action="/dashboard/btw-afgehandeld" class="inline done">
+        <input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="period_end" value="{{ i.done }}">
+        <button class="secondary small">{{ _("Afgehandeld") }}</button></form>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="muted">{{ _("Niets te doen.") }}</p>{% endif %}
+</section>

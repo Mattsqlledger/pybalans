@@ -1,0 +1,23 @@
+Lettertypen voor de documenten (Beheer > Huisstijl)
+====================================================
+
+Deze map bevat vijf lettertypen die onveranderd zijn meegeleverd. Ze vallen alle vijf onder de
+SIL Open Font License, versie 1.1 (zie OFL.txt in elke map; ook https://openfontlicense.org).
+Ze mogen gratis gebruikt, meegeleverd en in documenten (PDF) ingesloten worden; ze mogen niet
+los verkocht worden. De licentie geldt voor de lettertypen, niet voor de documenten die ermee
+gemaakt worden.
+
+liberation-sans/   Liberation Sans 2.1.5 — Red Hat, Inc. (Reserved Font Name "Liberation"),
+                   op basis van Arimo (Google). https://github.com/liberationfonts/liberation-fonts
+inter/             Inter — The Inter Project Authors. https://github.com/rsms/inter
+source-sans-3/     Source Sans 3 — Adobe (Reserved Font Name "Source").
+                   https://github.com/adobe-fonts/source-sans
+source-serif-4/    Source Serif 4 — The Source Serif 4 Project Authors.
+                   https://github.com/adobe-fonts/source-serif
+lora/              Lora — The Lora Project Authors (Reserved Font Name "Lora").
+                   https://github.com/cyrealtype/Lora-Cyrillic
+
+Bron van de bestanden (2026-10-11): de release van Liberation op GitHub en de map ofl/ van
+https://github.com/google/fonts. Alleen de bestandsnamen zijn aangepast (zonder [ ] ).
+
+In de app: Beheer > Huisstijl > "Licenties en makers" (/lettertypen).

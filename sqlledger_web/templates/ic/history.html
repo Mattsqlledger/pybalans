@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Prijshistorie verkoop") if side == "sales" else _("Prijshistorie inkoop") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Prijshistorie verkoop") if side == "sales" else _("Prijshistorie inkoop") }}
+    <span class="muted">{{ p.partnumber }} {{ p.description }}</span></h2>
+  <p class="actions noprint">
+    {% if side == "sales" %}<a href="/artikelen/{{ p.id }}/historie?kant=inkoop">{{ _("Prijshistorie inkoop") }}</a>
+    {% else %}<a href="/artikelen/{{ p.id }}/historie">{{ _("Prijshistorie verkoop") }}</a>{% endif %}
+  </p>
+</div>
+{% include "help/ic_history.html" %}
+<div class="table-wrap">
+<table class="list report">
+  <thead><tr>{% for c in table.columns %}<th{% if c.kind == 'amount' %} class="num"{% endif %}>{{ _(c.label) }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for r in table.rows %}
+  <tr>{% for c in table.columns %}{% set txt = cell(c, r) %}{% set url = r.links.get(c.key) %}
+    <td class="{{ 'num' if c.kind == 'amount' }}{{ ' nowrap' if c.kind == 'date' }}">{% if url %}<a href="{{ url }}">{{ txt or "—" }}</a>{% else %}{{ txt }}{% endif %}</td>
+  {% endfor %}</tr>
+  {% else %}
+  <tr><td colspan="{{ table.columns|length }}" class="muted">{{ _("Niets gevonden.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="actions noprint"><a class="button secondary" href="/artikelen/{{ p.id }}">{{ _("Terug naar het artikel") }}</a></p>
+{% endblock %}

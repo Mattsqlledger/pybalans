@@ -1,0 +1,20 @@
+{# Systeem > Logboek (HELP_ANALYSE golf 3, tekst C13) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Wat er in de app is gebeurd: inloggen (ook mislukt), wijzigingen aan gebruikers en administraties, back-ups, exports, en meer. Voor alle administraties samen, het nieuwste bovenaan.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul zo nodig {l}, {a}, {v} en {t} in en klik op {b}.", l=hl("Login"), a=hl("Actie"), v=hl("Van"), t=hl("Tot en met"), b=hl("Zoeken")) }}</li>
+  <li>{{ ht("Blader met {o} en {n} (100 regels per pagina).", o=hl("ouder"), n=hl("nieuwer")) }}</li>
+  <li>{{ ht("Klik op {b} om alle gevonden regels te downloaden.", b=hl("CSV")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: een deel van de login is genoeg.", f=hl("Login")) }}</li>
+  <li>{{ ht("{f}: extra gegevens bij de actie, zoals de gebruiker of administratie waar het om ging.", f=hl("Details")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Dit logboek is van de app. De wijzigingen in de boekingen zelf staan per administratie in {m}.", m=hm("Beheer", "Audittrail")) }}</li>
+</ul>
+</details>

@@ -1,0 +1,34 @@
+{#- Overstap uit SQL-Ledger (6d-2, I4/I5): punten met "gedaan" (zelf afvinken) of "niet nodig". `back`: waarheen na een klik. -#}
+<ul class="startlist">
+  {% for i in items %}
+  <li class="{{ 'done' if i.done else ('skipped' if i.skipped else '') }}">
+    <span class="mark" aria-hidden="true">{{ "✓" if i.done else ("–" if i.skipped else "") }}</span>
+    <span class="item">{% if i.done %}<span class="txt">{{ i.text }}</span> <span class="muted small">{{ _("klaar") }}</span>{% if i.hint %} <span class="muted small">· {{ i.hint }}</span>{% endif %}
+    {% elif i.skipped %}<span class="txt">{{ i.text }}</span> <span class="muted small">{{ _("niet nodig") }}</span>{% if i.hint %} <span class="muted small">· {{ i.hint }}</span>{% endif %}
+    {% else %}{% if i.href %}<a href="{{ i.href | overstap(i.key, back) }}">{{ i.text }}</a>{% else %}<span class="txt">{{ i.text }}</span>{% endif %}{% if i.count %} <span class="muted small">{{ i.count }}</span>{% endif %}{% if i.hint %} <span class="muted small">{{ i.hint }}</span>{% endif %}
+      <form method="post" action="/dashboard/overstaplijst" class="inline">
+        <input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="back" value="{{ back }}">
+        {% if i.manual %}<input type="hidden" name="done" value="1"><button name="item" value="{{ i.key }}" class="link small">{{ _("gedaan") }}</button>
+        {% else %}<button name="item" value="{{ i.key }}" class="link small">{{ _("niet nodig") }}</button>{% endif %}
+      </form>{% endif %}
+      {% if i.note %}<span class="switch-note small">{{ i.note }}</span>{% endif %}
+      {% if help %}<br><span class="muted small">{{ i.help }}</span>{% endif %}
+      {% if i.steps and not i.done and not i.skipped %}
+      <ul class="substeps">
+        {% for s in i.steps %}
+        <li class="{{ 'done' if s.done else '' }}">
+          <span class="mark" aria-hidden="true">{{ "✓" if s.done else "" }}</span>
+          <span><span class="txt">{{ s.text }}</span>{% if not s.done %}{% if s.where %} · <a href="{{ s.href | overstap(i.key, back) }}">{{ s.where }}</a>{% endif %}
+            {% if s.detail %}<br><span class="small">{{ s.detail }}</span>{% endif %}
+            {% if s.links %}<ul class="steplinks">{% for l in s.links %}<li>{% if l.stop %}<span>{{ l.label }} · <a href="{{ l.href | overstap(i.key, back) }}">{{ l.edit }}</a> ·
+                <form method="post" action="/terugkerend/{{ l.stop }}/stoppen" class="inline"><input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="back" value="{{ back }}"><button class="link small">{{ _("Stoppen") }}</button></form></span>
+              {% else %}<a href="{{ l.href | overstap(i.key, back) }}">{{ l.label }}</a>{% endif %}{% if l.note %}<br><span class="muted small">{{ l.note }}</span>{% endif %}</li>{% endfor %}
+              {% if s.more %}<li>{% if s.more_href %}<a href="{{ s.more_href | overstap(i.key, back) }}">{{ s.more }}</a>{% else %}{{ s.more }}{% endif %}</li>{% endif %}</ul>{% endif %}
+            {% else %} <span class="muted small">{{ _("klaar") }}</span>{% endif %}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}</span>
+  </li>
+  {% endfor %}
+</ul>

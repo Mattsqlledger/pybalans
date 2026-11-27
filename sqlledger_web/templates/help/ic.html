@@ -1,0 +1,30 @@
+{# Artikelen > Artikel toevoegen, Dienst toevoegen (HELP_ANALYSE golf 1, tekst 12) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een artikel (met voorraad) of een dienst (zonder voorraad), met prijs, rekeningen en btw. Op een factuur of order kiest u het daarna en worden die gegevens vanzelf ingevuld.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Laat {f} leeg voor het volgende nummer, of klik op {n}.", f=hl("Nummer"), n=hl("Nieuw nummer")) }}</li>
+  <li>{{ ht("Vul de {o} in (verplicht) en zo nodig de {e}, bijvoorbeeld st of uur.", o=hl("Omschrijving"), e=hl("Eenheid")) }}</li>
+  <li>{{ ht("Vul de {f} in.", f=hl("Verkoopprijs")) }}</li>
+  <li>{{ ht("Kies bij {f} de rekeningen en vink de btw-tarieven aan.", f=hl("Rekeningen en btw")) }}</li>
+  <li>{{ ht("Alleen bij een artikel: vul eventueel het {b} in en zet {c} aan als u niet meer wilt verkopen dan er op voorraad is.", b=hl("Bestelniveau"), c=hl("Voorraad controleren bij verkoop")) }}</li>
+  <li>{{ ht("Klik op {s}.", s=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: wordt bijgewerkt bij elke inkoopfactuur met dit artikel.", f=hl("Laatste inkoopprijs")) }}</li>
+  <li>{{ ht("{f}: zakt de voorraad hieronder, dan staat het artikel op het dashboard bij {t}.", f=hl("Bestelniveau"), t=hl("Te doen")) }}</li>
+  <li>{{ ht("{f}: alleen ter informatie. De voorraad wijzigt u via {c} (na opslaan).", f=hl("Op voorraad"), c=hl("Voorraadcorrectie")) }}</li>
+  <li>{{ ht("{f}: het artikel blijft bestaan, maar u kunt het niet meer kiezen op nieuwe facturen.", f=hl("Vervallen")) }}</li>
+  <li>{{ ht("{a} / {b} (artikel) of {c} (dienst): hierop boekt een verkoop of inkoop.", a=hl("Opbrengstrekening"), b=hl("Kostprijsrekening"), c=hl("Kostenrekening")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Is het artikel al gebruikt, dan liggen de soort en de rekeningen vast en kunt u het niet meer verwijderen. Zet het dan op {v}.", v=hl("Vervallen")) }}</li>
+  <li>{{ _("Een artikelnummer dat al bestaat, mag u opslaan; u krijgt alleen een waarschuwing.") }}</li>
+  <li>{{ ht("Een product uit meerdere onderdelen maakt u via {m}.", m=hm("Artikelen", "Samengesteld artikel toevoegen")) }}</li>
+  <li>{{ ht("Na het opslaan kunt u onder {b} een PDF of foto bij het artikel bewaren, bijvoorbeeld een productblad.", b=hl("Bijlagen")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: de omschrijving is verplicht.") }}</li>
+</ul>
+</details>

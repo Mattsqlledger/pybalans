@@ -1,0 +1,141 @@
+# Chart of accounts, United Kingdom, limited company (Sage-style number bands), names in en, nl, de, fr.
+# Based on SQL-Ledger UK_General-chart.sql (GPL), with headings, VAT 20/5/0 % per direction, reverse-charge pairs and VAT100 boxes (1, 1R, 4).
+# id: uk-ltd
+# land: GB
+# talen: en nl de fr
+# valuta: GBP
+# naam.en: Limited company (SME)
+# naam.nl: Limited (MKB)
+# naam.de: Limited (KMU)
+# naam.fr: Limited (PME)
+# bron: SQL-Ledger UK_General-chart.sql (GPL), aangepast (REKENINGSCHEMA_ANALYSE.md deelstap 4)
+# licentie: GPL-2.0-or-later
+# voorraad: 1001
+# omzet: 4001
+# kosten: 5001
+# koersverschil: 7906
+# btw-afdracht: 2202
+# btw-afronding: 7907
+# volgorde: 1
+rekening;soort;categorie;koppeling;contra;tarief;rubriek;rgs;en;nl;de;fr
+0000;H;A;;;;;;Fixed assets;Vaste activa;Anlagevermögen;Actif immobilisé
+0010;A;A;;;;;;Freehold property;Bedrijfspanden (eigendom);Grundstücke und Gebäude;Terrains et constructions
+0011;A;A;;;;;;Goodwill;Goodwill;Geschäfts- oder Firmenwert;Fonds commercial
+0012;A;A;;1;;;;Goodwill amortisation;Cumulatieve afschrijving goodwill;Kumulierte Abschreibung Firmenwert;Amortissements du fonds commercial
+0020;A;A;;;;;;Plant and machinery;Machines en installaties;Maschinen und Anlagen;Installations et machines
+0021;A;A;;1;;;;Plant and machinery depreciation;Cumulatieve afschrijving machines;Kumulierte Abschreibung Maschinen;Amortissements des installations
+0030;A;A;;;;;;Office equipment;Kantoorinrichting en apparatuur;Büroausstattung;Matériel de bureau
+0031;A;A;;1;;;;Office equipment depreciation;Cumulatieve afschrijving kantoorinrichting;Kumulierte Abschreibung Büroausstattung;Amortissements du matériel de bureau
+0040;A;A;;;;;;Furniture and fixtures;Inventaris;Betriebs- und Geschäftsausstattung;Mobilier et agencements
+0041;A;A;;1;;;;Furniture and fixtures depreciation;Cumulatieve afschrijving inventaris;Kumulierte Abschreibung Geschäftsausstattung;Amortissements du mobilier
+0050;A;A;;;;;;Motor vehicles;Auto's;Fahrzeuge;Matériel de transport
+0051;A;A;;1;;;;Motor vehicles depreciation;Cumulatieve afschrijving auto's;Kumulierte Abschreibung Fahrzeuge;Amortissements du matériel de transport
+1000;H;A;;;;;;Current assets;Vlottende activa;Umlaufvermögen;Actif circulant
+1001;A;A;IC;;;;;Stock;Voorraad;Vorräte;Stocks
+1002;A;A;IC;;;;;Work in progress;Onderhanden werk;Unfertige Erzeugnisse;En-cours de production
+1100;A;A;AR;;;;;Trade debtors;Debiteuren;Forderungen aus Lieferungen und Leistungen;Clients
+1102;A;A;AR;;;;;Other debtors;Overige debiteuren;Sonstige Forderungen;Autres débiteurs
+1103;A;A;;;;;;Prepayments;Vooruitbetaalde kosten;Aktive Rechnungsabgrenzung;Charges constatées d'avance
+1200;A;A;AR_paid:AP_paid;;;;;Bank current account;Bank;Bank;Banque
+1210;A;A;;;;;;Bank deposit account;Spaarrekening;Festgeldkonto;Compte de dépôt
+1220;A;A;;;;;;Building society account;Rekening bouwfonds (building society);Bausparkonto (Building Society);Compte building society
+1230;A;A;AR_paid:AP_paid;;;;;Petty cash;Kas;Kasse;Caisse
+2000;H;L;;;;;;Current liabilities;Kortlopende schulden;Kurzfristige Verbindlichkeiten;Dettes à court terme
+2100;A;L;AP;;;;;Trade creditors;Crediteuren;Verbindlichkeiten aus Lieferungen und Leistungen;Fournisseurs
+2102;A;L;AP;;;;;Other creditors;Overige crediteuren;Sonstige Verbindlichkeiten;Autres créanciers
+2109;A;L;;;;;;Accruals;Nog te betalen kosten;Passive Rechnungsabgrenzung;Charges à payer
+2120;A;L;;;;;;Company credit card;Creditcard;Firmenkreditkarte;Carte de crédit société
+2200;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.20;1;;VAT on sales 20%;Btw op verkopen 20 %;Umsatzsteuer 20 %;TVA collectée 20 %
+2201;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.05;1;;VAT on sales 5%;Btw op verkopen 5 %;Umsatzsteuer 5 %;TVA collectée 5 %
+2202;A;L;;;;;;VAT liability;Af te dragen btw;Umsatzsteuer-Zahllast;TVA à décaisser
+2203;A;L;AR_tax:IC_taxpart:IC_taxservice;;0;1;;VAT on sales 0%;Btw op verkopen 0 %;Umsatzsteuer 0 %;TVA collectée 0 %
+2204;A;L;AP_tax:IC_taxpart:IC_taxservice;;-0.20;1;;VAT due on services from abroad 20% (reverse charge);Btw verlegd diensten uit het buitenland 20 % te betalen;Umsatzsteuer Reverse-Charge Leistungen Ausland 20 %;TVA autoliquidée services de l'étranger 20 % à payer
+2205;A;L;AP_tax:IC_taxpart:IC_taxservice;;-0.20;1R;;VAT due, domestic reverse charge 20%;Btw verlegd binnenland 20 % te betalen;Umsatzsteuer Reverse-Charge Inland 20 %;TVA autoliquidée nationale 20 % à payer
+2206;A;L;AP_tax:IC_taxpart:IC_taxservice;;-0.20;1R;;Postponed import VAT 20%;Uitgestelde invoer-btw 20 % te betalen;Einfuhrumsatzsteuer aufgeschoben 20 %;TVA à l'importation autoliquidée 20 % à payer
+2210;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.20;4;;VAT on purchases 20%;Btw op inkopen 20 %;Vorsteuer 20 %;TVA déductible 20 %
+2211;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.05;4;;VAT on purchases 5%;Btw op inkopen 5 %;Vorsteuer 5 %;TVA déductible 5 %
+2212;A;L;AP_tax:IC_taxpart:IC_taxservice;;0;4;;VAT on purchases 0%;Btw op inkopen 0 %;Vorsteuer 0 %;TVA déductible 0 %
+2214;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.20;4;;Input VAT on services from abroad 20% (reverse charge);Btw verlegd diensten uit het buitenland 20 % te vorderen;Vorsteuer Reverse-Charge Leistungen Ausland 20 %;TVA autoliquidée services de l'étranger 20 % déductible
+2215;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.20;4;;Input VAT, domestic reverse charge 20%;Btw verlegd binnenland 20 % te vorderen;Vorsteuer Reverse-Charge Inland 20 %;TVA autoliquidée nationale 20 % déductible
+2216;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.20;4;;Input VAT, postponed import VAT 20%;Uitgestelde invoer-btw 20 % te vorderen;Vorsteuer aufgeschobene Einfuhrumsatzsteuer 20 %;TVA à l'importation autoliquidée 20 % déductible
+2220;A;L;;;;;;PAYE and National Insurance;Loonheffing en premies (PAYE en NI);Lohnsteuer und Sozialversicherung (PAYE/NI);Retenues PAYE et National Insurance
+2230;A;L;;;;;;Net wages;Netto lonen;Nettolöhne;Salaires nets
+2250;A;L;;;;;;Corporation tax;Vennootschapsbelasting;Körperschaftsteuer;Impôt sur les sociétés
+2300;H;L;;;;;;Long-term liabilities;Langlopende schulden;Langfristige Verbindlichkeiten;Dettes à long terme
+2301;A;L;;;;;;Bank loan;Banklening;Bankdarlehen;Emprunt bancaire
+2305;A;L;;;;;;Directors' loan account;Rekening-courant directie;Gesellschafterdarlehen (Directors);Compte courant des dirigeants
+2310;A;L;;;;;;Hire purchase;Huurkoop;Mietkauf;Location-vente
+2330;A;L;;;;;;Mortgages;Hypotheken;Hypotheken;Emprunts hypothécaires
+3000;H;Q;;;;;;Capital and reserves;Eigen vermogen;Eigenkapital;Capitaux propres
+3001;A;Q;;;;;;Ordinary shares;Gewone aandelen;Stammaktien;Actions ordinaires
+3010;A;Q;;;;;;Preference shares;Preferente aandelen;Vorzugsaktien;Actions de préférence
+3100;A;Q;;;;;;Share premium account;Agioreserve;Kapitalrücklage (Agio);Prime d'émission
+3200;A;Q;;;;;;Profit and loss account;Onverdeelde winst;Gewinnvortrag;Report à nouveau
+3300;A;Q;;;;;;Dividends;Dividenden;Dividenden;Dividendes
+4000;H;I;;;;;;Sales;Omzet;Umsatzerlöse;Chiffre d'affaires
+4001;A;I;AR_amount:IC_sale:IC_income;;;;;Sales;Omzet;Umsatzerlöse;Ventes
+4009;A;I;;;;;;Discounts allowed;Verleende kortingen;Gewährte Skonti;Escomptes accordés
+4010;A;I;AR_amount:IC_sale:IC_income;;;;;Export sales;Omzet export;Exporterlöse;Ventes à l'export
+4900;A;I;AR_amount:IC_sale:IC_income;;;;;Miscellaneous income;Overige opbrengsten;Sonstige Erlöse;Produits divers
+4904;A;I;AR_amount;;;;;Rent income;Huuropbrengsten;Mieterträge;Revenus locatifs
+4906;A;I;AR_amount;;;;;Interest received;Ontvangen rente;Zinserträge;Intérêts reçus
+5000;H;E;;;;;;Direct costs;Kostprijs van de omzet;Wareneinsatz und direkte Kosten;Coût des ventes
+5001;A;E;AP_amount:IC_cogs:IC_expense;;;;;Materials purchased;Inkoop materialen;Materialeinkauf;Achats de matières
+5002;A;E;AP_amount:IC_cogs:IC_expense;;;;;Materials imported;Inkoop materialen import;Materialeinkauf Import;Achats de matières importées
+5004;A;E;;;;;;Opening stock;Beginvoorraad;Anfangsbestand;Stock initial
+5005;A;E;;;;;;Closing stock;Eindvoorraad;Endbestand;Stock final
+5200;A;E;AP_amount;;;;;Packaging;Verpakking;Verpackung;Emballages
+5201;A;E;;;;;;Discounts taken;Ontvangen kortingen;Erhaltene Skonti;Escomptes obtenus
+5202;A;E;AP_amount;;;;;Carriage;Vrachtkosten;Frachtkosten;Transports
+5203;A;E;AP_amount;;;;;Import duty;Invoerrechten;Einfuhrzölle;Droits de douane
+5204;A;E;AP_amount;;;;;Transport insurance;Transportverzekering;Transportversicherung;Assurance transport
+5205;A;E;;;;;;Equipment hire;Huur apparatuur;Gerätemiete;Location de matériel
+6000;A;E;AP_amount;;;;;Productive labour;Directe lonen productie;Fertigungslöhne;Main-d'œuvre de production
+6001;A;E;AP_amount;;;;;Cost of sales labour;Directe lonen verkoop;Löhne Vertrieb;Main-d'œuvre liée aux ventes
+6002;A;E;AP_amount;;;;;Sub-contractors;Onderaannemers;Subunternehmer;Sous-traitants
+7000;H;E;;;;;;Overheads;Algemene kosten;Gemeinkosten;Frais généraux
+7001;A;E;AP_amount:IC_expense;;;;;General expenses;Algemene kosten;Allgemeiner Aufwand;Charges diverses
+7002;A;E;AP_amount;;;;;Directors' remuneration;Bezoldiging directie;Geschäftsführervergütung;Rémunération des dirigeants
+7003;A;E;AP_amount;;;;;Staff wages and salaries;Lonen en salarissen;Löhne und Gehälter;Salaires du personnel
+7006;A;E;AP_amount;;;;;Employer's National Insurance;Werkgeverspremies (NI);Arbeitgeberanteil Sozialversicherung;Charges sociales patronales
+7007;A;E;AP_amount;;;;;Employer's pensions;Pensioenpremies werkgever;Arbeitgeberbeiträge Altersvorsorge;Cotisations de retraite patronales
+7008;A;E;AP_amount;;;;;Recruitment expenses;Wervingskosten;Personalbeschaffung;Frais de recrutement
+7100;A;E;AP_amount;;;;;Rent;Huur;Miete;Loyers
+7102;A;E;AP_amount;;;;;Water rates;Waterkosten;Wassergebühren;Eau
+7103;A;E;AP_amount;;;;;Business rates;Gemeentelijke belastingen (business rates);Gewerbliche Grundsteuer (Business Rates);Taxes locales (business rates)
+7104;A;E;AP_amount;;;;;Premises insurance;Opstalverzekering;Gebäudeversicherung;Assurance des locaux
+7200;A;E;AP_amount;;;;;Light and heat;Gas, water en licht;Strom und Heizung;Électricité et chauffage
+7300;A;E;AP_amount;;;;;Motor expenses;Autokosten;Fahrzeugkosten;Frais de véhicules
+7350;A;E;AP_amount;;;;;Travelling;Reiskosten;Reisekosten;Frais de déplacement
+7400;A;E;AP_amount;;;;;Advertising;Reclame;Werbung;Publicité
+7402;A;E;AP_amount;;;;;PR, literature and brochures;Pr en drukwerk;Öffentlichkeitsarbeit und Prospekte;Relations publiques et brochures
+7403;A;E;AP_amount;;;;;UK entertainment;Representatie (VK);Bewirtung (Inland);Frais de réception (Royaume-Uni)
+7404;A;E;AP_amount;;;;;Overseas entertainment;Representatie (buitenland);Bewirtung (Ausland);Frais de réception (étranger)
+7500;A;E;AP_amount;;;;;Postage and carriage;Porto en verzendkosten;Porto und Versand;Frais postaux
+7501;A;E;AP_amount;;;;;Office stationery;Kantoorbenodigdheden;Büromaterial;Fournitures de bureau
+7502;A;E;AP_amount;;;;;Telephone;Telefoon;Telefon;Téléphone
+7506;A;E;AP_amount;;;;;Website costs;Websitekosten;Website;Site internet
+7600;A;E;AP_amount;;;;;Legal fees;Juridische kosten;Rechtsberatung;Honoraires juridiques
+7601;A;E;AP_amount;;;;;Audit and accountancy fees;Accountantskosten;Abschluss- und Prüfungskosten;Honoraires d'audit et de comptabilité
+7603;A;E;AP_amount;;;;;Professional fees;Advieskosten;Beratungskosten;Honoraires
+7701;A;E;AP_amount;;;;;Office machine maintenance;Onderhoud kantoormachines;Wartung Büromaschinen;Entretien du matériel de bureau
+7710;A;E;AP_amount;;;;;Computer expenses;Automatiseringskosten;EDV-Kosten;Frais informatiques
+7800;A;E;AP_amount;;;;;Repairs and renewals;Reparatie en vervanging;Reparaturen und Instandhaltung;Réparations et renouvellements
+7801;A;E;AP_amount;;;;;Cleaning;Schoonmaakkosten;Reinigung;Nettoyage
+7802;A;E;AP_amount;;;;;Laundry;Wasserij;Wäscherei;Blanchisserie
+7900;A;E;;;;;;Bank interest paid;Rentelasten bank;Zinsaufwand Bank;Intérêts bancaires
+7901;A;E;;;;;;Bank charges;Bankkosten;Bankgebühren;Frais bancaires
+7903;A;E;;;;;;Loan interest paid;Rentelasten leningen;Darlehenszinsen;Intérêts d'emprunts
+7904;A;E;;;;;;Hire purchase interest;Rente huurkoop;Mietkaufzinsen;Intérêts de location-vente
+7906;A;E;;;;;;Exchange differences;Koersverschillen;Kursdifferenzen;Écarts de change
+7907;A;E;;;;;;Rounding differences;Afrondingsverschillen;Rundungsdifferenzen;Écarts d'arrondi
+8000;A;E;;;;;;Depreciation;Afschrijvingen;Abschreibungen;Dotations aux amortissements
+8005;A;E;;;;;;Goodwill amortisation;Afschrijving goodwill;Abschreibung Firmenwert;Amortissement du fonds commercial
+8100;A;E;;;;;;Bad debt write-off;Afgeboekte debiteuren;Forderungsausfälle;Créances irrécouvrables
+8201;A;E;AP_amount;;;;;Subscriptions;Abonnementen en contributies;Beiträge und Abonnements;Abonnements et cotisations
+8202;A;E;AP_amount;;;;;Clothing costs;Werkkleding;Arbeitskleidung;Vêtements de travail
+8203;A;E;AP_amount;;;;;Training costs;Opleidingskosten;Fortbildung;Frais de formation
+8204;A;E;AP_amount;;;;;Insurance;Verzekeringen;Versicherungen;Assurances
+8205;A;E;AP_amount;;;;;Refreshments;Kantinekosten;Bewirtung Personal;Collations
+8600;A;E;;;;;;Corporation tax;Vennootschapsbelasting;Körperschaftsteuer;Impôt sur les sociétés
+9999;A;E;;;;;;Suspense account;Vraagposten;Klärungskonto;Compte d'attente

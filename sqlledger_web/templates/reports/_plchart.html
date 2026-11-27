@@ -1,0 +1,46 @@
+{#- Grafiek bij Winst en verlies (v1.1, GR1–GR4), geometrie uit plchart.layout. Zelfde SVG op het scherm, bij
+    Afdrukken en in de PDF; kleuren als attribuut (PDF/afdrukken), het scherm overschrijft ze via CSS. -#}
+{% macro swatch(s) -%}
+<svg class="pl-sw" width="22" height="12" viewBox="0 0 22 12" aria-hidden="true">
+{%- if s.key.startswith('res') -%}
+<line x1="1" x2="21" y1="6" y2="6" stroke="{{ s.color }}" stroke-width="2"{% if s.prev %} stroke-dasharray="4 3"{% endif %} class="pl-{{ s.key }}"/>
+<circle cx="11" cy="6" r="3" stroke="{{ s.color }}" stroke-width="1.5" fill="{{ '#ffffff' if s.prev else s.color }}" class="pl-{{ s.key }}"/>
+{%- else -%}
+<rect x="4" y="1" width="14" height="10" fill="{{ s.color }}" class="pl-{{ s.key }}"/>
+{%- endif -%}
+</svg>
+{%- endmacro %}
+
+{% macro svg(c) %}
+<svg xmlns="http://www.w3.org/2000/svg" class="pl-svg" width="{{ c.width }}" height="{{ c.height }}"
+     viewBox="0 0 {{ c.width }} {{ c.height }}" role="img" aria-labelledby="pl-title pl-desc"
+     font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11">
+  <title id="pl-title">{{ c.title }}</title>
+  <desc id="pl-desc">{{ c.desc }} {{ _("De bedragen staan ook in de tabel bij de grafiek.") }}</desc>
+  <g class="pl-grid">{% for t in c.ticks %}<line x1="{{ c.left }}" x2="{{ c.width - 8 }}" y1="{{ t.y }}" y2="{{ t.y }}" stroke="#d9dee5" stroke-width="1"/>{% endfor %}</g>
+  <g class="pl-axis">{% for t in c.ticks %}<text x="{{ c.left - 6 }}" y="{{ t.y + 4 }}" text-anchor="end" fill="#6b7684">{{ t.label }}</text>{% endfor %}</g>
+  <g class="pl-bars">{% for b in c.rects %}<rect x="{{ b.x }}" y="{{ b.y }}" width="{{ b.w }}" height="{{ b.h }}" fill="{{ b.color }}" class="pl-{{ b.key }}" data-tip="{{ b.title }}"><title>{{ b.title }}</title></rect>{% endfor %}</g>
+  <line class="pl-zero" x1="{{ c.left }}" x2="{{ c.width - 8 }}" y1="{{ c.zero }}" y2="{{ c.zero }}" stroke="#6b7684" stroke-width="1"/>
+  {% for l in c.paths %}
+  <g class="pl-line">
+    {% if l.points | length > 1 %}<polyline points="{{ l.path }}" fill="none" stroke="{{ l.color }}" stroke-width="2"{% if l.dashed %} stroke-dasharray="5 4"{% endif %} class="pl-{{ l.key }}"/>{% endif %}
+    {% for x, y, tip in l.points %}<circle cx="{{ x }}" cy="{{ y }}" r="{{ 3.5 if l.points | length > 1 else 5 }}" stroke="{{ l.color }}" stroke-width="1.5" fill="{{ '#ffffff' if l.dashed else l.color }}" class="pl-{{ l.key }}" data-tip="{{ tip }}"><title>{{ tip }}</title></circle>{% endfor %}
+  </g>
+  {% endfor %}
+  <g class="pl-axis">{% for l in c.labels %}<text x="{{ l.x }}" y="{{ c.height - 12 }}" text-anchor="middle" fill="#6b7684">{{ l.label }}</text>{% endfor %}</g>
+</svg>
+{% endmacro %}
+
+{% macro legend(c) %}
+<div class="pl-legend">{% for s in c.legend %}<span>{{ swatch(s) }}{{ s.label }}</span>{% endfor %}</div>
+{% endmacro %}
+
+{% macro data(c) %}
+<details class="pl-data">
+  <summary>{{ _("Cijfers bij de grafiek") }}</summary>
+  <div class="table-wrap"><table class="list report">
+    <thead><tr><th>{{ _("Periode") }}</th>{% for s in c.legend %}<th class="num">{{ s.label }}</th>{% endfor %}</tr></thead>
+    <tbody>{% for title, amounts in c.data_rows() %}<tr><td>{{ title }}</td>{% for a in amounts %}<td class="num">{{ a }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+  </table></div>
+</details>
+{% endmacro %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% import "reports/_macros.html" as m with context %}
+{% block title %}{{ _("ICP-opgaaf") }}{% endblock %}
+{% block content %}
+<h2>{{ _("ICP-opgaaf") }}</h2>
+{% include "help/vat_icp.html" %}
+<form method="get" action="/btw/icp" class="report-form noprint">
+  <div class="filters">
+    <label>{{ _("Tijdvak") }}
+      <select name="tijdvak">
+        {% for k, text in periods %}<option value="{{ k }}"{% if k == period.key %} selected{% endif %}>{{ text }}</option>{% endfor %}
+      </select></label>
+  </div>
+  <div class="actions"><button>{{ _("Toon") }}</button></div>
+</form>
+<details class="more noprint">
+  <summary>{{ _("Andere periode") }}</summary>
+  <form method="get" action="/btw/icp" class="report-form">
+    <div class="filters">
+      <label>{{ _("Van") }} <input type="date" name="van" value="{{ period.fromdate.isoformat() }}" required></label>
+      <label>{{ _("Tot en met") }} <input type="date" name="tot" value="{{ period.todate.isoformat() }}" required></label>
+    </div>
+    <div class="actions"><button>{{ _("Toon periode") }}</button></div>
+  </form>
+</details>
+
+{% if not configured %}
+<p class="notice warning">{{ _("Er staat nog geen btw-rekening of klant op rubriek 3B (leveringen naar of diensten in landen binnen de EU). Stel bij de klant de btw-rubriek 3B en een EU-btw-nummer in.") }}</p>
+{% else %}
+<div class="report-head">
+  <div>
+    <strong>{{ company_name }}</strong>
+    <div>{{ title }}</div>
+    {% for line in head %}<div class="muted">{{ line }}</div>{% endfor %}
+  </div>
+  <div class="actions noprint">
+    <a class="button secondary" href="/btw/aangifte?tijdvak={{ period.key }}">{{ _("Btw-aangifte") }}</a>
+    <a class="button secondary" href="/btw/icp?{{ export_query }}&amp;export=xlsx">Excel</a>
+    <a class="button secondary" href="/btw/icp?{{ export_query }}&amp;export=csv">CSV</a>
+    <a class="button secondary" href="/btw/icp?{{ export_query }}&amp;export=pdf" target="_blank" rel="noopener">PDF</a>
+    <button type="button" class="secondary" data-print>{{ _("Afdrukken") }}</button>
+  </div>
+</div>
+
+{% set stored = rep.stored %}
+{% if stored %}
+<p class="notice">{% if stored.gl_id %}{{ _("Vastgelegd met btw-boeking {reference} op {date} door {login}.").format(reference=stored.reference or stored.gl_id, date=date(stored.created.date()), login=stored.login or "?") }}{% else %}{{ _("Vastgelegd op {date} door {login}.").format(date=date(stored.created.date()), login=stored.login or "?") }}{% endif %}</p>
+{% endif %}
+
+{% if rep.difference %}
+<div class="notice warning" role="alert">
+  <p><strong>{{ _("De boekhouding wijkt af van de vastgelegde opgaaf.") }}</strong>
+    {{ _("Verwerk het verschil in het portaal bij \"Eerdere opgaven corrigeren\".") }}</p>
+  <div class="table-wrap"><table class="list">
+    <thead><tr><th>{{ _("Btw-nummer") }}</th><th>{{ _("Afnemer") }}</th><th class="num">{{ _("Leveringen toen") }}</th><th class="num">{{ _("nu") }}</th><th class="num">{{ _("Diensten toen") }}</th><th class="num">{{ _("nu") }}</th><th class="num">{{ _("ABC toen") }}</th><th class="num">{{ _("nu") }}</th></tr></thead>
+    <tbody>{% for d in rep.difference.lines %}<tr>
+      <td class="nowrap">{{ d.country }}{{ d.number }}</td><td>{{ d.name }}</td>
+      {% for c in ("goods", "services", "abc") %}<td class="num">{{ amount(d.old[c]) }}</td><td class="num">{{ amount(d.now[c]) }}</td>{% endfor %}
+    </tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+{% endif %}
+
+{% if rep.problems %}
+<div class="notice warning" role="alert">
+  <p><strong>{{ _("Zonder geldig btw-nummer kan de opgaaf niet worden ingediend.") }}</strong>
+    {{ _("Vul bij deze klanten een btw-nummer uit een ander EU-land in (landcode + nummer, bv. DE123456789):") }}</p>
+  <ul>{% for ln in rep.problems %}<li>{% for cid, name in ln.customers %}<a href="/klanten/{{ cid }}">{{ name or cid }}</a>{% if not loop.last %}, {% endif %}{% endfor %} — {{ _(problem_labels[ln.problem]) }}{% if ln.number %} ({{ ln.country }}{{ ln.number }}){% endif %}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+{% if rep.lines %}
+<div class="vatreturn">{% for t in tables %}{{ m.table(t, cell) }}{% endfor %}</div>
+{% else %}
+<p class="muted">{{ _("Geen intracommunautaire prestaties in dit tijdvak.") }}</p>
+{% endif %}
+
+<div class="icp-check">
+  <p>{{ _("Rubriek 3B van de btw-aangifte: {box} (exact {exact}); totaal deze opgaaf: {total} (exact {texact}).").format(box=amount(rep.box3b), exact=amount(rep.box3b_exact, 2), total=amount(rep.totals.goods + rep.totals.services + rep.totals.abc), texact=amount(rep.total_exact, 2)) }}</p>
+  {% if rep.unexplained %}
+  <div class="notice warning">
+    <p>{{ _("Rubriek 3B en de opgaaf verschillen {amount}: deze boekingen in 3B hebben geen afnemer (memoriaal of inkoop).").format(amount=amount(rep.unexplained, 2)) }}</p>
+    <ul>{% for u in rep.unassigned %}<li><a href="/boekingen/{{ u.trans_id }}">{{ u.number or u.trans_id }}</a> {{ date(u.transdate) }} {{ _(kinds[u.kind]) }} {{ u.name }} — {{ amount(u.base, 2) }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+</div>
+
+{% if can_register and rep.lines and not stored %}
+<form method="post" action="/btw/icp/vastleggen" class="vat-book noprint">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="tijdvak" value="{{ period.key }}">
+  <button>{{ _("ICP-opgaaf vastleggen") }}</button>
+  <span class="muted small">{{ _("Na het indienen in het portaal. Valt het tijdvak samen met dat van de btw-aangifte, dan gebeurt dit vanzelf bij de btw-boeking.") }}</span>
+</form>
+{% endif %}
+
+<div class="small muted">
+  <p>{{ _("Bedragen in hele euro's, per afnemer rekenkundig afgerond. Leveringen en diensten volgen de artikelen op de factuur (dienst = artikel zonder voorraad); een boeking zonder artikelen volgt de ICP-soort bij de klant. Klik op een btw-nummer voor de boekingen.") }}</p>
+  <p>{{ _("Indienen gaat via Mijn Belastingdienst Zakelijk of uw aangiftesoftware; neem de bedragen daar over. Overbrengen van voorraad op afroep wordt niet berekend: vul dat zo nodig zelf in het portaal in.") }}</p>
+</div>
+
+{% if detail %}
+<div id="detail" class="vatreturn vatdetail">
+  {{ m.table(detail, cell) }}
+  <p class="noprint"><a href="/btw/icp?{{ export_query }}&amp;export=pdf" target="_blank" rel="noopener">{{ _("PDF van deze afnemer") }}</a></p>
+</div>
+{% endif %}
+{% endif %}
+<script src="/static/reports.js" defer></script>
+{% endblock %}

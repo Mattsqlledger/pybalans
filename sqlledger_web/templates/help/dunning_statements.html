@@ -1,0 +1,25 @@
+{# Verkoop > Rekeningoverzichten (HELP_ANALYSE golf 2, tekst 20) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een overzicht voor klanten van alles wat op een datum openstaat, ook wat nog niet vervallen is. Elke klant krijgt per valuta één overzicht.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {p} en eventueel een {k} of {n}, en klik op {b}.", p=hl("Peildatum"), k=hl("Klant"), n=hl("Klantnummer"), b=hl("Toon")) }}</li>
+  <li>{{ _("Vink de klanten aan die een overzicht moeten krijgen.") }}</li>
+  <li>{{ ht("Klik op {v} om ze te bekijken.", v=hl("Voorbeeld")) }}</li>
+  <li>{{ ht("Klik op {p} om te printen, of op {m} om ze te e-mailen.", p=hl("PDF"), m=hl("Mailen")) }}</li>
+  <li>{{ ht("Bij {m} ziet u eerst wie een mail krijgt en wie afvalt omdat er geen e-mailadres is. Klik dan op {s}.", m=hl("Mailen"), s=hl("Verzenden")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: betalingen na deze datum tellen niet mee.", f=hl("Peildatum")) }}</li>
+  <li>{{ ht("{f}: de ouderdomskolommen op het overzicht. {l} is nog niet ouder dan het eerste aantal dagen.", f=hl("Kolommen"), l=hl("Lopend")) }}</li>
+  <li>{{ ht("{f}: tel de dagen vanaf de vervaldatum in plaats van vanaf de factuurdatum.", f=hl("Dagen vanaf vervaldatum")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Er staat nog niets aangevinkt; vink zelf aan wie u een overzicht wilt sturen.") }}</li>
+  <li>{{ ht("Anders dan bij {m} verandert er niets aan het aanmaningsniveau van de facturen.", m=hm("Verkoop", "Aanmaningen")) }}</li>
+  <li>{{ ht("Onderwerp en tekst van de mail stelt u in bij {m}.", m=hm("Beheer", "E-mail")) }}</li>
+</ul>
+</details>

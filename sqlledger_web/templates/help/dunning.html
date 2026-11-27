@@ -1,0 +1,27 @@
+{# Verkoop > Aanmaningen (HELP_ANALYSE golf 1, tekst 15) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Herinneringen en aanmaningen voor klanten met vervallen facturen. Elke klant krijgt per valuta één brief met al zijn vervallen facturen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {p} en eventueel {m}, en klik op {b}.", p=hl("Peildatum"), m=hl("Minimaal dagen vervallen"), b=hl("Toon")) }}</li>
+  <li>{{ _("Vink per klant de facturen aan die op de brief moeten.") }}</li>
+  <li>{{ ht("Klik op {v} om de brieven te bekijken. Er wordt dan nog niets vastgelegd.", v=hl("Voorbeeld")) }}</li>
+  <li>{{ ht("Klik op {p} om te printen, of op {m} om ze te e-mailen.", p=hl("PDF"), m=hl("Mailen")) }}</li>
+  <li>{{ ht("Bij {m} ziet u eerst wie een mail krijgt en wie afvalt omdat er geen e-mailadres is. Klik dan op {s}.", m=hl("Mailen"), s=hl("Verzenden")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: hoe vaak er al een brief over deze factuur is gestuurd (– is nog nooit).", f=hl("Niveau nu")) }}</li>
+  <li>{{ ht("{f}: het niveau van de volgende brief: 1 herinnering, 2 tweede herinnering, 3 aanmaning.", f=hl("Wordt")) }}</li>
+  <li>{{ ht("{f}: creditnota's en vooruitbetalingen; ze gaan van het totaal af.", f=hl("te verrekenen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{p} en {m} verhogen het niveau van elke aangevinkte factuur; bij mailen alleen als de mail goed is verstuurd.", p=hl("PDF"), m=hl("Mailen")) }}</li>
+  <li>{{ ht("Niveau verkeerd? Kies het juiste en klik op {s}.", s=hl("Niveau opslaan")) }}</li>
+  <li>{{ _("Een klant met evenveel of meer tegoed dan open krijgt geen brief.") }}</li>
+  <li>{{ ht("Onderwerp en tekst van de mail stelt u in bij {m}.", m=hm("Beheer", "E-mail")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: één brief per klant met alle vervallen facturen, en het niveau wordt vanzelf vastgelegd bij printen of mailen.") }}</li>
+</ul>
+</details>

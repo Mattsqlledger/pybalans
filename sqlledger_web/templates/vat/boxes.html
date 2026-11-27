@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Btw-rubrieken") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Btw-rubrieken") }}</h2>
+{% include "help/vat_boxes.html" %}
+<form method="post" action="/btw/rubrieken" class="report-form">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="switch" value="1">
+  <div class="filters">
+    <label>{{ _("Aangifte volgens") }}
+      <select name="country">
+        {% if unavailable is not none %}<option value="" selected>—</option>{% endif %}
+        {% for code, label in countries.items() %}<option value="{{ code }}"{% if code == country and unavailable is none %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}
+      </select></label>
+  </div>
+  <div class="actions"><button class="secondary">{{ _("Land kiezen") }}</button></div>
+</form>
+{% if unavailable is not none %}
+<p class="notice warning">{% if unavailable_label %}{{ _("Voor {country} heeft PyBalans nog geen btw-aangifte. Gebruikt u toch een van de beschikbare aangiften, kies dan hierboven het land.").format(country=unavailable_label) }}{% else %}{{ _("Het land van de btw-aangifte is niet uit het rekeningschema of de valuta af te leiden. Kies hierboven het land; is uw land er niet bij, dan heeft PyBalans er nog geen btw-aangifte voor.") }}{% endif %}</p>
+{% else %}
+{% if not country_saved %}<p class="notice">{{ _("Voorstel: {country} (uit het rekeningschema of de standaardvaluta). Klik op Opslaan om het vast te leggen.").format(country=_(countries[country])) }}</p>{% endif %}
+{% if is_be %}
+<p class="muted small">{{ _("Kies per btw-rekening bij welk rooster van de Belgische periodieke aangifte hij hoort. Verkoop-btw: het rooster van de grondslag (01, 02 of 03), de btw komt in 54. Daaronder kiest u per kosten- of activarekening of de inkoop in 81, 82 of 83 komt.") }}</p>
+{% elif is_gb %}
+<p class="muted small">{{ _("Kies per btw-rekening bij welke box van de Britse VAT Return hij hoort. De btw komt in box 1, 2 of 4, het nettobedrag van de boekingen in box 6, 7 of 9.") }}</p>
+{% else %}
+<p class="muted small">{{ _("Kies per btw-rekening bij welke rubriek van de Nederlandse btw-aangifte hij hoort. De grondslag is het nettobedrag van de boekingen met die btw-rekening, de btw de mutaties op de rekening.") }}</p>
+{% endif %}
+{% if not any_saved %}<p class="notice warning">{{ _("Nog niet opgeslagen: hieronder staat een voorstel uit naam en tarief. Controleer het en klik op Opslaan.") }}</p>{% endif %}
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+<form method="post" action="/btw/rubrieken" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="country" value="{{ country }}">
+  {% if offsets %}
+  <label>{{ _("Kwartaal eindigt in") }}
+    <select name="offset">
+      {% for o, label in offsets %}<option value="{{ o }}"{% if o == offset %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}
+    </select>
+    <span class="muted small">{{ _("Zoals HMRC het tijdvak heeft vastgesteld (stagger). Maand of kwartaal kiest u bij Beheer > Instellingen.") }}</span></label>
+  {% endif %}
+  <div class="table-wrap">
+  <table class="list vatboxes">
+    <thead><tr><th>{{ _("Rekening") }}</th><th>{{ _("Omschrijving") }}</th><th class="num">{{ _("Tarief") }}</th><th>{% if is_be %}{{ _("Rooster") }}{% else %}{{ _("Rubriek") }}{% endif %}</th></tr></thead>
+    <tbody>
+    {% for a in accounts %}
+    {% set current = a.box or a.suggested %}
+    <tr>
+      <td>{{ a.accno }}</td>
+      <td>{{ a.description }}{% if a.closed %} <span class="tag">{{ _("Gesloten") }}</span>{% endif %}</td>
+      <td class="num">{{ rate(a.rate) }}</td>
+      <td><select name="box_{{ a.id }}" aria-label="{{ _('Rubriek') }} {{ a.accno }}">
+        {% for b in choices %}<option value="{{ b }}"{% if b == current %} selected{% endif %}>{% if b != "none" %}{{ b }} {% endif %}{{ _(box_labels[b]) }}</option>{% endfor %}
+      </select>{% if not a.box %} <span class="muted small">{{ _("voorstel") }}</span>{% endif %}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4" class="muted">{{ _("Er zijn geen btw-rekeningen (Btw-tarieven).") }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% if is_be %}
+  <p class="muted small">{{ _("Verlegde btw (intracommunautaire verwerving, diensten uit de EU, medecontractant, invoer): een paar btw-rekeningen, de te betalen kant met een negatief tarief in 86, 88, 87 of 57 en de aftrek in 59.") }}</p>
+  {% if expense %}
+  <h3>{{ _("Inkoop per kostenrekening (81, 82, 83)") }}</h3>
+  <p class="muted small">{{ _("De grondslag van elke inkoop (ook zonder btw en ook verlegd) komt in het rooster van de kosten- of activarekening waarop hij geboekt is. Voorstel: klasse 60 en voorraden 81, vaste activa 83, de rest 82.") }}</p>
+  <div class="table-wrap">
+  <table class="list vatboxes">
+    <thead><tr><th>{{ _("Rekening") }}</th><th>{{ _("Omschrijving") }}</th><th>{{ _("Rooster") }}</th></tr></thead>
+    <tbody>
+    {% for a in expense %}
+    {% set current = a.box or a.suggested %}
+    <tr>
+      <td>{{ a.accno }}</td>
+      <td>{{ a.description }}</td>
+      <td><select name="exp_{{ a.id }}" aria-label="{{ _('Rooster') }} {{ a.accno }}">
+        {% for b in expense_choices %}<option value="{{ b }}"{% if b == current %} selected{% endif %}>{{ b }} {{ _(box_labels[b]) }}</option>{% endfor %}
+      </select>{% if not a.box %} <span class="muted small">{{ _("voorstel") }}</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% endif %}
+  {% elif is_gb %}
+  <p class="muted small">{{ _("Verlegde btw (diensten uit het buitenland, binnenlandse verlegging, uitgestelde invoer-btw): een paar btw-rekeningen, de te betalen kant in box 1 (of 1 verlegd) en de aftrek in box 4.") }}</p>
+  {% else %}
+  <p class="muted small">{{ _("4A en 4B (verwerving en invoer): de btw telt mee in 5A; de aftrek als voorbelasting loopt via een rekening in 5B.") }}</p>
+  {% endif %}
+
+  <h3>{{ _("Btw-boeking") }}</h3>
+  {% if suggested and (settle or rounding) %}<p class="muted small">{{ _("Voorstel uit de omschrijving van de rekeningen.") }}</p>{% endif %}
+  <div class="grid">
+    <label>{{ _("Afdrachtrekening") }}
+      <select name="settlement"><option value="">—</option>
+        {% for c in settle_accounts %}<option value="{{ c.accno }}"{% if c.accno == settle %} selected{% endif %}>{{ c.accno }} {{ c.description }}</option>{% endfor %}
+      </select>
+      <span class="muted small">{% if is_gb %}{{ _("Hierop komt het totaal van de aangifte (box 5). Boekingen op deze rekening tellen niet mee in de aangifte.") }}{% elif is_be %}{{ _("Hierop komt het saldo van de aangifte (rooster 71 of 72). Boekingen op deze rekening tellen niet mee in de aangifte.") }}{% else %}{{ _("Hierop komt het totaal van de aangifte (5G). Boekingen op deze rekening tellen niet mee in de aangifte.") }}{% endif %}</span></label>
+    <label>{{ _("Rekening afrondingsverschillen") }}
+      <select name="rounding"><option value="">—</option>
+        {% for c in rounding_accounts %}<option value="{{ c.accno }}"{% if c.accno == rounding %} selected{% endif %}>{{ c.accno }} {{ c.description }}</option>{% endfor %}
+      </select>
+      <span class="muted small">{% if is_gb %}{{ _("Hierop komt een eventueel verschil tussen de btw-rekeningen en de aangifte.") }}{% else %}{{ _("Hierop komen de centen die door het afronden op hele euro's overblijven.") }}{% endif %}</span></label>
+  </div>
+  <div class="actions"><button>{{ _("Opslaan") }}</button></div>
+</form>
+{% endif %}
+{% endblock %}

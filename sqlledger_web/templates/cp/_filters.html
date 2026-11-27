@@ -1,0 +1,26 @@
+{% set any_filter = f.duedatefrom or f.duedateto or f.department_id or f.business_id or f.arap_accno %}
+<details class="more"{% if any_filter %} open{% endif %}>
+  <summary>{{ _("Filters") }}{% if any_filter %} <span class="tag">{{ _("actief") }}</span>{% endif %}</summary>
+  <fieldset class="glhead">
+    <label>{{ _("Vervaldatum vanaf") }} <input type="date" name="duedatefrom" value="{{ f.duedatefrom }}" data-refresh></label>
+    <label>{{ _("Vervaldatum tot en met") }} <input type="date" name="duedateto" value="{{ f.duedateto }}" data-refresh></label>
+    {% if ch.departments %}
+    <label>{{ _("Afdeling") }}
+      <select name="department_id" data-refresh><option value=""></option>
+        {% for d in ch.departments %}<option value="{{ d.id }}"{% if d.id|string == f.department_id %} selected{% endif %}>{{ d.description }}</option>{% endfor %}
+      </select></label>
+    {% endif %}
+    {% if ch.businesses %}
+    <label>{{ _("Branche") }}
+      <select name="business_id" data-refresh><option value=""></option>
+        {% for b in ch.businesses %}<option value="{{ b.id }}"{% if b.id|string == f.business_id %} selected{% endif %}>{{ b.description }}</option>{% endfor %}
+      </select></label>
+    {% endif %}
+    {% if ch.arap_accounts|length > 1 %}
+    <label>{{ _(k.arap_label) }}
+      <select name="arap_accno" data-refresh><option value="">{{ _("alle") }}</option>
+        {% for a in ch.arap_accounts %}<option value="{{ a.accno }}"{% if a.accno == f.arap_accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+      </select></label>
+    {% endif %}
+  </fieldset>
+</details>

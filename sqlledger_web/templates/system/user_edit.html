@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ target.login }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ target.login }}</h2><a href="/systeem/gebruikers">{{ _("Alle gebruikers") }}</a></div>
+{% include "help/sys_user_edit.html" %}
+<form method="post" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="grid">
+    <label>{{ _("Naam") }} <input name="name" value="{{ target.name }}">
+    <span class="muted small">{{ _("De volledige naam, bijvoorbeeld Jane Smith. Die staat in het menu en op documenten, en zo vindt de app de medewerker in een ingelezen administratie.") }}</span></label>
+    <label>{{ _("E-mail") }} <input type="email" name="email" value="{{ target.email }}"></label>
+    <label class="check"><input type="checkbox" name="is_sysadmin" value="1"{% if target.is_sysadmin %} checked{% endif %}> {{ _("Systeembeheerder") }}</label>
+    <label class="check"><input type="checkbox" name="active" value="1"{% if target.active %} checked{% endif %}> {{ _("Actief") }}
+    <span class="muted small">{{ _("Uitzetten haalt ook alle toegang per administratie en de sessies weg.") }}</span></label>
+  </div>
+  <h3>{{ _("Toegang per administratie") }}</h3>
+  {% if companies %}
+  <div class="table-wrap">
+  <table class="list">
+  <thead><tr><th>{{ _("Administratie") }}</th><th>{{ _("Rol") }}</th><th>{{ _("Medewerker") }}</th></tr></thead>
+  <tbody>
+  {% for c in companies %}{% set m = memberships.get(c.id) %}
+  <tr id="adm-{{ c.id }}">
+    <td>{{ c.name }}{% if not c.active %} <span class="muted">({{ _("uit") }})</span>{% endif %}</td>
+    <td><select name="role_{{ c.id }}">
+      <option value="">{{ _("geen toegang") }}</option>
+      {% for k, v in ROLES.items() %}<option value="{{ k }}"{% if m and m.role == k %} selected{% endif %}>{{ _(v) }}</option>{% endfor %}
+    </select></td>
+    <td>{% set emps = employees.get(c.id) %}{% if emps is none %}<input name="employee_{{ c.id }}" value="{{ m.employee_login if m else '' }}" placeholder="{{ target.login }}" aria-label="{{ _('Medewerker') }} {{ c.name }}">
+      {% else %}<select name="employee_{{ c.id }}" aria-label="{{ _('Medewerker') }} {{ c.name }}">{% for e in emps %}<option value="{{ e.value }}"{% if e.selected %} selected{% endif %}>{{ e.label }}{% if e.left %} – {{ _("uit dienst") }}{% endif %}</option>{% endfor %}</select>{% endif %}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+  </div>
+  <p class="muted small">{{ _("Medewerker: wie deze gebruiker in de administratie is (Mijn uren, en wie iets heeft geboekt). Alleen medewerkers met een login staan in de lijst; met \"nieuwe medewerker aanmaken\" maakt de app er een met de naam en login van deze gebruiker.") }}</p>
+  {% else %}
+  <p class="muted">{{ _("Nog geen administraties.") }} <a href="/systeem/administraties/nieuw">{{ _("Toevoegen") }}</a></p>
+  {% endif %}
+  <div><button name="action" value="save">{{ _("Opslaan") }}</button></div>
+</form>
+
+<h3>{{ _("Toegang en beveiliging") }}</h3>
+<dl class="facts">
+  <dt>{{ _("Wachtwoord") }}</dt><dd>{{ _("ingesteld") if target.password_hash else _("nog niet ingesteld") }}</dd>
+  <dt>{{ _("Tweestapsverificatie") }}</dt><dd>{{ _("aan") if target.totp_secret else _("uit") }}{% if totp_required %} <span class="muted">({{ _("verplicht") }})</span>{% endif %}</dd>
+  <dt>{{ _("Blokkade") }}</dt><dd>{% if target.locked_until and target.locked_until > now %}<span class="warn">{{ _("tot {time}").format(time=target.locked_until.strftime("%H:%M")) }}</span>{% else %}—{% endif %}</dd>
+  <dt>{{ _("Actieve sessies") }}</dt><dd>{{ sessions }}</dd>
+</dl>
+<form method="post" class="actions">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <button name="action" value="code" class="secondary">{{ _("Nieuwe eenmalige code") }}</button>
+  {% if target.totp_secret %}<button name="action" value="totp_reset" class="secondary">{{ _("2FA resetten") }}</button>{% endif %}
+  {% if target.locked_until and target.locked_until > now %}<button name="action" value="unlock" class="secondary">{{ _("Blokkade opheffen") }}</button>{% endif %}
+  {% if sessions %}<button name="action" value="sessions" class="secondary">{{ _("Sessies beëindigen") }}</button>{% endif %}
+</form>
+<p><a href="/systeem/logboek?login={{ target.login }}">{{ _("Logboek van deze gebruiker") }}</a></p>
+{% if target.id != ctx.user.id %}
+<h3>{{ _("Verwijderen") }}</h3>
+{% if deletable %}<p>{{ _("Deze gebruiker heeft nog nooit ingelogd en kan dus verwijderd worden, bijvoorbeeld als hij verkeerd is aangemaakt.") }}</p>
+<p><a class="button secondary" href="/systeem/gebruikers/{{ target.id }}/verwijderen">{{ _("Gebruiker verwijderen") }}</a></p>
+{% else %}<p class="muted small">{{ _("Verwijderen kan alleen voor een gebruiker die nog nooit heeft ingelogd. Zet deze gebruiker uit (vinkje Actief); het logboek blijft dan compleet.") }}</p>{% endif %}
+{% endif %}
+{% endblock %}

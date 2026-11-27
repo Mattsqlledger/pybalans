@@ -1,0 +1,49 @@
+# Leeg rekeningschema België (nummers volgens het minimumrekeningschema/PCMN): alleen de rekeningen die het programma nodig heeft.
+# id: leeg-be
+# land: BE
+# talen: nl fr en de
+# valuta: EUR
+# naam.nl: Leeg schema
+# naam.en: Empty chart
+# naam.de: Leerer Kontenplan
+# naam.fr: Plan vide
+# bron: sqlledger-py, eigen werk
+# licentie: GPL-2.0-or-later
+# voorraad: 340000
+# omzet: 700000
+# kosten: 604000
+# koersverschil: 654000
+# btw-afdracht: 451900
+# btw-afronding: 657000
+rekening;soort;categorie;koppeling;contra;tarief;rubriek;rgs;nl;fr;en;de
+1;H;Q;;;;;;Eigen vermogen;Capitaux propres;Equity;Eigenkapital
+100000;A;Q;;;;;;Geplaatst kapitaal;Capital souscrit;Share capital;Gezeichnetes Kapital
+140000;A;Q;;;;;;Overgedragen winst;Bénéfice reporté;Retained earnings;Gewinnvortrag
+3;H;A;;;;;;Voorraden;Stocks;Inventory;Vorräte
+340000;A;A;IC;;;81;;Handelsgoederen;Marchandises;Goods for resale;Handelswaren
+4;H;A;;;;;;Vorderingen;Créances;Receivables;Forderungen
+400000;A;A;AR;;;;;Handelsdebiteuren;Clients;Trade debtors;Forderungen aus Lieferungen und Leistungen
+411021;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.21;59;;Terug te vorderen btw 21 %;TVA à récupérer 21 %;Input VAT 21%;Vorsteuer 21 %
+411012;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.12;59;;Terug te vorderen btw 12 %;TVA à récupérer 12 %;Input VAT 12%;Vorsteuer 12 %
+411006;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.06;59;;Terug te vorderen btw 6 %;TVA à récupérer 6 %;Input VAT 6%;Vorsteuer 6 %
+411100;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.21;59;;Terug te vorderen btw verlegd 21 %;TVA à récupérer autoliquidée 21 %;Input VAT reverse charge 21%;Vorsteuer Reverse-Charge 21 %
+44;H;L;;;;;;Schulden;Dettes;Liabilities;Verbindlichkeiten
+440000;A;L;AP;;;;;Leveranciers;Fournisseurs;Trade creditors;Verbindlichkeiten aus Lieferungen und Leistungen
+451021;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.21;03;;Te betalen btw 21 %;TVA à payer 21 %;VAT payable 21%;Umsatzsteuer 21 %
+451012;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.12;02;;Te betalen btw 12 %;TVA à payer 12 %;VAT payable 12%;Umsatzsteuer 12 %
+451006;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.06;01;;Te betalen btw 6 %;TVA à payer 6 %;VAT payable 6%;Umsatzsteuer 6 %
+451157;A;L;AP_tax:IC_taxpart:IC_taxservice;;-0.21;57;;Verschuldigde btw invoer verlegd 21 %;TVA due importations autoliquidées 21 %;VAT due on imports, reverse charge 21%;Einfuhrumsatzsteuer verlagert 21 %
+451186;A;L;AP_tax:IC_taxpart:IC_taxservice;;-0.21;86;;Verschuldigde btw intracommunautaire verwerving goederen 21 %;TVA due acquisitions intracommunautaires de biens 21 %;VAT due on intra-EU acquisitions of goods 21%;Umsatzsteuer innergemeinschaftlicher Erwerb 21 %
+451187;A;L;AP_tax:IC_taxpart:IC_taxservice;;-0.21;87;;Verschuldigde btw verlegd binnenland (medecontractant) 21 %;TVA due autoliquidée nationale (cocontractant) 21 %;VAT due on domestic reverse charge 21%;Umsatzsteuer Reverse-Charge Inland 21 %
+451188;A;L;AP_tax:IC_taxpart:IC_taxservice;;-0.21;88;;Verschuldigde btw intracommunautaire diensten 21 %;TVA due services intracommunautaires 21 %;VAT due on intra-EU services received 21%;Umsatzsteuer innergemeinschaftliche Dienstleistungen 21 %
+451900;A;L;;;;;;Rekening-courant btw;Compte courant TVA;VAT current account;Umsatzsteuer-Verrechnungskonto
+5;H;A;;;;;;Liquide middelen;Valeurs disponibles;Cash at bank and in hand;Flüssige Mittel
+550000;A;A;AR_paid:AP_paid;;;;;Bank;Banque;Bank;Bank
+570000;A;A;AR_paid:AP_paid;;;;;Kas;Caisse;Cash;Kasse
+6;H;E;;;;;;Kosten;Charges;Expenses;Aufwand
+604000;A;E;AP_amount:IC_cogs;;;81;;Aankopen van handelsgoederen;Achats de marchandises;Purchases of goods for resale;Wareneinkauf
+612000;A;E;AP_amount:IC_expense;;;82;;Algemene kosten;Charges diverses;General expenses;Allgemeiner Aufwand
+654000;A;E;;;;;;Wisselkoersverschillen;Différences de change;Exchange differences;Kursdifferenzen
+657000;A;E;;;;;;Afrondingsverschillen;Écarts d'arrondi;Rounding differences;Rundungsdifferenzen
+7;H;I;;;;;;Opbrengsten;Produits;Income;Erträge
+700000;A;I;AR_amount:IC_sale:IC_income;;;;;Verkopen;Ventes;Sales;Umsatzerlöse

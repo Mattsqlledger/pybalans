@@ -1,0 +1,40 @@
+{# Kas en bank > Bankregels verwerken, ook op de pagina van één bankregel (HELP_ANALYSE golf 1, tekst 6) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Hier boekt u de ingelezen bankregels, één voor één of in één keer. Het programma zoekt bij elke regel een voorstel: welke factuur, welke relatie of welke rekening erbij hoort.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {f} en klik op {b}. Achter elke rekening staat hoeveel regels nog open zijn.", f=hl("Bankrekening"), b=hl("Tonen")) }}</li>
+  <li>{{ ht("Staat er een knop {a}? Klik erop, controleer de lijst en klik op {y}. Zeker betekent: betalingskenmerk of factuurnummer en bedrag kloppen precies, of de regel hoort bij de enige bestaande boeking met hetzelfde bedrag en (bijna) dezelfde datum.", a=hl("Alle zekere voorstellen verwerken"), y=hl("Ja, verwerken")) }}</li>
+  <li>{{ _("Klik bij een andere regel op het voorstel om het uit te klappen.") }}</li>
+  <li>{{ ht("Klopt het voorstel, klik dan op {b}. Gaat het om een boeking die u al had gemaakt, klik dan op {k}.", b=hl("Voorstel boeken"), k=hl("Koppelen")) }}</li>
+  <li>{{ ht("Geen voorstel, bijvoorbeeld bankkosten? Vul {m} in, zo nodig {t}, en klik op {b}.", m=hl("Memoriaal tegen rekening"), t=hl("Btw (bedrag is inclusief)"), b=hl("Memoriaal boeken")) }}</li>
+  <li>{{ ht("Moet u zelf facturen kiezen of een deel als vooruitbetaling boeken? Klik op {b}.", b=hl("Facturen kiezen, koppelen of meer…")) }}</li>
+  <li>{{ ht("Hoort de regel niet in deze boekhouding? Klik op {b}.", b=hl("Negeren")) }}</li>
+  <li>{{ ht("Horen twee bankregels bij één boeking, of één bankregel bij meerdere boekingen (bijvoorbeeld een factuur min een creditnota)? Dan stelt het programma samen afletteren voor. Zelf kiezen kan bij {m} op de pagina van de regel.", m=hl("Meerdere boekingen samen afletteren")) }}</li>
+</ol>
+<h4>{{ _("Rekeningnummer (IBAN) van klanten en leveranciers") }}</h4>
+<ul>
+  <li>{{ ht("Voor een juiste aflettering moet bij de klant of leverancier het rekeningnummer (IBAN) ingevuld zijn. Dan herkent het programma de betaling aan het rekeningnummer van de tegenpartij (label {c}).", c=hl("rekeningnummer relatie")) }}</li>
+  <li>{{ ht("Staat er geen rekeningnummer bij de relatie, dan wordt er niet op rekeningnummer afgeletterd. Het programma doet dan een boekingsvoorstel: een open post met precies het bedrag bij een relatie met een naam die erop lijkt ({f}), of zoals het eerder geboekt is ({g}). Zo'n voorstel is nooit zeker: u controleert en bevestigt het zelf.", f=hl("naam en bedrag"), g=hl("zoals eerder")) }}</li>
+  <li>{{ _("Kent het programma de relatie van eerder maar staat er geen open post, dan biedt het een link om eerst de factuur in te voeren.") }}</li>
+  <li>{{ ht("Na het boeken of koppelen vraagt het scherm {q} Daarmee komt het rekeningnummer in de gegevens van de relatie. Heeft de relatie al een ander rekeningnummer, dan vraagt het scherm {v}", q=hl("Rekeningnummer opslaan?"), v=hl("Rekeningnummer vervangen?")) }}</li>
+  <li>{{ _("Bij het afletteren van een bestaande boeking op een factuur neemt het programma het rekeningnummer zelf over als de relatie er nog geen heeft. Bij een verzamelrelatie (zoals Diverse crediteuren) gebeurt dat nooit.") }}</li>
+  <li>{{ ht("Pinbetalingen en andere regels zonder rekeningnummer van de tegenpartij doet u altijd met de hand (label {h}); ze vallen nooit onder {a}.", h=hl("met de hand"), a=hl("Alle zekere voorstellen verwerken")) }}</li>
+</ul>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("Het label bij een voorstel zegt waarop het steunt: {a}, {b}, {c}, {d}, {e}, {f} of {g}.", a=hl("kenmerk"), b=hl("factuurnummer"), c=hl("rekeningnummer relatie"), d=hl("bestaande boeking"), e=hl("vaste regel"), f=hl("naam en bedrag"), g=hl("zoals eerder")) }}</li>
+  <li>{{ ht("{v}: vaste regels die volgen uit wat al geboekt is, per rekeningnummer steeds dezelfde tegenrekening. Met {b} maakt u er een vaste regel van.", v=hl("Voorgestelde vaste regels"), b=hl("Regel maken")) }}</li>
+  <li>{{ ht("{f}: het bankbedrag wordt gesplitst in een bedrag zonder btw en de btw.", f=hl("Btw (bedrag is inclusief)")) }}</li>
+  <li>{{ ht("{f}: volgende bankregels van dezelfde tegenpartij of met hetzelfde {t} krijgen dan dit voorstel.", f=hl("Opslaan als vaste regel"), t=hl("Trefwoord")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Er wordt nooit iets vanzelf geboekt. Elk voorstel bevestigt u zelf.") }}</li>
+  <li>{{ ht("Wat u hier boekt of koppelt, is meteen afgeletterd. U hoeft het bij {m} niet meer aan te vinken.", m=hm("Kas en bank", "Afletteren")) }}</li>
+  <li>{{ ht("Een waarschuwing dat er al een boeking met hetzelfde bedrag is, kan betekenen dat de betaling al met de hand is geboekt. Kies dan {k} in plaats van opnieuw boeken.", k=hl("Koppelen")) }}</li>
+  <li>{{ ht("Na het boeken vraagt het scherm soms {q}. Met {a} of {b} gaat het de volgende keer sneller.", q=hl("Voortaan zo boeken?"), a=hl("Vaste regel maken"), b=hl("Rekeningnummer opslaan")) }}</li>
+  <li>{{ ht("Een genegeerde regel haalt u terug met {b} op de pagina van die regel.", b=hl("Weer open zetten")) }}</li>
+</ul>
+</details>

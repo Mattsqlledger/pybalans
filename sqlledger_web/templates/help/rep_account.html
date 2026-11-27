@@ -1,0 +1,22 @@
+{# Rapporten > Rekeningmutaties (HELP_ANALYSE golf 2, tekst 8) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Alle boekingen op één grootboekrekening in een periode, met beginsaldo en het saldo na elke regel.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {r}.", r=hl("Rekening")) }}</li>
+  <li>{{ ht("Kies de {p} en klik op {b}.", p=hl("Periode"), b=hl("Toon")) }}</li>
+  <li>{{ _("Klik op een nummer om de boeking te openen.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f} (onder {m}): een extra kolom met de debiteuren- of crediteurenrekening van de boeking.", f=hl("Debiteuren-/crediteurenrekening tonen"), m=hl("Meer opties")) }}</li>
+  <li>{{ ht("{f} (onder {m}): een subtotaal per datum, nummer of omschrijving, afhankelijk van {s}.", f=hl("Subtotaal per sorteerwaarde"), m=hl("Meer opties"), s=hl("Sorteren op")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("U komt hier ook door in de {p}, {w} of {b} op een rekening te klikken. De periode komt dan mee.", p=hl("Proefbalans"), w=hl("Winst en verlies"), b=hl("Balans")) }}</li>
+  <li>{{ ht("Bij een bank- of kasrekening ziet u ook {k} en {a}.", k=hl("Kenmerk"), a=hl("Afgeletterd")) }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

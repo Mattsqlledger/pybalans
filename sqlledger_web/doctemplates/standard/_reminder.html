@@ -1,0 +1,65 @@
+{#- Aanmaning per klant en valuta (fase 4 stap 4a, SB1/SB2/SB6): alle vervallen facturen, te verrekenen
+    negatieve posten, totaal. reminder1/2/3.html zetten ``level``; de teksten per niveau zijn in te stellen bij
+    Beheer > Documentinstellingen (leeg = de standaardtekst hieronder). -#}
+{% set titles = {1: 'Herinnering', 2: 'Tweede herinnering', 3: 'Aanmaning'} %}
+{% set intros = {1: 'Volgens onze administratie zijn de onderstaande facturen nog niet (volledig) betaald. Wellicht is dit aan uw aandacht ontsnapt. Wij verzoeken u het openstaande bedrag binnen 14 dagen te voldoen.',
+                 2: 'Ondanks onze herinnering hebben wij de betaling van de onderstaande facturen nog niet ontvangen. Wij verzoeken u het openstaande bedrag binnen 7 dagen te voldoen.',
+                 3: 'Ondanks eerdere herinneringen staan de onderstaande facturen nog steeds open. Wij verzoeken u dringend het openstaande bedrag binnen 7 dagen te voldoen. Blijft betaling uit, dan zijn wij genoodzaakt de vordering uit handen te geven.'} %}
+{% extends "_base.html" %}
+{% block title %}{{ t(titles[level]) }} {{ name }}{% endblock %}
+{% block body %}
+{% include "_parties.html" %}
+
+<div class="titlebar">
+  <h1>{{ t(titles[level]) }}</h1>
+  <table>
+    <tr><td>{{ t('Datum') }}</td><td>{{ statementdate }}</td></tr>
+    {% if customernumber %}<tr><td>{{ t('Klantnummer') }}</td><td>{{ customernumber }}</td></tr>{% endif %}
+  </table>
+</div>
+
+<p class="intro">{% if doc.intro %}{{ doc.intro }}{% else %}{{ t(intros[level]) }}{% endif %}</p>
+
+<table class="lines">
+  <thead><tr>
+    <th>{{ t('Factuurnummer') }}</th><th>{{ t('Factuurdatum') }}</th><th>{{ t('Vervaldatum') }}</th>
+    <th class="r">{{ t('Dagen vervallen') }}</th><th class="r">{{ t('Openstaand') }}</th>
+  </tr></thead>
+  <tbody>
+  {% for r in items %}
+    <tr>
+      <td class="num">{{ r.invnumber }}{% if r.ponumber %}<div class="note">{{ t('Uw referentie') }} {{ r.ponumber }}</div>{% endif %}</td>
+      <td class="num">{{ r.invdate }}</td><td class="num">{{ r.duedate }}</td>
+      <td class="r">{{ r.days }}</td><td class="r">{{ r.due }}</td>
+    </tr>
+  {% endfor %}
+  {% if credits %}
+    <tr class="group"><td colspan="5">{{ t('Te verrekenen') }}</td></tr>
+    {% for r in credits %}
+    <tr>
+      <td class="num">{{ r.invnumber }}</td><td class="num">{{ r.invdate }}</td><td></td><td></td>
+      <td class="r">{{ r.due }}</td>
+    </tr>
+    {% endfor %}
+  {% endif %}
+  </tbody>
+</table>
+
+<div class="totals"><table>
+  {% if credits %}
+  <tr><td>{{ t('Vervallen') }}</td><td class="r">{{ total_due }}</td></tr>
+  <tr><td>{{ t('Te verrekenen') }}</td><td class="r">{{ total_credit }}</td></tr>
+  {% endif %}
+  <tr class="grand"><td>{{ t('Te betalen') }}</td><td class="r">{{ total }}</td></tr>
+</table></div>
+<div class="currency">{{ t('Alle bedragen in') }} <strong>{{ currency }}</strong>.</div>
+{% if doc.note %}<div class="docnote">{{ doc.note }}</div>{% endif %}
+
+{% if doc.payinfo and iban %}
+<div class="payinfo">
+  {{ t('Graag het bedrag van') }} <strong>{{ currency }} {{ total }}</strong> {{ t('overmaken op rekening') }} <strong>{{ iban }}</strong>{% if doc.bankname %} {{ t('bij') }} {{ doc.bankname }}{% endif %}{% if bic %} (BIC {{ bic }}){% endif %}
+  {{ t('t.n.v.') }} {{ company }}, {{ t('onder vermelding van') }} <strong>{{ dcn or invnumber }}</strong>.
+</div>
+{% endif %}
+<div class="closing">{% if doc.closing %}{{ doc.closing }}{% else %}{{ t('Heeft u inmiddels betaald? Dan kunt u deze brief als niet verzonden beschouwen.') }}{% endif %}</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{# Artikelen > Samengesteld artikel toevoegen, en een samengesteld artikel wijzigen (HELP_ANALYSE golf 4, tekst A9) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een product dat u maakt uit andere artikelen en diensten, met een stuklijst. Bij verkoop gaan de onderdelen uit de voorraad; de kostprijs komt uit de onderdelen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Laat {n} leeg voor het volgende nummer en vul de {o} in.", n=hl("Nummer"), o=hl("Omschrijving")) }}</li>
+  <li>{{ ht("Typ onder {s} op de lege regel een nummer of omschrijving van een onderdeel, vul het {a} in en klik op {b}. Zijn er meer treffers, dan kiest u uit de lijst. Herhaal dit voor elk onderdeel.", s=hl("Stuklijst"), a=hl("Aantal"), b=hl("Bijwerken")) }}</li>
+  <li>{{ ht("De {v} is de {s}. Wilt u een eigen prijs, zet dan {z} aan en vul hem in.", v=hl("Verkoopprijs"), s=hl("Som verkoopprijzen onderdelen"), z=hl("Verkoopprijs zelf bepalen")) }}</li>
+  <li>{{ ht("Kies de {r} en de btw-tarieven, en klik op {s}.", r=hl("Opbrengstrekening"), s=hl("Opslaan")) }}</li>
+  <li>{{ ht("Maak daarna voorraad met {a}.", a=hl("Assembleren of demonteren")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{a} op een regel van de stuklijst: leeg of 0 haalt het onderdeel weg.", a=hl("Aantal")) }}</li>
+  <li>{{ ht("{d}: het onderdeel staat ook op de offerte en de factuur, onder het product.", d=hl("Op documenten")) }}</li>
+  <li>{{ ht("{l}, {k} en {g} worden uit de onderdelen berekend.", l=hl("Lijstprijs"), k=hl("Kostprijs (laatste inkoop)"), g=hl("Gewicht")) }}</li>
+  <li>{{ ht("{s} en {w} (bovenaan) tonen alle onderdelen, ook van sub-stuklijsten, en in welke producten dit artikel zit.", s=hl("Stuklijst uitgeklapt"), w=hl("Waar gebruikt")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Is er voorraad van het product, dan liggen de onderdelen en aantallen vast. Demonteer of verkoop eerst; {d} kunt u wel wijzigen.", d=hl("Op documenten")) }}</li>
+  <li>{{ _("Een samengesteld artikel kunt u niet inkopen (niet op een inkooporder of inkoopfactuur).") }}</li>
+  <li>{{ _("Verwijderen kan alleen zonder voorraad en zonder productiehistorie, en niet als het zelf in een stuklijst zit.") }}</li>
+  <li>{{ ht("Na het opslaan kunt u onder {b} een PDF of foto bij het artikel bewaren, bijvoorbeeld een productblad.", b=hl("Bijlagen")) }}</li>
+</ul>
+</details>

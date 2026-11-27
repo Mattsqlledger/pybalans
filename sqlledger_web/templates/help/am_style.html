@@ -1,0 +1,26 @@
+{# Beheer > Huisstijl (HELP_ANALYSE golf 3, tekst B6) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Logo, kleur, lettertype en indeling van alle documenten van deze administratie: facturen, orders, offertes, pakbonnen, aanmaningen en betalingsspecificaties. Rechts ziet u meteen een voorbeeld.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Sleep het logo in het vak of kies een bestand. Het logo wordt meteen opgeslagen.") }}</li>
+  <li>{{ ht("Kies {g} en {l} van het logo, de {a} en het {f}. Het voorbeeld verandert direct mee.", g=hl("Grootte"), l=hl("Ligging"), a=hl("Accentkleur (titel, lijnen en kolomkoppen)"), f=hl("Lettertype")) }}</li>
+  <li>{{ ht("Klik op {b} om het echte resultaat te zien.", b=hl("PDF bekijken")) }}</li>
+  <li>{{ ht("Klik op {b}. Pas dan gelden de keuzes voor de documenten.", b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: links of rechts, zodat het adres van de klant in het venster van uw envelop valt. De stippellijn in het voorbeeld is dat venster.", f=hl("Adres")) }}</li>
+  <li>{{ ht("{f}: zet dit uit bij voorbedrukt briefpapier. Dan verdwijnt ook het logo.", f=hl("Bedrijfsgegevens in de kop tonen")) }}</li>
+  <li>{{ ht("{f}: de regel onderaan met uw bedrijfsgegevens, of de eigen voettekst uit {m}.", f=hl("Voetregel tonen"), m=hm("Beheer", "Documentinstellingen")) }}</li>
+  <li>{{ ht("{f} (alleen als u ook beheerder van een andere administratie bent): klik op {l} en daarna op {b} om logo en instellingen van die administratie over te nemen.", f=hl("Overnemen van …"), l=hl("Laden"), b=hl("Opslaan")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een te lichte kleur wordt geweigerd, omdat tekst daarin slecht leesbaar is op wit papier.") }}</li>
+  <li>{{ ht("{s} zet alleen het formulier terug; dat geldt pas na {b}. Het logo blijft staan.", s=hl("Standaard herstellen"), b=hl("Opslaan")) }}</li>
+  <li>{{ ht("Hebt u een eigen sjabloon in {m}, dan geldt de huisstijl daar alleen als dat sjabloon er gebruik van maakt. Het scherm waarschuwt dan.", m=hm("Beheer", "Sjablonen")) }}</li>
+  <li>{{ ht("Teksten, bankrekening en kolommen op de documenten stelt u in bij {m}.", m=hm("Beheer", "Documentinstellingen")) }}</li>
+</ul>
+</details>

@@ -1,0 +1,30 @@
+{# Kas en bank > Betaalbestand maken (SEPA, BEHEER_EXTRA_ANALYSE.md IM9 A1, SP1–SP13) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een SEPA-betaalbestand maken van inkoopfacturen die u wilt betalen. U leest het bestand in bij uw bank (internetbankieren); de bank voert de overboekingen uit. In PyBalans wordt niets geboekt: de betalingen worden afgeletterd als u daarna het bankafschrift inleest.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {r} waarvan betaald wordt en de {d}.", r=hl("Betaalrekening"), d=hl("Uitvoerdatum")) }}</li>
+  <li>{{ ht("Standaard staan de facturen die uiterlijk op de uitvoerdatum vervallen in de lijst en zijn ze aangevinkt. Wilt u meer of minder zien? Pas {v} of {l} aan en klik op {b}.", v=hl("Vervaldatum t/m"), l=hl("Leverancier"), b=hl("Bijwerken")) }}</li>
+  <li>{{ ht("Vink de facturen aan die u wilt betalen en controleer het {f}; bij een deelbetaling past u het aan.", f=hl("Bedrag")) }}</li>
+  <li>{{ ht("Klik op {b} en daarna op {d}. Lees het bestand in bij uw bank.", b=hl("Betaalbestand maken"), d=hl("Downloaden")) }}</li>
+  <li>{{ ht("Na de uitvoering leest u het afschrift in bij {m}; de betalingen worden dan voorgesteld op betalingskenmerk of factuurnummer.", m=hm("Kas en bank", "Bankafschrift inlezen")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: alleen rekeningen met een IBAN zijn te kiezen. De IBAN (en BIC) vult u in bij de rekening onder {m}.", f=hl("Betaalrekening"), m=hm("Beheer", "Rekeningschema")) }}</li>
+  <li>{{ ht("{f}: de dag waarop de bank de overboekingen uitvoert; standaard de volgende werkdag.", f=hl("Uitvoerdatum")) }}</li>
+  <li>{{ ht("{f}: wat openstaat min de contante korting die op de uitvoerdatum nog geldt (kolom {k}).", f=hl("Bedrag"), k=hl("Korting")) }}</li>
+  <li>{{ ht("{f}: het betalingskenmerk van de factuur als dat een geldig Nederlands of RF-kenmerk is, anders het factuurnummer.", f=hl("Omschrijving")) }}</li>
+  <li>{{ ht("{f}: kies pain.001.001.03 tenzij uw bank om de nieuwere versie vraagt.", f=hl("Versie")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Alleen inkoopfacturen in euro die goedgekeurd zijn en niet geblokkeerd. Creditnota's gaan niet mee; u krijgt een melding als een leverancier er een heeft openstaan.") }}</li>
+  <li>{{ _("Zonder geldige IBAN, met een IBAN van een land buiten SEPA, of zonder adres bij een betaling buiten de EER (bijvoorbeeld Zwitserland of het Verenigd Koninkrijk) kan een factuur niet mee; vul dat aan op de kaart van de leverancier.") }}</li>
+  <li>{{ ht("Een factuur die al in een betaalbestand zat, staat niet meer aangevinkt; bij {o} staat de datum. Vink hem alleen aan als het eerdere bestand niet is uitgevoerd.", o=hl("Opmerking")) }}</li>
+  <li>{{ _("Elke factuur wordt een eigen overboeking, zodat hij op het afschrift apart terugkomt en vanzelf wordt afgeletterd.") }}</li>
+  <li>{{ ht("Gemaakte bestanden kunt u onder {e} opnieuw downloaden.", e=hl("Eerder gemaakte betaalbestanden")) }}</li>
+  <li>{{ _("Nieuw ten opzichte van SQL-Ledger: dat kende alleen een Zwitsers betaalbestand en een lijst met geboekte betalingen.") }}</li>
+</ul>
+</details>

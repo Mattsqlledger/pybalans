@@ -1,0 +1,16 @@
+{# Beheer > Locks (HELP_ANALYSE golf 3, tekst B13) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een boeking die iemand open heeft, is voor anderen alleen-lezen. Ze zien dan een melding dat de boeking in gebruik is, met de naam van wie hem open heeft. Blijft zo'n lock hangen, bijvoorbeeld omdat iemand het scherm sloot zonder op te slaan, dan geeft u het hier vrij.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Zoek de boeking in de lijst. U ziet wie het lock heeft en wanneer het verloopt.") }}</li>
+  <li>{{ ht("Klik op {b} in die regel.", b=hl("Vrijgeven")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Een lock verdwijnt ook vanzelf als de tijd bij {v} voorbij is.", v=hl("Verloopt")) }}</li>
+  <li>{{ _("Geef een lock alleen vrij als u zeker weet dat de ander niet meer met de boeking bezig is. Werkt die toch nog, dan kan opslaan een conflict geven.") }}</li>
+  <li>{{ ht("{b} vraagt eerst om bevestiging.", b=hl("Alle locks vrijgeven")) }}</li>
+</ul>
+</details>

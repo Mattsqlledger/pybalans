@@ -1,0 +1,9 @@
+.venv*/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dev/DEV_LOGIN.txt
+db_password.txt
+.claude/
+dev/voorbeeld-pdf/

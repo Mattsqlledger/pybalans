@@ -1,0 +1,21 @@
+{# Orders > Verkooporders, Inkooporders en Offertes > Offertes, Offerteaanvragen (HELP_ANALYSE golf 4, tekst A2) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Uw orders of offertes van één soort zoeken en openen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul zo nodig het nummer, de relatie of een periode ({v}, {t}) in.", v=hl("Datum van"), t=hl("tot en met")) }}</li>
+  <li>{{ ht("Kies bij {s}: standaard ziet u alleen {o}. Zet {g} aan om ook afgehandelde te zien.", s=hl("Status"), o=hl("open"), g=hl("gesloten")) }}</li>
+  <li>{{ ht("Onder {m} zoekt u ook op {r} of {n}, kiest u de sortering en zet u onder {k} extra kolommen aan.", m=hl("Meer opties"), r=hl("Regelomschrijving"), n=hl("Notities"), k=hl("Kolommen")) }}</li>
+  <li>{{ ht("Klik op {z}. Klik op een nummer om het document te openen.", z=hl("Zoeken")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("Kolom {s}: open, nabestelling (restant van een deels gefactureerde order), gesloten (omgezet of afgehandeld) of gefactureerd. Bij gefactureerd opent de kolom {f} de factuur.", s=hl("Status"), f=hl("Factuur")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Zoekt u op een nummer, dan ziet u open en gesloten documenten, ook als {g} uit staat.", g=hl("gesloten")) }}</li>
+  <li>{{ _("Met CSV, Excel of PDF bovenaan de lijst exporteert u alle gevonden regels.") }}</li>
+</ul>
+</details>

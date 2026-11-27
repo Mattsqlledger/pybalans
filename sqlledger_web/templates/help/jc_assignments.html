@@ -1,0 +1,24 @@
+{# Afdelingen en projecten > Toewijzingen (HELP_ANALYSE golf 4, tekst B6) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Welke medewerker op welk project met welke dienst uren schrijft. Alleen die combinaties staan in zijn maandstaat.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Klik op {b}, of op een medewerker in de lijst om een toewijzing te wijzigen.", b=hl("Toewijzing toevoegen")) }}</li>
+  <li>{{ ht("Kies {m}, {p} en {d} en vul de datum bij {v} in.", m=hl("Medewerker"), p=hl("Project"), d=hl("Dienst"), v=hl("Van")) }}</li>
+  <li>{{ ht("Vul zo nodig {p} en {i} in en klik op {b}.", p=hl("Prijs"), i=hl("Intern tarief"), b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: de laatste dag. Zo beëindigt u een toewijzing; verwijderen kan niet.", f=hl("Tot en met")) }}</li>
+  <li>{{ ht("{f}: de verkoopprijs per uur voor deze medewerker op dit project. Leeg is de prijs van de dienst.", f=hl("Prijs")) }}</li>
+  <li>{{ ht("{f}: de kosten per uur. Leeg is het tarief uit {m}, en anders de kostprijs van de dienst.", f=hl("Intern tarief"), m=hm("Interne tarieven")) }}</li>
+  <li>{{ ht("{f}: alleen ter informatie.", f=hl("Projectleider")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Dezelfde medewerker, hetzelfde project en dezelfde dienst mogen niet twee keer in dezelfde periode voorkomen.") }}</li>
+  <li>{{ ht("Als dienst kunt u alleen een dienst kiezen (geen artikel met voorraad). Diensten maakt u bij {m}.", m=hm("Artikelen")) }}</li>
+  <li>{{ _("Een gewijzigde prijs of tarief geldt voor nieuwe uren; al opgeslagen uren houden hun prijs.") }}</li>
+</ul>
+</details>

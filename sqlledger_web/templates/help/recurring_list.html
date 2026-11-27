@@ -1,0 +1,30 @@
+{# Terugkerend > Terugkerende boekingen (HELP_ANALYSE golf 4, tekst B1) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Alle herhaalschema's op één lijst. Hier maakt u de boekingen, facturen en orders aan die weer aan de beurt zijn.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Een schema maakt u niet hier, maar op de boeking zelf met {b} (zie het scherm Herhaalschema).", b=hl("Herhalen")) }}</li>
+  <li>{{ _("Kijk welke schema's zijn aangevinkt: dat zijn de schema's waarvan de volgende datum vandaag of eerder is.") }}</li>
+  <li>{{ ht("Wilt u de kopie deze keer op een andere datum? Pas de datum aan in de kolom {k}.", k=hl("Volgende")) }}</li>
+  <li>{{ ht("Klik op {b}. Per aangevinkt schema maakt het programma één kopie, met een nieuw nummer.", b=hl("Verwerken")) }}</li>
+  <li>{{ _("Bovenaan ziet u per schema het nieuwe nummer (klik om te openen) of waarom het is overgeslagen.") }}</li>
+  <li>{{ _("Kiest het schema voor PDF, dan staat bovenaan een knop om de nieuwe documenten samen als één PDF te downloaden.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: klik hierop om het schema te bekijken of te wijzigen.", f=hl("Kenmerk")) }}</li>
+  <li>{{ ht("{f}: de oorspronkelijke boeking, factuur of order waar de kopieën van gemaakt worden.", f=hl("Boeking")) }}</li>
+  <li>{{ ht("{f}: {v}, te laat (met het aantal dagen), over een aantal dagen, of {a}. Hier staat ook of het schema mailt of een PDF maakt.", f=hl("Status"), v=hl("vandaag"), a=hl("afgelopen")) }}</li>
+  <li>{{ ht("{f}: verschijnt als een schema meer dan één termijn achterloopt. Zo'n schema verwerkt u alleen als u dit aanvinkt.", f=hl("toch verwerken")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Verwerken gebeurt niet vanzelf. Het dashboard meldt bij {t} welke schema's klaarstaan.", t=hl("Te doen")) }}</li>
+  <li>{{ ht("{b} maakt per schema altijd één kopie, ook als het schema meer termijnen achterloopt. Klik opnieuw voor de volgende termijn, of zet de volgende datum op het schema verder.", b=hl("Verwerken")) }}</li>
+  <li>{{ ht("Een schema wordt overgeslagen als de datum in een afgesloten periode valt, als de koers van een vreemde valuta op die datum ontbreekt, of als er te weinig voorraad is van een artikel met {v}. De volgende datum blijft dan staan.", v=hl("Voorraad controleren bij verkoop")) }}</li>
+  <li>{{ _("Mailen gebeurt pas na het boeken. Lukt het mailen niet (geen e-mailadres bij de relatie, geen e-mailinstellingen), dan blijft de kopie toch staan; mail het document dan vanaf de boeking.") }}</li>
+  <li>{{ ht("Met {b} in de regel komt een schema niet meer terug; de boeking en eerdere kopieën blijven staan.", b=hl("Stoppen")) }}</li>
+  <li>{{ _("U ziet dit scherm als boekhouder of beheerder, en alleen als de module Terugkerend aan staat.") }}</li>
+</ul>
+</details>

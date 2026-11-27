@@ -1,0 +1,18 @@
+<div class="codes">
+<p>{{ _("Geef elke gebruiker zijn code persoonlijk of via een ander kanaal door. Een code is {hours} uur geldig, werkt één keer en wordt niet opnieuw getoond. Druk deze pagina zo nodig af.").format(hours=hours) }}</p>
+<div class="table-wrap"><table class="list">
+<thead><tr><th>{{ _("Gebruiker") }}</th><th>{{ _("Rol") }}</th><th>{{ _("Eenmalige code") }}</th></tr></thead>
+<tbody>
+{% for c in created %}
+<tr class="who">
+  <td>{{ c.user.name or c.user.login }} <span class="muted">({{ c.user.login }})</span></td>
+  <td>{{ _(ROLES[c.role]) }}</td>
+  <td class="code">{{ c.code }}</td>
+</tr>
+<tr class="how"><td colspan="3"><span class="muted">{{ _("Activeren via") }}</span> <code>{{ c.url }}</code>
+  · <a href="/systeem/gebruikers/{{ c.user.id }}">{{ _("Toegang per administratie") }}</a></td></tr>
+{% endfor %}
+</tbody>
+</table></div>
+<p class="muted small">{{ _("Mailen kan nog niet: e-mail is nog niet ingesteld. Stel het later in bij Beheer > E-mail; dan kunt u een nieuwe code mailen vanuit Systeem > Gebruikers.") }}</p>
+</div>

@@ -1,0 +1,34 @@
+{# Inleesrapport Run my Accounts / ledger123 (RI6/RI7); ``rma`` = sqlledger_web.rmareport.view #}
+<section class="rma-report">
+<h3>{{ _("Controle Run my Accounts / ledger123 (versie {version})").format(version=rma.version) }}</h3>
+{% if rma.differences %}
+<p class="error" role="alert">{{ _("De proefbalans of het openstaande bedrag na het inlezen wijkt af van de back-up:") }}</p>
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("Wat") }}</th><th class="num">{{ _("In de back-up") }}</th><th class="num">{{ _("Na inlezen") }}</th></tr></thead>
+  <tbody>{% for d in rma.differences[:50] %}<tr><td>{{ d.what }}</td><td class="num">{{ d.before }}</td><td class="num">{{ d.after }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}
+<p class="ok">{{ _("Gecontroleerd: de proefbalans ({accounts} rekeningen) en het openstaande bedrag per factuur ({documents} documenten) zijn gelijk aan de back-up.").format(accounts=rma.accounts, documents=rma.documents) }}</p>
+{% endif %}
+{% if rma.warnings %}<div class="notice warning" role="status"><ul>{% for w in rma.warnings %}<li>{{ w }}</li>{% endfor %}</ul></div>{% endif %}
+{% if rma.warehouse %}<p class="notice warning">{{ _("Voorraad per magazijn is nog niet omgezet: de voorraad per artikel klopt, maar staat in PyBalans onder \"geen magazijn\". De magazijnregels van Run my Accounts zijn bewaard.") }}</p>{% endif %}
+{% if rma.done %}<h4>{{ _("Overgenomen in PyBalans") }}</h4>
+<dl class="facts">{% for i in rma.done %}<dt>{{ i.label }}</dt><dd>{{ i.value }}</dd>{% endfor %}</dl>{% endif %}
+{% if rma.kept %}<h4>{{ _("Bewaard, maar (nog) zonder plek in PyBalans") }}</h4>
+<dl class="facts">{% for i in rma.kept %}<dt>{{ i.label }}</dt><dd>{{ i.value }}</dd>{% endfor %}</dl>{% endif %}
+<h4>{{ _("Apart bewaard (schema rma)") }}</h4>
+<p>{{ _("{tables} tabellen met {rows} rijen en {columns} extra kolommen die SQL-Ledger niet kent, zijn ongewijzigd bewaard. PyBalans gebruikt ze niet, maar ze gaan mee in elke back-up.").format(tables=rma.tables|length, rows=rma.rows, columns=rma.ncolumns) }}
+{% if rma.objects %}{{ _("Daarnaast als tekst bewaard:") }} {% for o in rma.objects %}{{ o.count }} {{ o.label }}{% if not loop.last %}, {% endif %}{% endfor %}.{% endif %}
+{% if rma.extension %}{{ _("De extensie {name} (alleen voor zoeken in de banklaag van Run my Accounts) is niet geïnstalleerd.").format(name=rma.extension) }}{% endif %}</p>
+<details><summary>{{ _("Tabellen en kolommen") }}</summary>
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("Tabel") }}</th><th class="num">{{ _("Rijen") }}</th></tr></thead>
+  <tbody>{% for t in rma.tables %}<tr><td>{{ "rma." ~ t.table }}</td><td class="num">{{ t.rows }}</td></tr>{% endfor %}</tbody>
+</table></div>
+<ul class="small">{% for table, cols in rma.columns %}<li>{{ table }}: {{ cols|join(", ") }}</li>{% endfor %}</ul>
+</details>
+{% if rma.chain_errors %}<div class="warning" role="alert"><p>{{ _("Bij het bijwerken zijn {n} opdrachten overgeslagen (SQL-Ledger slaat die ook over); controleer de administratie:").format(n=rma.chain_errors|length) }}</p>
+<ul>{% for e in rma.chain_errors[:20] %}<li>{{ e.script }}:{{ e.line }} – {{ e.message }}</li>{% endfor %}</ul></div>{% endif %}
+{% if rma.counts %}<div class="notice" role="status"><p>{{ _("Aantal rijen anders dan in de back-up (de bijwerkstappen van SQL-Ledger bouwen deze tabellen opnieuw op):") }}</p>
+<ul>{% for c in rma.counts %}<li>{{ c.table }}: {{ c.source }} → {{ c.now }}</li>{% endfor %}</ul></div>{% endif %}
+</section>

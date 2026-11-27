@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Terugkerende boekingen") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Terugkerende boekingen") }}</h2>
+</div>
+{% include "help/recurring_list.html" %}
+<p class="muted small">{{ _("Een schema maakt u met de knop Herhalen op een memoriaal-, verkoop- of inkoopboeking, een factuur of een order. Aangevinkt zijn de schema's waarvan de volgende datum vandaag of eerder is; een schema dat meer dan één termijn achterloopt, verwerkt u alleen met \"toch verwerken\". Verwerken maakt per schema één kopie op de (eventueel aangepaste) volgende datum. Kiest een schema voor mailen of PDF, dan wordt elk nieuw document na het boeken gemaild of komt het in één PDF op de resultaatpagina.") }}</p>
+
+{% if results %}
+<div class="notice" role="status">
+  <p><strong>{{ _("Verwerkt: {done}, overgeslagen: {skipped}").format(done=results | selectattr("ok") | list | length, skipped=results | rejectattr("ok") | list | length) }}</strong></p>
+  <ul>
+  {% for r in results %}
+    <li>{% if r.ok %}{{ _("Schema {id}: geboekt").format(id=r.id) }} <a href="{{ r.url }}">{{ r.number }}</a> {{ _("op {date}; volgende {nextdate}").format(date=r.transdate, nextdate=r.nextdate or _("geen (afgelopen)")) }}
+      {% else %}<span class="err">{{ _("Schema {id}: {reason}").format(id=r.id, reason=r.reason) }}</span>{% endif %}
+      {% if r.outputs %}<ul>{% for o in r.outputs %}<li>{% if o.ok %}{{ o.text }}{% else %}<span class="err">{{ o.text }}</span>{% endif %}</li>{% endfor %}</ul>{% endif %}</li>
+  {% endfor %}
+  </ul>
+  {% if prints %}
+  <form method="post" action="/terugkerend/pdf" class="actions">
+    <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+    {% for p in prints %}<input type="hidden" name="doc" value="{{ p.doc }}">{% endfor %}
+    <button>{{ _("PDF van de nieuwe documenten ({n})").format(n=prints | length) }}</button>
+    <span class="muted small">{{ prints | map(attribute="label") | join(", ") }}</span>
+  </form>
+  {% endif %}
+</div>
+{% endif %}
+
+<form method="post" action="/terugkerend">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="table-wrap">
+  <table class="list">
+    <thead><tr><th></th><th>{{ _("Soort") }}</th><th>{{ _("Kenmerk") }}</th><th>{{ _("Omschrijving") }}</th>
+      <th>{{ _("Relatie") }}</th><th>{{ _("Boeking") }}</th><th>{{ _("Volgende") }}</th><th>{{ _("Einde") }}</th>
+      <th class="num">{{ _("Bedrag") }}</th><th>{{ _("Elke") }}</th><th class="num">{{ _("Aantal") }}</th><th>{{ _("Status") }}</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td>{% if r.processable %}<input type="checkbox" name="sel" value="{{ r.id }}"{% if r.checked %} checked{% endif %}
+               aria-label="{{ _('Verwerken') }} {{ r.number or r.id }}">{% endif %}</td>
+        <td>{{ _(types.get(r.transaction, r.transaction)) }}</td>
+        <td><a href="/herhalen/{{ r.id }}">{{ r.reference or _("volgend nummer") }}</a></td>
+        <td>{{ r.description or r.trans_description or "" }}</td>
+        <td>{{ r.vcnumber or "" }} {{ r.name or "" }}</td>
+        <td><a href="{{ r.url }}">{{ r.number or r.id }}</a></td>
+        <td>{% if r.processable %}<input type="date" name="next_{{ r.id }}" value="{{ r.next_value }}"
+              aria-label="{{ _('Volgende datum') }} {{ r.number or r.id }}">
+            <input type="hidden" name="old_{{ r.id }}" value="{{ r.nextdate.isoformat() if r.nextdate else '' }}">
+            {% else %}{{ fmt(r.nextdate) }}{% endif %}</td>
+        <td>{{ fmt(r.enddate) }}</td>
+        <td class="num">{{ r.amount | amount(nf, precision) }} {{ r.currency or "" }}</td>
+        <td>{{ r.repeat }} {{ _(units.get(r.unit, r.unit)) }}</td>
+        <td class="num">{{ r.howmany }}</td>
+        <td>{% if r.reason %}<span class="muted">{{ r.reason_nl or libmsg(r.reason) }}</span>
+            {% elif r.expired %}<span class="muted">{{ _("afgelopen") }}</span>
+            {% elif r.overdue is not none and r.overdue < 0 %}<span class="tag">{{ _("te laat ({n} dagen)").format(n=-r.overdue) }}</span>
+            {% elif r.overdue == 0 %}<span class="tag">{{ _("vandaag") }}</span>
+            {% else %}{{ _("over {n} dagen").format(n=r.overdue) }}{% endif %}
+            {% if r.processable and r.behind > 1 %}<br><span class="warn small">{{ _("loopt {n} termijnen achter").format(n=r.behind) }}</span>
+              <label class="check small"><input type="checkbox" name="behind_ok" value="{{ r.id }}"{% if r.confirmed %} checked{% endif %}> {{ _("toch verwerken") }}</label>{% endif %}
+            {% if r.email_labels %}<br><span class="muted small">{{ _("mailen: {list}").format(list=r.email_labels | join(", ")) }}</span>{% endif %}
+            {% if r.print_labels %}<br><span class="muted small">{{ _("PDF: {list}").format(list=r.print_labels | join(", ")) }}</span>{% endif %}
+            {% if not r.expired %}<br><button class="link small" formaction="/terugkerend/{{ r.id }}/stoppen" name="back" value="/terugkerend"
+              formnovalidate>{{ _("Stoppen") }}</button>{% endif %}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="12" class="muted">{{ _("Er zijn geen herhaalschema's.") }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% if rows | selectattr("processable") | list %}
+  <p class="actions"><button name="action" value="process">{{ _("Verwerken") }}</button></p>
+  {% endif %}
+</form>
+{% endblock %}

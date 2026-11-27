@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Importeren") }}: {{ _(kind_label) }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Importeren") }}: {{ _(kind_label) }}</h2><span class="muted">{{ f.filename }}</span></div>
+{% include "help/am_import.html" %}
+<form method="post" action="/beheer/importeren/{{ f.token }}" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="chosen_set" value="1">
+  <h3>{{ _("Kolommen") }}</h3>
+  <div class="table-wrap"><table class="list">
+    <thead><tr><th>{{ _("Kolom in het bestand") }}</th><th>{{ _("Veld") }}</th><th>{{ _("Eerste waarde") }}</th></tr></thead>
+    <tbody>
+    {% for h in header %}{% set i = loop.index0 %}
+    <tr><td>{{ h }}</td>
+      <td><select name="col_{{ i }}" aria-label="{{ _('Veld voor kolom') }} {{ h }}">
+        <option value="">{{ _("— niet importeren —") }}</option>
+        {% for fl in fields %}<option value="{{ fl.name }}"{% if mapping[i] == fl.name %} selected{% endif %}>{{ _(fl.label) }} ({{ fl.name }})</option>{% endfor %}
+      </select>{% if h in unsupported %} <span class="muted small">{{ _("niet ondersteund") }}</span>{% endif %}</td>
+      <td class="muted">{{ cell(rows[0][i]) if rows else "" }}</td></tr>
+    {% endfor %}
+    </tbody></table></div>
+  <p class="actions"><button name="action" value="preview" class="secondary">{{ _("Voorbeeld bijwerken") }}</button></p>
+
+  {% if res %}
+  {% set n = res.items | selectattr("status", "equalto", "new") | list | length %}
+  {% set u = res.items | selectattr("status", "equalto", "update") | list | length %}
+  {% set s = res.items | selectattr("status", "equalto", "same") | list | length %}
+  {% set e = res.items | selectattr("status", "equalto", "error") | list | length %}
+  <h3>{{ _("Voorbeeld") }}</h3>
+  <p>{{ _("{n} nieuw, {u} bijwerken, {s} ongewijzigd, {e} met een fout.").format(n=n, u=u, s=s, e=e) }}
+    {% if e %}{{ _("Rijen met een fout worden niet geïmporteerd.") }}{% endif %}</p>
+  <div class="table-wrap"><table class="list">
+    <thead><tr><th><span class="visually-hidden">{{ _("Importeren") }}</span></th><th>{{ _("Rij") }}</th><th>{{ _("Sleutel") }}</th><th>{{ _("Naam") }}</th>{% if docs %}<th>{{ _("Valuta") }}</th><th class="num">{{ _("Netto") }}</th><th class="num">{{ _("Btw") }}</th><th class="num">{{ _("Totaal") }}</th>{% endif %}{% if pay %}<th>{{ _("Valuta") }}</th><th class="num">{{ _("Bedrag") }}</th><th class="num">{{ _("Openstaand") }}</th>{% endif %}<th>{{ _("Status") }}</th><th>{{ _("Toelichting") }}</th></tr></thead>
+    <tbody>
+    {% for it in res.items %}
+    <tr class="status-{{ it.status }}">
+      <td><input type="checkbox" name="row" value="{{ it.rows[0] }}" aria-label="{{ _('Rij') }} {{ it.rows[0] }}"{% if it.selected and it.status in ("new", "update") %} checked{% endif %}{% if it.status not in ("new", "update") %} disabled{% endif %}></td>
+      <td>{{ it.rows | join(", ") }}</td>
+      <td>{{ it.key }}</td>
+      <td>{{ it.label }}</td>
+      {% if docs %}{% if it.amounts %}<td>{{ it.amounts[0] }}</td><td class="num">{{ it.amounts[1] | amount(ctx.user.numberformat) }}</td><td class="num">{{ it.amounts[2] | amount(ctx.user.numberformat) }}</td><td class="num">{{ it.amounts[3] | amount(ctx.user.numberformat) }}</td>{% else %}<td></td><td></td><td></td><td></td>{% endif %}{% endif %}{% if pay %}{% if it.amounts %}<td>{{ it.amounts[0] }}</td><td class="num">{{ it.amounts[1] | amount(ctx.user.numberformat) }}</td><td class="num">{{ it.amounts[2] | amount(ctx.user.numberformat) }}</td>{% else %}<td></td><td></td><td></td>{% endif %}{% endif %}
+      <td>{{ _(status_labels[it.status]) if it.status in status_labels else it.status }}</td>
+      <td>{% if it.error %}<span class="error">{{ msg(it.error) }}</span>{% endif %}
+          {% if it.changes %}{{ _("Gewijzigd:") }} {% for c in it.changes %}{{ _(labels[c]) if c in labels else c }}{{ ", " if not loop.last }}{% endfor %}{% endif %}
+          {% if it.warning %}<span class="warning">{{ msg(it.warning) }}</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody></table></div>
+  <label class="check"><input type="checkbox" name="remember" value="1" checked> {{ _("Koppeling van de kolommen onthouden voor de volgende keer") }}</label>
+  <p class="actions"><button name="action" value="import">{{ _("Importeren") }}</button>
+    <button name="action" value="cancel" class="secondary" formnovalidate>{{ _("Annuleren") }}</button></p>
+  {% endif %}
+</form>
+{% endblock %}

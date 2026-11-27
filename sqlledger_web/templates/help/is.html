@@ -1,0 +1,35 @@
+{# Verkoop > Verkoopfactuur, Inkoop > Inkoopfactuur (HELP_ANALYSE golf 1, tekst 1) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Een factuur met artikelen uit uw artikellijst. Het programma rekent de bedragen, de btw en het totaal zelf uit, en bij verkoop past het de voorraad aan. Een factuur zonder artikelen maakt u met {ar} of {ap}.", ar=hm("Verkoop", "Boeking toevoegen"), ap=hm("Inkoop", "Boeking toevoegen")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Typ bij {c} of {v} een naam of nummer en kies uit de lijst. Termijn, valuta en btw komen dan van die relatie.", c=hl("Klant"), v=hl("Leverancier")) }}</li>
+  <li>{{ ht("Controleer {d} en {t}. De {due} rekent zich zelf uit.", d=hl("Factuurdatum"), t=hl("Termijn (dagen)"), due=hl("Vervaldatum")) }}</li>
+  <li>{{ ht("Typ op een regel bij {p} een nummer of omschrijving en kies het artikel. Vul {q} in en zo nodig {price} of {disc}. Er komt vanzelf een nieuwe lege regel bij.", p=hl("Artikel"), q=hl("Aantal"), price=hl("Prijs"), disc=hl("Korting %")) }}</li>
+  <li>{{ ht("Is de factuur al (deels) betaald? Vul onder {p} de datum, het bedrag en de {a} (bijvoorbeeld de bank) in.", p=hl("Betalingen"), a=hl("Rekening")) }}</li>
+  <li>{{ ht("Wilt u de factuur als PDF bewaren? Sleep die bij {a} in het vak.", a=hl("Bijlagen")) }}</li>
+  <li>{{ ht("Klik op {s}, of op {sp} als u de factuur meteen wilt zien of afdrukken.", s=hl("Opslaan"), sp=hl("Opslaan en PDF")) }}</li>
+  <li>{{ ht("Wilt u de factuur e-mailen? Gebruik daarna {m}.", m=hl("E-mail")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: laat dit leeg, dan krijgt de factuur bij opslaan vanzelf het volgende nummer. {n} vult dat nummer meteen in.", f=hl("Factuurnummer"), n=hl("Nieuw nummer")) }}</li>
+  <li>{{ ht("{f}: bij een nieuw gekozen artikel staat hier de korting van de klant of leverancier (veld {f} op hun kaart). Bestaande regels veranderen niet als die korting later wijzigt.", f=hl("Korting %")) }}</li>
+  <li>{{ ht("{f}: zet dit aan als de prijzen al inclusief btw zijn.", f=hl("Btw inbegrepen")) }}</li>
+  <li>{{ ht("{f}: verschijnt bij een andere valuta. De koers komt uit de koerstabel van die datum. Staat daar niets, vul hem dan zelf in.", f=hl("Koers")) }}</li>
+  <li>{{ ht("{f} (alleen inkoop): het kenmerk dat u bij het betalen moet vermelden.", f=hl("Betaalkenmerk")) }}</li>
+  <li>{{ ht("{f}: de factuur komt niet in de lijsten om facturen te betalen of betalingen te ontvangen.", f=hl("Geblokkeerd (niet betalen)")) }}</li>
+  <li>{{ ht("{f}: kies een andere opmaak of taal voor de PDF.", f=hl("Sjabloonvariant")) }}</li>
+  <li>{{ ht("{f}: alleen invullen als het afleveradres anders is dan het adres van de relatie.", f=hl("Afleveradres en verzending")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("PDF en e-mail gebruiken de opgeslagen versie. Sla wijzigingen dus eerst op.") }}</li>
+  <li>{{ ht("Na het opslaan voegt u onder {b} nog een bestand toe met {t}, ook als de factuur in een afgesloten periode valt. De boeking zelf verandert daarbij niet.", b=hl("Bijlagen"), t=hl("Bijlage toevoegen")) }}</li>
+  <li>{{ ht("Bij verkoop ziet u een waarschuwing als er te weinig voorraad is. Bij een artikel met {c} weigert het programma de factuur.", c=hl("Voorraad controleren bij verkoop")) }}</li>
+  <li>{{ ht("Verandert u een bestaande factuur, dan vraagt het programma eerst om een bevestiging. {d} haalt ook de betalingen op de factuur weg en kunt u niet ongedaan maken.", d=hl("Verwijderen")) }}</li>
+  <li>{{ ht("Valt de factuur in een afgesloten periode, dan kunt u hem alleen nog lezen. Met {c} maakt u een nieuwe op basis van deze.", c=hl("Kopiëren naar nieuwe factuur")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: bij inkoop waarschuwt het programma als het factuurnummer al bestaat bij dezelfde leverancier.") }}</li>
+</ul>
+</details>

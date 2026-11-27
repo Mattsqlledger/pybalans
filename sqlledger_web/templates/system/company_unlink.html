@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Administratie ontkoppelen") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ company.name }}: {{ _("ontkoppelen") }}</h2><a href="/systeem/administraties/{{ company.id }}">{{ _("Terug") }}</a></div>
+<p class="notice warning" role="status">{{ _("Na ontkoppelen staat de administratie niet meer in deze app. Weg gaan: de toegang van alle gebruikers, de eigen sjablonen en het logo, de e-mailinstellingen en de map met opgeslagen mails. De database met de boeken blijft op de databaseserver staan; die kunt u later weer koppelen of zelf verwijderen. In het logboek blijft de naam leesbaar.") }}</p>
+<dl class="facts">
+  <dt>{{ _("Database") }}</dt><dd>{{ where[0] }} <span class="muted">({{ where[1] }}:{{ where[2] }})</span></dd>
+  <dt>{{ _("Gebruikers met toegang") }}</dt><dd>{{ users | join(", ") or "—" }}</dd>
+</dl>
+<form method="post" class="stack">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Typ ter bevestiging de naam van de administratie: {name}").format(name=company.name) }}
+    <input name="confirm_name" autocomplete="off" required></label>
+  <div class="actions"><button>{{ _("Ja, administratie ontkoppelen") }}</button>
+    <a class="button secondary" href="/systeem/administraties/{{ company.id }}">{{ _("Annuleren") }}</a></div>
+</form>
+{% endblock %}

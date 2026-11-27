@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ _(title) }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _(title) }}</h2><a href="/beheer/rekeningschema">{{ _("Rekeningschema") }}</a></div>
+{% include "help/am_account.html" %}
+<form method="post" action="/beheer/rekeningschema" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="id" value="{{ f.id }}">
+  <div class="grid">
+    <label>{{ _("Rekeningnummer") }} * <input name="accno" value="{{ f.accno }}" required></label>
+    <label>{{ _("Omschrijving") }} <input name="description" value="{{ f.description }}"></label>
+    <label>{{ _("GIFI") }} <input name="gifi_accno" value="{{ f.gifi_accno }}" list="gifilist" autocomplete="off" spellcheck="false"></label>
+  </div>
+  <datalist id="gifilist">{% for g in gifi %}<option value="{{ g.accno }}" data-n="{{ g.accno }}" data-name="{{ g.description or '' }}"></option>{% endfor %}</datalist>
+  {% if gifi_unknown %}<p class="warn small" role="status">{{ _("GIFI-code {code} staat niet in de GIFI-indeling. In de rapporten op GIFI staat deze rekening dan zonder omschrijving.").format(code=gifi_unknown) }}
+    <a href="/beheer/gifi/nieuw?code={{ gifi_unknown | urlencode }}">{{ _("Code toevoegen") }}</a></p>{% endif %}
+  <fieldset><legend>{{ _("Soort") }} *</legend>
+    {% for k, v in categories.items() %}<label class="check"><input type="radio" name="category" value="{{ k }}"{% if f.category == k %} checked{% endif %} required> {{ _(v) }}</label>{% endfor %}
+  </fieldset>
+  <fieldset><legend>{{ _("Rekening of kop") }}</legend>
+    <label class="check"><input type="radio" name="charttype" value="A"{% if f.charttype != 'H' %} checked{% endif %}> {{ _("Rekening") }}</label>
+    <label class="check"><input type="radio" name="charttype" value="H"{% if f.charttype == 'H' %} checked{% endif %}> {{ _("Kop (geen boekingen)") }}</label>
+    <label class="check"><input type="checkbox" name="contra" value="1"{% if f.contra %} checked{% endif %}> {{ _("Tegenrekening (bv. afschrijving)") }}</label>
+    <label class="check"><input type="checkbox" name="closed" value="1"{% if f.closed %} checked{% endif %}> {{ _("Gesloten") }}</label>
+  </fieldset>
+  <p class="muted small">{{ _("Koppelingen bepalen in welke keuzelijsten de rekening staat. Bij een kop worden ze niet bewaard.") }}</p>
+  {% for group, items in groups %}
+  <fieldset><legend>{{ _(group) }}</legend>
+    {% for k, label in items %}<label class="check"><input type="checkbox" name="link_{{ k }}" value="1"{% if f['link_' ~ k] %} checked{% endif %}> {{ _(label) }}</label>{% endfor %}
+  </fieldset>
+  {% endfor %}
+  <fieldset id="bank" class="fgrid"><legend>{{ _("Bankgegevens") }}</legend>
+    <p class="muted small full">{{ _("Alleen bij een betaalrekening (koppeling betaling verkoop of inkoop). Het IBAN staat op facturen en wordt gebruikt bij het inlezen van bankafschriften.") }}</p>
+    <label class="w2">{{ _("IBAN") }} <input name="iban" value="{{ f.iban }}" maxlength="42" autocomplete="off" spellcheck="false"></label>
+    <label>{{ _("BIC") }} <input name="bic" value="{{ f.bic }}" maxlength="11" autocomplete="off" spellcheck="false"></label>
+    <label>{{ _("Naam van de bank") }} <input name="bankname" value="{{ f.bankname }}" maxlength="64"></label>
+  </fieldset>
+  {% if view %}
+  <p class="muted small">
+    {% if view.has_transactions %}{{ _("Er is op deze rekening geboekt.") }}{% else %}{{ _("Nog niet op geboekt.") }}{% endif %}
+    {% if view.default_for %}{{ _("Standaardrekening:") }} {{ view.default_for | join(", ") }}.{% endif %}
+    {% if view.used_by %}{{ _("Gebruikt bij:") }} {% for t, n in view.used_by.items() %}{{ t }} ({{ n }}){{ ", " if not loop.last }}{% endfor %}.{% endif %}
+    {% if view.tax_rows %}<a href="/beheer/btw">{{ _("Btw-tarieven") }}</a> ({{ view.tax_rows }}).{% endif %}
+  </p>
+  {% endif %}
+  {% if confirm == "delete" %}
+  <div class="confirm" role="alert">
+    <p>{{ _("Rekening {accno} verwijderen?").format(accno=f.accno) }}</p>
+    <p><button name="action" value="delete_confirmed" class="danger">{{ _("Ja, verwijderen") }}</button>
+      <a href="/beheer/rekeningschema/{{ f.id }}">{{ _("Annuleren") }}</a></p>
+  </div>
+  {% else %}
+  <p class="actions">
+    <button name="action" value="save">{{ _("Opslaan") }}</button>
+    {% if f.id %}<button name="action" value="save_as_new" class="secondary">{{ _("Opslaan als nieuw") }}</button>
+    {% if view and view.can_delete %}<button name="action" value="delete" class="danger secondary" formnovalidate>{{ _("Verwijderen") }}</button>{% endif %}{% endif %}
+  </p>
+  {% endif %}
+</form>
+{% endblock %}

@@ -1,0 +1,26 @@
+{# Kas en bank > Bankafschrift inlezen (HELP_ANALYSE golf 1, tekst 5) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("U leest een digitaal bankafschrift in, zodat u de bankregels daarna snel kunt boeken. Bij het inlezen wordt nog niets geboekt.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Download bij uw bank het afschrift als CAMT.053 (XML) of MT940.") }}</li>
+  <li>{{ ht("Kies bij {f} dat bestand.", f=hl("Bestand")) }}</li>
+  <li>{{ ht("Laat {f} staan op {a}.", f=hl("Bankrekening"), a=hl("automatisch (via het rekeningnummer)")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Inlezen")) }}</li>
+  <li>{{ _("Controleer de uitkomst: periode, begin- en eindsaldo en het aantal nieuwe regels.") }}</li>
+  <li>{{ ht("Klik op {b} om de bankregels te boeken.", b=hl("Regels verwerken")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: alleen nodig als het rekeningnummer van het afschrift nog onbekend is. Kies dan de juiste rekening en het bestand opnieuw. Het rekeningnummer wordt bewaard, zodat het de volgende keer vanzelf gaat.", f=hl("Bankrekening")) }}</li>
+  <li>{{ ht("{f}: beginsaldo plus alle regels is precies het eindsaldo. Klopt dat niet, dan wordt het afschrift niet ingelezen.", f=hl("saldocontrole klopt")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("U kunt een afschrift gerust twee keer inlezen. Regels die er al zijn worden overgeslagen.") }}</li>
+  <li>{{ _("Een waarschuwing dat het beginsaldo niet aansluit op het vorige afschrift of op de boekhouding betekent meestal dat er een afschrift ontbreekt of iets dubbel is geboekt.") }}</li>
+  <li>{{ _("Het afschrift moet in dezelfde valuta zijn als de bankrekening. Het bestand mag hoogstens 10 MB zijn.") }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: daar kon u alleen een CSV met betalingen inlezen. Hier leest u het hele afschrift in.") }}</li>
+</ul>
+</details>

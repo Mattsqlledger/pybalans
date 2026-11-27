@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Importeren") }}: {{ _(kind_label) }}{% endblock %}
+{% block content %}
+<h2>{{ _("Importeren") }}: {{ _(kind_label) }}</h2>
+{% include "help/am_import.html" %}
+<p class="notice" role="status">{{ _("Klaar: {added} nieuw, {updated} bijgewerkt (bestand {file}).").format(added=res.added, updated=res.updated, file=filename) }}</p>
+{% if done %}
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("Rij") }}</th><th>{{ _("Sleutel") }}</th><th>{{ _("Naam") }}</th>{% if docs %}<th>{{ _("Valuta") }}</th><th class="num">{{ _("Netto") }}</th><th class="num">{{ _("Btw") }}</th><th class="num">{{ _("Totaal") }}</th>{% endif %}{% if pay %}<th>{{ _("Valuta") }}</th><th class="num">{{ _("Bedrag") }}</th><th class="num">{{ _("Openstaand") }}</th>{% endif %}<th>{{ _("Status") }}</th></tr></thead>
+  <tbody>{% for it in done %}<tr><td>{{ it.rows | join(", ") }}</td><td>{{ it.key }}</td><td>{{ it.label }}</td>{% if docs %}{% if it.amounts %}<td>{{ it.amounts[0] }}</td><td class="num">{{ it.amounts[1] | amount(ctx.user.numberformat) }}</td><td class="num">{{ it.amounts[2] | amount(ctx.user.numberformat) }}</td><td class="num">{{ it.amounts[3] | amount(ctx.user.numberformat) }}</td>{% else %}<td></td><td></td><td></td><td></td>{% endif %}{% endif %}{% if pay %}{% if it.amounts %}<td>{{ it.amounts[0] }}</td><td class="num">{{ it.amounts[1] | amount(ctx.user.numberformat) }}</td><td class="num">{{ it.amounts[2] | amount(ctx.user.numberformat) }}</td>{% else %}<td></td><td></td><td></td>{% endif %}{% endif %}<td>{{ _(status_labels[it.status]) }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endif %}
+<p class="actions"><a class="button" href="/beheer/importeren?soort={{ kind }}">{{ _("Nog een bestand importeren") }}</a></p>
+{% endblock %}

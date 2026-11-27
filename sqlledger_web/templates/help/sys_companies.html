@@ -1,0 +1,22 @@
+{# Systeem > Administraties (HELP_ANALYSE golf 3, tekst C5) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Alle administraties van deze installatie. Hier begint u een nieuwe administratie, leest u een back-up in of koppelt u een bestaande database. Alleen de systeembeheerder ziet dit menu.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("{b}: een lege administratie met een standaardrekeningschema.", b=hl("Nieuwe administratie")) }}</li>
+  <li>{{ ht("{b}: een back-up uit SQL-Ledger of van deze app wordt een nieuwe administratie.", b=hl("Back-up inlezen")) }}</li>
+  <li>{{ ht("{b}: een SQL-Ledger-database die al op de databaseserver staat.", b=hl("Bestaande database koppelen")) }}</li>
+  <li>{{ _("Klik op een naam om de administratie te bewerken.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: hoeveel gebruikers toegang hebben. Toegang geeft u bij {m}. {n} = geen enkele actieve gebruiker kan de administratie openen.", f=hl("Gebruikers"), m=hm("Systeem", "Gebruikers"), n=hl("niemand heeft toegang")) }}</li>
+  <li>{{ ht("{f}: {u} = niemand kan de administratie openen; de gegevens blijven bestaan.", f=hl("Status"), u=hl("uit")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Een administratie die u niet meer gebruikt, zet u uit bij de administratie (vinkje {f}). Daarna kunt u haar daar met {b} uit de app halen. De database met de boeken blijft altijd op de databaseserver staan; verwijderen doet deze app niet.", f=hl("Actief"), b=hl("Administratie ontkoppelen")) }}</li>
+  <li>{{ _("Een database hoort bij één administratie: dezelfde database nog een keer koppelen kan niet.") }}</li>
+</ul>
+</details>

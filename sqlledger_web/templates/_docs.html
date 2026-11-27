@@ -1,0 +1,38 @@
+{# Knoppen PDF/E-mail met keuze van de documentsoort en de regel Geprint/Gemaild (fase 4, DS1/DS2). #}
+{% macro doc_buttons(docs, mail=True) -%}
+{% if docs %}
+{% if docs.kinds|length == 1 %}{% set k = docs.kinds[0] %}
+<a class="button secondary doclink" href="/document/{{ k.key }}/{{ docs.id }}.pdf" target="_blank" rel="noopener">{{ _("PDF") }}</a>
+{% if mail %}<a class="button secondary doclink" href="/document/{{ k.key }}/{{ docs.id }}/mail">{{ _("E-mail") }}</a>{% endif %}
+{% else %}
+<details class="docmenu"><summary class="button secondary">{{ _("PDF") }}</summary>
+  <ul>{% for k in docs.kinds %}<li><a class="doclink" href="/document/{{ k.key }}/{{ docs.id }}.pdf" target="_blank" rel="noopener">{{ _(k.label) }}</a></li>{% endfor %}</ul></details>
+{% if mail %}<details class="docmenu"><summary class="button secondary">{{ _("E-mail") }}</summary>
+  <ul>{% for k in docs.kinds %}<li><a class="doclink" href="/document/{{ k.key }}/{{ docs.id }}/mail">{{ _(k.label) }}</a></li>{% endfor %}</ul></details>{% endif %}
+{% endif %}
+{% endif %}
+{%- endmacro %}
+
+{% macro doc_status(docs) -%}
+{% if docs %}
+<p class="muted small docstatus" data-save-first="{{ _('Sla eerst op: de PDF en de e-mail gebruiken de opgeslagen versie.') }}">
+{%- for k in docs.status %}{% if docs.kinds|length > 1 %}{{ _(k.label) }} — {% endif %}{{ _("Geprint") }}: {{ _("ja") if k.printed else _("nee") }} · {{ _("Gemaild") }}: {{ _("ja") if k.emailed else _("nee") }}{% if not loop.last %}; {% endif %}{% endfor -%}
+</p>
+<script src="/static/docs.js" defer></script>
+{% endif %}
+{%- endmacro %}
+
+{% macro doc_ready(docs) -%}
+{% if docs and docs.ready %}
+<p class="notice" role="status">{{ _("Opgeslagen.") }} <a class="button secondary" href="/document/{{ docs.ready }}/{{ docs.id }}.pdf" target="_blank" rel="noopener">{{ _("PDF openen") }}</a></p>
+{% endif %}
+{%- endmacro %}
+
+{% macro variant_select(variants, current) -%}
+{% if variants %}
+<label>{{ _("Sjabloonvariant") }}
+  <select name="language_code"><option value="">{{ _("standaard") }}</option>
+    {% for v in variants %}<option value="{{ v.code }}"{% if v.code == current %} selected{% endif %}>{{ v.label }}{% if v.label != v.code %} ({{ v.code }}){% endif %}</option>{% endfor %}
+  </select></label>
+{% else %}<input type="hidden" name="language_code" value="{{ current }}">{% endif %}
+{%- endmacro %}

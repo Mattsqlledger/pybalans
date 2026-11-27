@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Administraties") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Administraties") }}</h2><span class="actions"><a class="button" href="/systeem/administraties/aanmaken">{{ _("Nieuwe administratie") }}</a> <a class="button secondary" href="/systeem/back-up">{{ _("Back-up inlezen") }}</a> <a class="button secondary" href="/systeem/administraties/nieuw">{{ _("Bestaande database koppelen") }}</a></span></div>
+{% include "help/sys_companies.html" %}
+<div class="table-wrap"><table class="list">
+<thead><tr><th>{{ _("Code") }}</th><th>{{ _("Naam") }}</th><th>{{ _("Database") }}</th><th>{{ _("Modules") }}</th><th>{{ _("Gebruikers") }}</th><th>{{ _("Status") }}</th></tr></thead>
+<tbody>
+{% for c in companies %}
+<tr>
+  <td class="admcode">{{ c.code }}</td>
+  <td><a href="/systeem/administraties/{{ c.id }}">{{ c.name }}</a></td>
+  <td>{{ c.dbname }}{% if c.dbhost %} <span class="muted">@ {{ c.dbhost }}{% if c.dbport %}:{{ c.dbport }}{% endif %}</span>{% endif %}</td>
+  <td class="small">{{ c.modules | module_labels or '—' }}</td>
+  <td>{{ c.users }}{% if not c.access %} <span class="warn">{{ _("niemand heeft toegang") }}</span>{% endif %}</td>
+  <td>{{ _("actief") if c.active else _("uit") }}</td>
+</tr>
+{% else %}
+<tr><td colspan="6" class="muted">{{ _("Nog geen administraties.") }}</td></tr>
+{% endfor %}
+</tbody>
+</table></div>
+{% endblock %}

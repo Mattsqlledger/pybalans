@@ -1,0 +1,27 @@
+{# Kas en bank > Ontvangst, Betaling (HELP_ANALYSE golf 1, tekst 4) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Hier boekt u geld dat een klant u betaalt (Ontvangst) of dat u een leverancier betaalt (Betaling). U verdeelt het bedrag over één of meer openstaande facturen van die klant of leverancier.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Typ bij {c} of {v} een naam of nummer en kies uit de lijst. De openstaande facturen verschijnen.", c=hl("Klant"), v=hl("Leverancier")) }}</li>
+  <li>{{ ht("Controleer de {d} en kies de {a}, bijvoorbeeld uw bankrekening.", d=hl("Datum"), a=hl("Betaalrekening")) }}</li>
+  <li>{{ ht("Vink de facturen aan die met dit geld betaald zijn. Het bedrag in {p} wordt voorgesteld; bij een deelbetaling past u het aan.", p=hl("Betaald")) }}</li>
+  <li>{{ ht("Controleer het {t}. Dat moet gelijk zijn aan het bedrag op uw bankafschrift.", t=hl("Totaalbedrag")) }}</li>
+  <li>{{ ht("Klik op {b}. Daarna kunt u meteen de volgende ontvangst of betaling invoeren.", b=hl("Boeken")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: het volgende nummer van de gekozen betaalrekening wordt vanzelf ingevuld. U kunt het overschrijven, bijvoorbeeld met het nummer van het bankafschrift.", f=hl("Kenmerk")) }}</li>
+  <li>{{ ht("{f}: normaal ziet u alleen relaties met openstaande facturen. Zet dit aan als iemand vooruitbetaalt.", f=hl("Alle relaties (ook zonder open posten)")) }}</li>
+  <li>{{ ht("{f}: verschijnt alleen als een factuur contante korting heeft. Binnen de kortingstermijn wordt die voorgesteld.", f=hl("Korting")) }}</li>
+  <li>{{ ht("{f}: alleen bij een vreemde valuta. Vul de koers op de betaaldatum in.", f=hl("Koers")) }}</li>
+  <li>{{ ht("{f}: is het betaalde bedrag hoger dan de aangevinkte facturen, vul dan het echte bedrag in. Het meerdere wordt een vooruitontvangst of vooruitbetaling; het scherm vraagt dat eerst.", f=hl("Totaalbedrag")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("U kunt niet meer op een factuur boeken dan er openstaat.") }}</li>
+  <li>{{ ht("Verkeerd geboekt? Gebruik {c} bovenaan het scherm. Daar kunt u de betaling storneren.", c=hl("Corrigeren")) }}</li>
+  <li>{{ ht("Leest u ook bankafschriften in? Boek dan niet twee keer. Een bankregel van een betaling die u hier al boekte, krijgt bij {m} het voorstel {k}.", m=hm("Kas en bank", "Bankregels verwerken"), k=hl("Koppelen")) }}</li>
+</ul>
+</details>

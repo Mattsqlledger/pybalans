@@ -1,0 +1,39 @@
+{% extends "_base.html" %}
+{#- Pakbon (doc/templates/Dutch/packing_list.tex): zonder prijzen, afleveradres als hoofdadres. Uit een
+    verkooporder: besteld, eerder geleverd en nu te leveren (DS4); uit een factuur: het aantal. -#}
+{% set from_order = orddate is defined %}
+{% set docnumber = ordnumber if from_order else invnumber %}
+{% set docdate = orddate if from_order else invdate %}
+{% set ship_main = true %}
+{% block title %}{{ t('Pakbon') }} {{ docnumber }}{% endblock %}
+{% block body %}
+{% include "_parties.html" %}
+
+<div class="titlebar">
+  <h1>{{ t('Pakbon') }}</h1>
+  <table>
+    <tr><td>{{ t('Datum') }}</td><td>{{ docdate }}</td></tr>
+    <tr><td>{{ t('Ordernummer') if from_order else t('Factuurnummer') }}</td><td>{{ docnumber }}</td></tr>
+    {% if not from_order and ordnumber %}<tr><td>{{ t('Ordernummer') }}</td><td>{{ ordnumber }}</td></tr>{% endif %}
+    {% if customernumber %}<tr><td>{{ t('Klantnummer') }}</td><td>{{ customernumber }}</td></tr>{% endif %}
+    {% if ponumber %}<tr><td>{{ t('Uw referentie') }}</td><td>{{ ponumber }}</td></tr>{% endif %}
+    {% if shipvia %}<tr><td>{{ t('Verzending') }}</td><td>{{ shipvia }}</td></tr>{% endif %}
+    {% if waybill %}<tr><td>{{ t('Vrachtbrief') }}</td><td>{{ waybill }}</td></tr>{% endif %}
+  </table>
+</div>
+
+{% from "_lines.html" import line_table, weight_table with context %}
+{{ line_table(doc.columns, doc.notes, lines, priced=false, split_qty=from_order, merge_bom=false, subtotal=none) }}
+{% if 'grossweight' in doc.columns|map(attribute='name')|list and totalgrossweight %}<div class="currency">{{ t('Totaal gewicht') }}: <strong>{{ totalgrossweight }} {{ weightunit }}</strong></div>{% endif %}
+
+{% if doc.note %}<div class="docnote">{{ doc.note }}</div>{% endif %}
+{% if doc.weights %}{{ weight_table(lines) }}{% endif %}
+{% if notes %}<div class="notes">{{ notes|nl2br }}</div>{% endif %}
+{% if doc.closing %}<div class="closing">{{ doc.closing }}</div>{% endif %}
+<table class="sign">
+  <tr><td>{{ t('Ontvangen in goede orde') }}</td><td></td></tr>
+  <tr><td>{{ t('Naam') }}</td><td></td></tr>
+  <tr><td>{{ t('Datum') }}</td><td></td></tr>
+  <tr><td>{{ t('Handtekening') }}</td><td></td></tr>
+</table>
+{% endblock %}

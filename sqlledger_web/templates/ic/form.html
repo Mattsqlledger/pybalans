@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+{% import "_attach.html" as att with context %}
+{% block title %}{{ _(title) }}{% endblock %}
+{% macro text(name, label, max=None, cls="", req=False, type="text") -%}
+<label{% if cls %} class="{{ cls }}"{% endif %}>{{ _(label) }}{% if req %} *{% endif %}
+  <input{% if type != "text" %} type="{{ type }}"{% endif %} name="{{ name }}" value="{{ f[name] }}"{% if max %} maxlength="{{ max }}"{% endif %}{{ dis }}></label>
+{%- endmacro %}
+{% macro num(name, label) -%}
+<label>{{ _(label) }} <input name="{{ name }}" value="{{ f[name] }}" class="num" inputmode="decimal"{{ dis }}></label>
+{%- endmacro %}
+{% macro accounts(name, label, list) -%}
+<label>{{ _(label) }} *
+  {% if locked %}
+  <input value="{{ f[name] }} {% for a in list if a.accno == f[name] %}{{ a.description }}{% endfor %}" readonly>
+  <input type="hidden" name="{{ name }}" value="{{ f[name] }}">
+  {% else %}
+  <select name="{{ name }}"{{ dis }}><option value=""></option>
+    {% for a in list %}<option value="{{ a.accno }}"{% if a.accno == f[name] %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+  </select>
+  {% endif %}</label>
+{%- endmacro %}
+{# alleen-lezen waarde als veldachtig blok in het raster (v1.0.1 PB18) #}
+{% macro ro(label, value) -%}
+<div class="ro"><span class="ro-label">{{ _(label) }}</span><span class="ro-value num">{{ value }}</span></div>
+{%- endmacro %}
+{% block content %}
+<div class="head">
+  <h2>{{ _(title) if not readonly else _(kind_label) }}
+    {% if f.id %}<span class="muted">{{ f.partnumber }}</span>{% endif %}
+    {% if saved and saved.obsolete %}<span class="tag">{{ _("vervallen") }}</span>{% endif %}
+    {% if readonly %}<span class="tag">{{ _("alleen lezen") }}</span>{% endif %}</h2>
+  <p class="actions noprint">
+    <a href="/artikelen">{{ _("Artikelen zoeken") }}</a>
+    {% if ctx.has_role("bookkeeper") %}<a href="/artikelen/nieuw">{{ _("Artikel toevoegen") }}</a>
+    <a href="/artikelen/nieuw?soort=dienst">{{ _("Dienst toevoegen") }}</a>
+    {% if ctx.production() %}<a href="/artikelen/nieuw?soort=samengesteld">{{ _("Samengesteld artikel toevoegen") }}</a>{% endif %}{% endif %}
+    {% if f.id %}<a href="/artikelen/{{ f.id }}/historie">{{ _("Prijshistorie verkoop") }}</a>
+    <a href="/artikelen/{{ f.id }}/historie?kant=inkoop">{{ _("Prijshistorie inkoop") }}</a>
+    {% if kind == "assembly" %}<a href="/artikelen/{{ f.id }}/stuklijst">{{ _("Stuklijst uitgeklapt") }}</a>
+    <a href="/artikelen/{{ f.id }}/assembleren">{{ _("Assembleren") }}</a>{% endif %}
+    {% if saved and saved.used_in %}<a href="/artikelen/{{ f.id }}/waar-gebruikt">{{ _("Waar gebruikt") }}</a>{% endif %}{% endif %}
+  </p>
+</div>
+{% include "help/ic_assembly.html" if f.kind == "assembly" else "help/ic.html" %}
+{% if saved and not saved.editable %}
+<p class="notice warning">{{ _("Dit soort artikel ({kind}) kan hier alleen bekeken worden.").format(kind=_(kind_label)) }}</p>
+{% endif %}
+{% if duplicates %}
+<p class="notice warning">{{ _("Artikelnummer {number} bestaat al:").format(number=f.partnumber) }}
+  {% for d in duplicates %}<a href="/artikelen/{{ d.id }}">{{ d.description or d.partnumber }}</a>{% if not loop.last %}, {% endif %}{% endfor %}.
+  {{ _("Opslaan mag wel.") }}</p>
+{% endif %}
+
+<form method="post" action="/artikelen" class="icform">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="id" value="{{ f.id or '' }}">
+  <input type="hidden" name="kind" value="{{ f.kind }}">
+  <input type="hidden" name="number_preview" value="{{ f.number_preview }}">
+
+  <fieldset class="glhead"{{ dis }}>
+    <legend>{{ _(kind_label) }}</legend>
+    <label>{{ _("Nummer") }}
+      <input name="partnumber" value="{{ f.partnumber }}" maxlength="100" placeholder="{{ _('automatisch bij opslaan') }}"{{ dis }}>
+      {% if number_note %}<span class="muted small">{{ _("wordt pas vastgelegd bij opslaan") }}</span>{% endif %}
+    </label>
+    <label class="wide">{{ _("Omschrijving") }} *
+      <textarea name="description" rows="{{ [f.description.count('\n') + 2, 5]|min }}"{{ dis }}>
+{{ f.description }}</textarea></label>
+    {{ text("unit", N_("Eenheid"), 5) }}
+    {% if groups %}
+    <label>{{ _("Groep") }}
+      <select name="partsgroup_id"{{ dis }}><option value=""></option>
+        {% for g in groups %}<option value="{{ g.id }}"{% if g.id|string == f.partsgroup_id %} selected{% endif %}>{{ g.partsgroup }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="partsgroup_id" value="{{ f.partsgroup_id }}">{% endif %}
+    {{ text("barcode", N_("Barcode"), 64) }}
+    <label class="check"><input type="checkbox" name="obsolete" value="1"{% if f.obsolete %} checked{% endif %}{{ dis }}> {{ _("Vervallen") }}</label>
+  </fieldset>
+
+  {% if f.kind == "assembly" %}
+  <fieldset class="glhead"{{ dis }}>
+    <legend>{{ _("Prijzen") }}</legend>
+    <label>{{ _("Verkoopprijs") }} <input name="sellprice" value="{{ f.sellprice if f.own_sellprice else bom.sellprice }}" class="num" inputmode="decimal" data-own-price{% if not f.own_sellprice %} readonly{% endif %}{{ dis }}></label>
+    <label class="check"><input type="checkbox" name="own_sellprice" value="1" data-own-toggle{% if f.own_sellprice %} checked{% endif %}{{ dis }}> {{ _("Verkoopprijs zelf bepalen") }}</label>
+    {{ ro(N_("Som verkoopprijzen onderdelen"), bom.sellprice) }}
+    {{ ro(N_("Lijstprijs"), bom.listprice) }}
+    {{ ro(N_("Kostprijs (laatste inkoop)"), bom.lastcost) }}
+    {{ ro(N_("Gewicht"), bom.weight) }}
+    {{ text("priceupdate", N_("Prijsdatum"), type="date") }}
+    <input type="hidden" name="listprice" value="{{ f.listprice }}"><input type="hidden" name="lastcost" value="{{ f.lastcost }}">
+  </fieldset>
+  {% else %}
+  <fieldset class="glhead"{{ dis }}>
+    <legend>{{ _("Prijzen") }}</legend>
+    {{ num("sellprice", N_("Verkoopprijs")) }}
+    {{ num("listprice", N_("Lijstprijs")) }}
+    {{ num("lastcost", N_("Laatste inkoopprijs")) }}
+    {% if f.kind == "part" and avgcost %}{{ ro(N_("Gemiddelde kostprijs"), avgcost) }}{% endif %}
+    {{ text("priceupdate", N_("Prijsdatum"), type="date") }}
+  </fieldset>
+  {% endif %}
+
+  {% if f.kind == "assembly" %}
+  <fieldset class="bom">
+    <legend>{{ _("Stuklijst") }}</legend>
+    {% if bom.locked %}<p class="muted small">{{ _("Er is voorraad van dit artikel: de onderdelen en aantallen liggen vast. Demonteer of verkoop eerst om de stuklijst te wijzigen; het vinkje “op documenten” kan wel.") }}</p>{% endif %}
+    <div class="table-wrap">
+    <table class="list gllines bomlines">
+      <thead><tr>
+        <th class="num">{{ _("Aantal") }}</th><th>{{ _("Nummer") }}</th><th>{{ _("Omschrijving") }}</th>
+        <th>{{ _("Eenheid") }}</th><th class="num">{{ _("Voorraad") }}</th>
+        <th class="num">{{ _("Verkoopprijs") }}</th><th class="num">{{ _("Kostprijs (laatste inkoop)") }}</th>
+        <th title="{{ _('Onderdeel tonen op documenten (offerte, factuur)') }}">{{ _("Op documenten") }}</th>
+      </tr></thead>
+      <tbody>
+      {% for ln in bom.lines %}{% set i = loop.index %}
+        <tr>
+          {% if ln.id %}
+          <td>{% if bom.locked or readonly %}{{ ln.qty }}<input type="hidden" name="comp_qty_{{ i }}" value="{{ ln.qty }}">{% else %}<input name="comp_qty_{{ i }}" value="{{ ln.qty }}" class="num" inputmode="decimal" aria-label="{{ _('Aantal') }} {{ i }}">{% endif %}
+            <input type="hidden" name="comp_id_{{ i }}" value="{{ ln.id }}"></td>
+          <td><a href="/artikelen/{{ ln.id }}">{{ ln.partnumber }}</a>{% if ln.assembly %} <span class="tag">{{ _("samengesteld") }}</span>{% endif %}{% if ln.obsolete %} <span class="tag">{{ _("vervallen") }}</span>{% endif %}</td>
+          <td>{{ ln.description }}</td>
+          <td>{{ ln.unit }}</td>
+          <td class="num">{% if ln.stocked %}{{ ln.onhand }}{% else %}<span class="muted">{{ _("dienst") }}</span>{% endif %}</td>
+          <td class="num">{{ ln.sell }}</td><td class="num">{{ ln.cost }}</td>
+          <td><input type="checkbox" name="comp_bom_{{ i }}" value="1"{% if ln.bom %} checked{% endif %}{{ dis }} aria-label="{{ _('Op documenten') }} {{ i }}"></td>
+          {% else %}
+          <td><input name="comp_qty_{{ i }}" value="{{ ln.qty }}" class="num" inputmode="decimal" placeholder="1" aria-label="{{ _('Aantal') }} {{ i }}"></td>
+          <td colspan="2">
+            {% if ln.choices %}
+            <select name="comp_pick_{{ i }}" aria-label="{{ _('Artikel') }} {{ i }}"><option value="">{{ _("kies…") }}</option>
+              {% for c in ln.choices %}<option value="{{ c.id }}">{{ c.partnumber }} {{ c.description }}</option>{% endfor %}
+            </select>
+            {% endif %}
+            <input name="comp_find_{{ i }}" value="{{ ln.find }}" placeholder="{{ _('nummer of omschrijving, dan Bijwerken') }}" class="acc" aria-label="{{ _('Onderdeel zoeken') }} {{ i }}"></td>
+          <td colspan="5"></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+      <tfoot><tr class="total"><th colspan="5">{{ _("Totaal per stuk") }}</th>
+        <th class="num">{{ bom.sellprice }}</th><th class="num">{{ bom.lastcost }}</th><th></th></tr></tfoot>
+    </table>
+    </div>
+    <input type="hidden" name="comp_rows" value="{{ bom.lines|length }}">
+    {% if not readonly and not bom.locked %}<p class="muted small">{{ _("Aantal leeg of 0 haalt een onderdeel weg. Een nieuw onderdeel: nummer of omschrijving invullen en Bijwerken.") }}</p>{% endif %}
+  </fieldset>
+  {% endif %}
+
+  {% if f.kind in ("part", "assembly") %}
+  <fieldset class="glhead"{{ dis }}>
+    <legend>{{ _("Voorraad") }}</legend>
+    <div class="ro"><span class="ro-label">{{ _("Op voorraad") }}</span>
+      <span class="ro-value num"><strong>{{ onhand or "0" }}</strong> {{ f.unit }}</span>
+      <span class="ro-help">{% if f.id and f.kind == "assembly" %}<a href="/artikelen/{{ f.id }}/assembleren">{{ _("Assembleren of demonteren") }}</a> · {% endif %}
+      {% if f.id %}<a href="/artikelen/{{ f.id }}/voorraad">{{ _("Voorraadcorrectie") }}</a>{% endif %}</span></div>
+    {{ num("rop", N_("Bestelniveau")) }}
+    {{ text("bin", N_("Bak/locatie"), 64) }}
+    {% if f.kind == "part" %}{{ num("weight", N_("Gewicht")) }}{% else %}<input type="hidden" name="weight" value="{{ f.weight }}">{% endif %}
+    <label class="check"><input type="checkbox" name="checkinventory" value="1"{% if f.checkinventory %} checked{% endif %}{{ dis }}> {{ _("Voorraad controleren bij verkoop") }}</label>
+  </fieldset>
+  {% else %}
+  <input type="hidden" name="rop" value="{{ f.rop }}"><input type="hidden" name="bin" value="{{ f.bin }}">
+  <input type="hidden" name="weight" value="{{ f.weight }}">
+  {% endif %}
+
+  <fieldset class="glhead"{{ dis }}>
+    <legend>{{ _("Rekeningen en btw") }}</legend>
+    {% if locked %}<p class="muted small wide">{{ _("Dit artikel is gebruikt in facturen of orders: soort en rekeningen liggen vast.") }}</p>{% endif %}
+    {% if f.kind == "part" %}{{ accounts("inventory_accno", N_("Voorraadrekening"), links.inventory) }}{% endif %}
+    {{ accounts("income_accno", N_("Opbrengstrekening"), links.income) }}
+    {% if f.kind != "assembly" %}{{ accounts("expense_accno", N_("Kostprijsrekening") if f.kind == "part" else N_("Kostenrekening"), links.expense) }}
+    {% else %}<p class="muted small wide">{{ _("Een samengesteld artikel heeft geen eigen voorraad- en kostprijsrekening: bij verkoop worden voorraad en kostprijs van de onderdelen geboekt.") }}</p>{% endif %}
+    <div class="wide">
+      <span class="label">{{ _("Btw") }}</span>
+      {% for t in links.tax %}
+      <label class="check inline"><input type="checkbox" name="tax" value="{{ t.accno }}"{% if t.accno in f.taxaccounts %} checked{% endif %}{{ dis }}> {{ t.accno }} {{ t.description }}</label>
+      {% else %}<span class="muted">{{ _("geen btw-rekeningen") }}</span>{% endfor %}
+    </div>
+  </fieldset>
+
+  <label class="wide notes">{{ _("Notities") }}
+    <textarea name="notes" rows="{{ [f.notes.count('\n') + 2, 6]|min }}"{{ dis }}>
+{{ f.notes }}</textarea></label>
+
+  {% if confirm == "delete" %}
+  <div class="confirm" role="alert">
+    <p><strong>{{ _("Artikel {number} verwijderen?").format(number=f.partnumber) }}</strong>
+      {{ _("Dit kan niet ongedaan gemaakt worden.") }}</p>
+    <button name="action" value="delete_confirmed" class="danger">{{ _("Ja, verwijderen") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Terug") }}</button>
+  </div>
+  {% elif not readonly %}
+  <p class="actions glbuttons">
+    <button name="action" value="save">{{ _("Opslaan") }}</button>
+    {% if f.id %}<button name="action" value="save_as_new" class="secondary">{{ _("Opslaan als nieuw") }}</button>{% endif %}
+    <button name="action" value="new_number" class="secondary" formnovalidate>{{ _("Nieuw nummer") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Bijwerken") }}</button>
+    {% if saved and not saved.in_use %}
+    <button name="action" value="delete" class="secondary danger" formnovalidate>{{ _("Verwijderen") }}</button>
+    {% endif %}
+  </p>
+  {% endif %}
+</form>
+{% if f.id %}{{ att.saved(attachments, f.id, f.kind, can_edit) }}{% elif not readonly %}{{ att.later() }}{% endif %}
+{% if f.kind == "assembly" %}<script src="/static/ic.js" defer></script>{% endif %}
+<script src="/static/attach.js" defer></script>
+{% endblock %}

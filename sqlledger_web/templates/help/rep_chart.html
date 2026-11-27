@@ -1,0 +1,17 @@
+{# Rapporten > Rekeningschema (HELP_ANALYSE golf 2, tekst 6) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Al uw grootboekrekeningen met hun saldo. Het overzicht verschijnt meteen; u hoeft niets te kiezen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Zoek de rekening op. De rekeningen staan op nummer, met de koppen ertussen.") }}</li>
+  <li>{{ ht("Klik op een rekeningnummer om {r} voor die rekening te openen. Kies daar de periode en klik op {b}.", r=hm("Rapporten", "Rekeningmutaties"), b=hl("Toon")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Het saldo telt alle boekingen sinds het begin van de administratie, zonder datumgrens. Voor een saldo op een bepaalde datum gebruikt u {p} of {b}.", p=hm("Rapporten", "Proefbalans"), b=hm("Rapporten", "Balans")) }}</li>
+  <li>{{ ht("Een vinkje bij {g} betekent dat de rekening is afgesloten in het rekeningschema.", g=hl("Gesloten")) }}</li>
+  <li>{{ ht("Rekeningen toevoegen of wijzigen doet de beheerder bij {r}.", r=hm("Beheer", "Rekeningschema")) }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

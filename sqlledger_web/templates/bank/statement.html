@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Afschrift") }} {{ st.sequence or st.statement_ref or st.id }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Afschrift") }} {{ st.sequence or st.statement_ref or st.id }} · {{ st.accno }} {{ st.account }}</h2>
+  <p class="actions noprint"><a href="/bank/afschriften">{{ _("Alle afschriften") }}</a>
+    <a href="?export=csv">CSV</a> <a href="?export=xlsx">Excel</a> <a href="?export=pdf" target="_blank" rel="noopener">PDF</a></p>
+</div>
+<dl class="facts">
+  <dt>{{ _("Periode") }}</dt><dd>{{ st.begindate or "" }} – {{ st.enddate or "" }}</dd>
+  <dt>{{ _("Saldo") }}</dt><dd>{{ amount(st.beginbalance) }} → {{ amount(st.endbalance) }} {{ st.curr or "" }}</dd>
+  {% if st.warnings %}<dt>{{ _("Waarschuwingen") }}</dt><dd class="prewrap warn">{{ st.warnings }}</dd>{% endif %}
+</dl>
+<div class="table-wrap">
+<table class="list">
+  <thead><tr><th>{{ _("Datum") }}</th><th class="num">{{ _("Bedrag") }}</th><th>{{ _("Tegenpartij") }}</th><th>{{ _("Omschrijving") }}</th><th>{{ _("Status") }}</th></tr></thead>
+  <tbody>
+  {% for l in lines %}
+    <tr><td class="nowrap">{{ l.bookdate }}</td><td class="num">{{ amount(l.amount) }}</td>
+      <td>{{ l.name or "" }} <span class="muted small">{{ l.iban or "" }}</span></td><td class="small">{{ l.description or "" }}</td>
+      <td><a href="/bank/regel/{{ l.id }}">{{ _(statuses[l.status]) }}</a>{% if l.is_reversal %} <span class="warn small">{{ _("storno") }}</span>{% endif %}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

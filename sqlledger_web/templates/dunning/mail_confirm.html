@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Mailen") }}{% endblock %}
+{% block content %}
+<h2>{{ title or (_("Aanmaningen mailen") if kind == 'reminders' else _("Rekeningoverzichten mailen")) }}</h2>
+{% if note %}<p class="warn">{{ note }}</p>{% endif %}
+<p>{{ intro or _("Per klant gaat er één mail met de brief als PDF. Onderwerp en bericht komen uit Beheer > E-mail (taal van de klant).") }}</p>
+<div class="table-wrap">
+<table class="list">
+  <thead><tr><th>{{ who or _("Klant") }}</th><th>{{ _("Aan") }}</th><th>{{ _("Cc") }}</th><th>{{ _("Bcc") }}</th><th>{{ _("Onderwerp") }}</th></tr></thead>
+  <tbody>
+  {% for m in mails %}
+    <tr><td>{{ m.label or m.name }}</td><td class="addr">{{ m.to }}</td><td class="addr">{{ m.cc }}</td><td class="addr">{{ m.bcc }}</td><td>{{ m.subject }}</td></tr>
+  {% endfor %}
+  {% for n in without %}
+    <tr class="muted"><td>{{ n }}</td><td colspan="4">{{ _("geen e-mailadres: valt af") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<form method="post" action="{{ back }}">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% for k, v in hidden %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+  {% if custom is defined and custom %}
+  <fieldset class="mailtext">
+    <legend>{{ _("Eigen tekst voor alle documenten (optioneel)") }}</legend>
+    <label>{{ _("Onderwerp") }} <input name="onderwerp" value="{{ custom.subject }}" maxlength="300" placeholder="{{ _('standaardtekst') }}"></label>
+    <label>{{ _("Bericht") }} <textarea name="bericht" rows="6" placeholder="{{ _('standaardtekst') }}">{{ custom.body }}</textarea></label>
+    <p class="muted small">{{ _("Plaatshouders:") }} {% for p in placeholders %}<code>{{ "{" ~ p ~ "}" }}</code>{% if not loop.last %} {% endif %}{% endfor %}.</p>
+    <p class="actions"><button name="action" value="mail" class="secondary">{{ _("Overzicht bijwerken") }}</button></p>
+  </fieldset>
+  {% endif %}
+  <p class="actions">
+    {% if mails %}<button name="action" value="mail_send">{{ _("Verzenden ({n})").format(n=mails|length) }}</button>{% endif %}
+    <a class="button secondary" href="{{ cancel or back ~ '?asof=' ~ f.asof.isoformat() }}">{{ _("Annuleren") }}</a>
+  </p>
+</form>
+{% endblock %}

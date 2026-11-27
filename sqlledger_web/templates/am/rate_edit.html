@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Koers") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Koersen wijzigen") if f.olddate else _("Koers invoeren") }}</h2><a href="/beheer/koersen">{{ _("Alle koersen") }}</a></div>
+{% include "help/am_rate_edit.html" %}
+<form method="post" action="/beheer/koersen/datum" class="stack">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="olddate" value="{{ f.olddate }}">
+  <input type="hidden" name="currencies" value="{{ foreign | join(':') }}">
+  <label>{{ _("Datum") }} * <input type="date" name="transdate" value="{{ f.transdate }}" required></label>
+  {% for c in foreign %}
+  <label>{{ c }} <input name="rate_{{ c }}" value="{{ f['rate_' ~ c] or '' }}" class="num" inputmode="decimal"></label>
+  {% endfor %}
+  <p class="muted small">{{ _("Leeg = geen koers voor die valuta op deze datum. Een andere datum verplaatst de koersen.") }}</p>
+  {% if confirm == "delete" %}
+  <div class="confirm" role="alert">
+    <p>{{ _("Alle koersen op deze datum verwijderen?") }}</p>
+    <p><button name="action" value="delete_confirmed" class="danger" formnovalidate>{{ _("Ja, verwijderen") }}</button>
+      <a href="/beheer/koersen/datum?datum={{ f.olddate }}">{{ _("Annuleren") }}</a></p>
+  </div>
+  {% else %}
+  <p class="actions"><button name="action" value="save">{{ _("Opslaan") }}</button>
+    {% if f.olddate %}<button name="action" value="delete" class="danger secondary" formnovalidate>{{ _("Verwijderen") }}</button>{% endif %}</p>
+  {% endif %}
+</form>
+{% endblock %}

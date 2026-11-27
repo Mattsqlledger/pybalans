@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Over PyBalans") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Over PyBalans") }}</h2>
+{% include "_tagline.html" %}
+<dl class="facts">
+  <dt>{{ _("Versie") }}</dt><dd>{{ version }} · Matthijs Havinga · © 2026</dd>
+  <dt>{{ _("Gebaseerd op") }}</dt><dd>SQL-Ledger 3.2.12 · Dieter Simader (DWS Systems Inc.)</dd>
+  <dt>{{ _("Licentie") }}</dt><dd>GPL-2.0-or-later</dd>
+</dl>
+<p>{{ _("PyBalans is vrije software onder de GNU General Public License, versie 2 of later. Het is gebaseerd op SQL-Ledger, gemaakt door Dieter Simader (DWS Systems Inc.), dat ook onder de GPL valt. Alle eer voor SQL-Ledger, het ontwerp en de licentie ervan komen hem toe.") }}</p>
+<h3>{{ _("Merken") }}</h3>
+<p>{{ _("PostgreSQL is een merk van de PostgreSQL Community Association of Canada; PyBalans is daar niet aan verbonden.") }}</p>
+<p>{{ _("SQL-Ledger is een merk van DWS Systems Inc.; PyBalans is daar niet aan verbonden en leest SQL-Ledger-administraties alleen in.") }}</p>
+{% endblock %}

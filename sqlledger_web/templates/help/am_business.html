@@ -1,0 +1,18 @@
+{# Beheer > Branches (HELP_ANALYSE golf 3, tekst B2) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een indeling van klanten en leveranciers naar soort bedrijf, bijvoorbeeld Groothandel of Horeca.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Klik op {t}, vul de {o} in en klik op {b}.", t=hl("Branche toevoegen"), o=hl("Omschrijving"), b=hl("Opslaan")) }}</li>
+  <li>{{ ht("Kies de branche bij de klant of leverancier in het veld {f}.", f=hl("Branche")) }}</li>
+  <li>{{ _("Zet met ↑ en ↓ de meest gebruikte bovenaan; in deze volgorde staan ze in de keuzelijsten.") }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("U kunt zoeken op branche in de lijst van klanten en leveranciers (onder {m}), en bij betalingen aan leveranciers filteren op branche.", m=hl("Meer opties")) }}</li>
+  <li>{{ ht("Het veld {f} verschijnt bij de klant pas als hier minstens één branche staat.", f=hl("Branche")) }}</li>
+  <li>{{ _("Een branche die bij een relatie gebruikt wordt, kunt u niet verwijderen.") }}</li>
+  <li>{{ ht("Anders dan in SQL-Ledger: een branche heeft geen korting. Een vaste korting voor een klant of leverancier zet u op de kaart van die relatie bij {f}.", f=hl("Korting %")) }}</li>
+</ul>
+</details>

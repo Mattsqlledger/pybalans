@@ -1,0 +1,13 @@
+{#- SVG-staafgrafiek (DB6), geometrie uit routes_dashboard.bar_chart -#}
+{% macro chart(c, label) %}
+<svg viewBox="0 0 {{ c.width }} {{ c.height }}" role="img" aria-label="{{ label }}" class="chart">
+  <g class="grid">{% for t in c.ticks %}<line x1="{{ c.left }}" x2="{{ c.width - 2 }}" y1="{{ t.y }}" y2="{{ t.y }}"/>{% endfor %}</g>
+  {% for t in c.ticks %}<text x="{{ c.left - 4 }}" y="{{ t.y + 4 }}" text-anchor="end">{{ t.label }}</text>{% endfor %}
+  {% for b in c.bars %}
+  {% if b.href %}<a href="{{ b.href }}">{% endif %}<rect x="{{ b.x }}" y="{{ b.y }}" width="{{ b.w }}" height="{{ b.h }}" class="{{ b.cls }}"><title>{{ b.title }}</title></rect>{% if b.href %}</a>{% endif %}
+  {% if b.value %}<text class="v" x="{{ b.x + b.w / 2 }}" y="{{ (b.y if b.y < c.zero else b.y + b.h + 12) - (4 if b.y < c.zero else 0) }}" text-anchor="middle">{{ b.value }}</text>{% endif %}
+  {% endfor %}
+  <line class="zero" x1="{{ c.left }}" x2="{{ c.width - 2 }}" y1="{{ c.zero }}" y2="{{ c.zero }}"/>
+  {% for l in c.labels %}<text x="{{ l.x }}" y="{{ c.height - 8 }}" text-anchor="middle">{{ l.label }}</text>{% endfor %}
+</svg>
+{% endmacro %}

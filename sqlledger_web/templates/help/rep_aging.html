@@ -1,0 +1,23 @@
+{# Verkoop > Ouderdomsanalyse en Inkoop > Ouderdomsanalyse (HELP_ANALYSE golf 2, tekst 3) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De openstaande facturen per klant of leverancier, verdeeld naar hoe oud ze zijn. Zo ziet u snel wie al lang niet betaald heeft.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies bij {f} de peildatum. Standaard is dat vandaag.", f=hl("Per datum")) }}</li>
+  <li>{{ ht("Kies bij {w} {r} (één regel per klant of leverancier) of {p}.", w=hl("Weergave"), r=hl("Per relatie"), p=hl("Per factuur")) }}</li>
+  <li>{{ ht("Klik op {b}. In de weergave per factuur opent u een factuur door op het nummer te klikken.", b=hl("Toon")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{k} (onder {m}): de leeftijdsgroepen in dagen. Elke kolom loopt tot de volgende; de laatste kolom bevat alles wat ouder is. Met de standaardkeuze is {l} 0 tot 30 dagen, de volgende kolom 31 tot 60 dagen, enzovoort.", k=hl("Kolommen"), m=hl("Meer opties"), l=hl("Lopend")) }}</li>
+  <li>{{ ht("{d} (onder {m}): {f} of {v}.", d=hl("Dagen tellen"), m=hl("Meer opties"), f=hl("vanaf factuurdatum"), v=hl("vanaf vervaldatum")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Met {v} ziet u alleen facturen die op de peildatum al vervallen zijn. Facturen die nog niet vervallen zijn, staan er dan niet in.", v=hl("vanaf vervaldatum")) }}</li>
+  <li>{{ _("Hebt u facturen in een vreemde valuta, dan ziet u een apart totaal per valuta, in die valuta.") }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: bij een peildatum in het verleden tellen betalingen van na die datum niet mee. SQL-Ledger toonde die al als betaald.") }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

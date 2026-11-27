@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_file.html" import filepick %}
+{% block title %}{{ _("Back-up inlezen") }}{% endblock %}
+{% block content %}
+{% if wizard %}{% include "start/_steps.html" %}{% endif %}
+<div class="head"><h2>{{ _("Back-up inlezen") }}</h2>{% if not wizard %}<a href="/systeem/administraties">{{ _("Alle administraties") }}</a>{% endif %}</div>
+{% include "help/sys_restore.html" %}
+{% for a in aborted %}<p class="notice warning" role="alert">{{ a }}</p>{% endfor %}
+{% for j in jobs %}
+<p class="notice{% if j.failed %} warning{% endif %}" role="status">
+  {% if j.running %}{{ _("Bezig met inlezen van {name}:").format(name=j.name) }} {{ j.text }}
+  {% elif j.failed %}{{ _("Inlezen van {name} is mislukt.").format(name=j.name) }}
+  {% else %}{{ _("{name} is ingelezen.").format(name=j.name) }}{% endif %}
+  <a href="{{ j.href }}">{{ _("Bekijken") }}</a></p>
+{% endfor %}
+<p>{{ _("Lees een back-up uit SQL-Ledger in als nieuwe administratie: het bestand dat SQL-Ledger maakt bij Systeem > Back-up (.sql of .sql.gz), of een pg_dump in platte SQL. Een oudere versie wordt meteen bijgewerkt naar 3.2.4, zoals SQL-Ledger zelf bij het inloggen doet.") }}</p>
+<p>{{ _("Ook een back-up van deze versie (Systeem > Back-up maken) leest u hier in.") }}</p>
+<p class="muted small">{{ _("Veilig: het bestand wordt regel voor regel gecontroleerd; alleen tabellen, gegevens, sequences, indexen en functies worden ingelezen, in een nieuwe database. Lukt iets niet, dan wordt er niets aangemaakt. De back-up zelf wordt na het inlezen niet bewaard.") }}</p>
+<form method="post" action="{{ action }}" enctype="multipart/form-data" class="stack" data-upload-progress
+      data-text-upload="{{ _('Uploaden: {percent}%') }}" data-text-check="{{ _('Bestand ontvangen; wordt bekeken…') }}"
+      data-text-failed="{{ _('Uploaden mislukt. Probeer het opnieuw.') }}">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Back-upbestand") }} * {{ filepick("bestand", ".sql,.gz,.bz2,application/gzip,application/x-bzip2,application/sql,text/plain", True) }}</label>
+  <label>{{ _("Sjablonen en logo (.zip, optioneel)") }} {{ filepick("sjablonen", ".zip,application/zip") }}</label>
+  <p class="muted small">{{ _("Het zip-bestand dat Systeem > Back-up maken naast de database geeft, met de eigen sjablonen en het logo.") }}</p>
+  <div class="progress-block" data-progress hidden>
+    <progress class="progressbar" max="100" value="0" aria-label="{{ _('Uploaden') }}"></progress>
+    <p class="small" aria-live="polite" data-progress-text></p>
+  </div>
+  <p class="actions"><button>{{ _("Uploaden") }}</button>{% if wizard %} <a class="button secondary" href="/welkom/administratie">{{ _("Terug") }}</a>{% endif %}</p>
+  <p class="muted small">{{ _("Na het uploaden ziet u eerst wat er in de back-up staat; pas daarna leest u hem in.") }}</p>
+</form>
+<script src="/static/restore.js" defer></script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{# Artikelen > Assembleren, Stuklijsten en Productiehistorie, overzichten (HELP_ANALYSE golf 4, tekst A8) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Overzichten van uw samengestelde artikelen:") }}</p>
+<ul>
+  <li>{{ ht("{m}: per product hoeveel u er nu kunt maken.", m=hm("Artikelen", "Assembleren")) }}</li>
+  <li>{{ ht("{m}: per product alle onderdelen, ook die van sub-stuklijsten, voor één stuk.", m=hm("Artikelen", "Stuklijsten")) }}</li>
+  <li>{{ ht("{s} (vanuit een samengesteld artikel): hetzelfde voor één product en een aantal naar keuze.", s=hl("Stuklijst uitgeklapt")) }}</li>
+  <li>{{ ht("{w} (vanuit een onderdeel): in welke producten het onderdeel zit.", w=hl("Waar gebruikt")) }}</li>
+  <li>{{ ht("{m}: alles wat geassembleerd en gedemonteerd is.", m=hm("Artikelen", "Productiehistorie")) }}</li>
+</ul>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul zo nodig een nummer, omschrijving of periode in en klik op {t}.", t=hl("Tonen")) }}</li>
+  <li>{{ ht("Klik op een nummer om het artikel te openen. In {m} klikt u op {a} in de regel om dat product te maken.", m=hm("Artikelen", "Assembleren"), a=hl("Assembleren")) }}</li>
+  <li>{{ _("In de productiehistorie klikt u op de datum om te zien hoeveel van elk onderdeel er bewoog.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{t}: zoveel stuks kunt u maken met de huidige voorraad van de directe onderdelen. {b} noemt het onderdeel waarvan u het eerst te weinig hebt.", t=hl("Te maken"), b=hl("Beperkt door")) }}</li>
+  <li>{{ ht("{a} (stuklijst uitgeklapt): de kolom {t} toont wat u nodig hebt voor dat aantal.", a=hl("Aantal producten"), t=hl("Totaal")) }}</li>
+  <li>{{ ht("{e}: verbergt producten die zelf onderdeel van een ander product zijn.", e=hl("alleen eindproducten")) }}</li>
+  <li>{{ ht("{v}: toont ook vervallen artikelen.", v=hl("ook vervallen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Diensten tellen niet mee bij {t} en hebben geen voorraad. Een negatieve voorraad telt als 0.", t=hl("Te maken")) }}</li>
+  <li>{{ ht("Deze menu-items staan er alleen als de administratie een samengesteld artikel heeft, of als de beheerder {p} aanzette in {m}.", p=hl("Productie (samengestelde artikelen) tonen"), m=hm("Beheer", "Instellingen")) }}</li>
+</ul>
+</details>

@@ -1,0 +1,26 @@
+{# Kas en bank > Betalingsregister (HELP_ANALYSE golf 2, tekst 17) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een lijst van geboekte ontvangsten en betalingen, om er achteraf een betalingsspecificatie van te printen of te mailen. Op de specificatie staat welke facturen met de betaling zijn voldaan.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies bij {s} {o} of {p}, vul zo nodig de filters in en klik op {b}.", s=hl("Soort"), o=hl("Ontvangsten (klanten)"), p=hl("Betalingen (leveranciers)"), b=hl("Toon")) }}</li>
+  <li>{{ _("Vink de betalingen aan.") }}</li>
+  <li>{{ ht("Klik op {v} om de specificaties te bekijken, op {p} om ze te printen of op {m}.", v=hl("Voorbeeld"), p=hl("PDF"), m=hl("Mailen")) }}</li>
+  <li>{{ ht("Bij {m} ziet u eerst wie een mail krijgt en wie afvalt. Klik dan op {s}.", m=hl("Mailen"), s=hl("Verzenden")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: staat eerst op de eerste dag van de vorige maand.", f=hl("Datum van")) }}</li>
+  <li>{{ ht("{f}: een naam of nummer van een klant of leverancier.", f=hl("Relatie")) }}</li>
+  <li>{{ ht("{f}: op hoeveel facturen de betaling is verdeeld.", f=hl("Posten")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Gestorneerde betalingen staan niet in de lijst.") }}</li>
+  <li>{{ ht("Oude betalingen {z} van dezelfde dag komen samen op één specificatie.", z=hl("zonder kenmerk")) }}</li>
+  <li>{{ ht("{v} legt niets vast. {p} en {m} worden vastgelegd; mailen alleen als de mail echt is verstuurd.", v=hl("Voorbeeld"), p=hl("PDF"), m=hl("Mailen")) }}</li>
+  <li>{{ ht("Bij {g} valt de relatie af bij mailen. Onderwerp en tekst van de mail stelt u in bij {m}.", g=hl("geen e-mailadres"), m=hm("Beheer", "E-mail")) }}</li>
+  <li>{{ _("Direct na het boeken van een ontvangst of betaling kunt u de specificatie ook meteen maken, bovenaan dat scherm.") }}</li>
+</ul>
+</details>

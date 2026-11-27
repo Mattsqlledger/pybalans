@@ -1,0 +1,88 @@
+{#- Regeltabel (fase 4 stap 3): kolommen en regels onder de omschrijving volgens Beheer > Documentinstellingen
+    (doc.columns, doc.notes; zonder instellingen gelijk aan de standaardset van stap 2). Opties:
+    priced (prijzen), check (afvinkvakje, picklijst), split_qty (besteld/eerder/nu, pakbon uit een order),
+    qty_key (veld voor het aantal), merge_bom (lege cellen achter een stuklijstregel samenvoegen),
+    subtotal ('cells', 'span' of none), note_date (leverdatum als regel alleen als die afwijkt).
+    Meer dan 8 kolommen: compacte tabel, zodat hij op A4 past. -#}
+{% macro value(r, name) -%}
+{%- if name == 'deliverydate' %}{{ r.deliverydate or r.requiredate }}
+{%- elif name == 'discount' %}{% if r.discountrate and r.discountrate != '0' %}{{ r.discountrate }}%{% endif %}
+{%- else %}{{ r[name] }}{% endif -%}
+{%- endmacro %}
+{% set RIGHT = ['qty', 'sellprice', 'discount', 'netprice', 'linetotal', 'grossweight', 'netweight'] %}
+{% set BOM_FILLED = ['number', 'description', 'qty', 'unit', 'bin'] %}
+{% macro line_table(cols, notes, lines, priced=true, check=false, split_qty=false, qty_key='qty', merge_bom=true,
+                    subtotal='cells', note_date='') %}
+{% set ncols = cols|length + (2 if split_qty else 0) + (1 if check else 0) %}
+{% set names = cols|map(attribute='name')|list %}
+<table class="lines{% if ncols > 8 %} dense{% endif %}">
+  <thead><tr>
+    {% if check %}<th class="check"></th>{% endif %}
+    {% for c in cols %}
+      {% if c.name == 'qty' and split_qty %}<th class="r">{{ t('Besteld') }}</th><th class="r">{{ t('Eerder geleverd') }}</th><th class="r">{{ t('Nu geleverd') }}</th>
+      {% else %}<th{% if c.name in RIGHT %} class="r"{% endif %}>{{ c.label }}</th>{% endif %}
+    {% endfor %}
+  </tr></thead>
+  <tbody>
+  {% for r in lines %}
+    {% if r.bom %}
+    {% set ns = namespace(last=0) %}
+    {% for c in cols %}{% if c.name in BOM_FILLED %}{% set ns.last = loop.index %}{% endif %}{% endfor %}
+    <tr class="bom">{% if check %}<td class="check"><span class="box"></span></td>{% endif %}
+      {%- for c in cols %}
+        {%- if loop.index <= ns.last or not merge_bom %}
+          {%- if c.name == 'number' %}<td class="num">{{ r.number }}</td>
+          {%- elif c.name == 'description' %}<td class="indent">{{ r.description }}</td>
+          {%- elif c.name == 'qty' %}{% if split_qty %}<td></td><td></td>{% endif %}<td class="r">{{ r.qty }}</td>
+          {%- elif c.name in BOM_FILLED %}<td>{{ r[c.name] }}</td>
+          {%- else %}<td></td>{% endif %}
+        {%- endif %}
+      {%- endfor %}
+      {%- if merge_bom and ns.last < cols|length %}<td colspan="{{ cols|length - ns.last }}"></td>{% endif %}</tr>
+    {% elif not r.runningnumber %}
+      {% if r.linetotal and subtotal == 'cells' %}
+      <tr class="subtotal">{% for c in cols %}{% if c.name == 'description' %}<td>{{ r.description }}</td>{% elif c.name == 'linetotal' %}<td class="r">{{ r.linetotal }}</td>{% else %}<td></td>{% endif %}{% endfor %}</tr>
+      {% elif r.linetotal and subtotal == 'span' and 'description' in names and 'linetotal' in names %}
+      {% set d = names.index('description') %}{% set a = names.index('linetotal') %}
+      <tr class="subtotal">{% for c in cols[:d] %}<td></td>{% endfor %}<td colspan="{{ a - d }}">{{ r.description }}</td><td class="r">{{ r.linetotal }}</td>{% for c in cols[a + 1:] %}<td></td>{% endfor %}</tr>
+      {% elif not r.linetotal %}
+      <tr class="group"><td colspan="{{ ncols }}">{{ r.description }}</td></tr>
+      {% endif %}
+    {% else %}
+    <tr>
+      {% if check %}<td class="check"><span class="box"></span></td>{% endif %}
+      {% for c in cols %}
+        {% if c.name == 'description' %}
+      <td>{{ r.description }}
+        {% for n in notes %}{% set val = value(r, n.name) %}
+          {% if val and (n.name != 'deliverydate' or val != note_date) %}<div class="note">{% if n.label %}{{ n.label }} {% endif %}{{ val }}</div>{% endif %}
+        {% endfor %}
+        {% if r.itemnotes %}<div class="note">{{ r.itemnotes|nl2br }}</div>{% endif %}
+      </td>
+        {% elif c.name == 'number' %}<td class="num">{{ r.number }}</td>
+        {% elif c.name == 'qty' and split_qty %}<td class="r">{{ r.qty }}</td><td class="r">{{ r.ship }}</td><td class="r"><strong>{{ r.toship }}</strong></td>
+        {% elif c.name == 'qty' %}<td class="r">{{ r[qty_key] }}</td>
+        {% else %}<td{% if c.name in RIGHT %} class="r"{% endif %}>{{ value(r, c.name) }}</td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+    {% endif %}
+  {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+{% macro weight_table(lines) %}
+{% set ns = namespace(any=false) %}
+{% for r in lines if r.runningnumber and (r.grossweight or r.netweight) %}{% set ns.any = true %}{% endfor %}
+{% if ns.any %}
+<table class="lines weights">
+  <thead><tr><th>{{ t('Omschrijving') }}</th><th class="r">{{ t('Aantal') }}</th><th class="r">{{ t('Gewicht') }}</th><th class="r">{{ t('Nettogewicht') }}</th></tr></thead>
+  <tbody>
+  {% for r in lines if r.runningnumber and (r.grossweight or r.netweight) %}
+    <tr><td>{{ r.description }}</td><td class="r">{{ r.qty }}</td><td class="r">{{ r.grossweight }}</td><td class="r">{{ r.netweight }}</td></tr>
+  {% endfor %}
+  <tr class="grand"><td>{{ t('Totaal gewicht') }}</td><td></td><td class="r">{{ totalgrossweight }}</td><td class="r">{{ totalnetweight }} {{ weightunit }}</td></tr>
+  </tbody>
+</table>
+{% endif %}
+{% endmacro %}

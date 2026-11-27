@@ -1,0 +1,22 @@
+{# Kas en bank > Afgeletterde posten (HELP_ANALYSE golf 2, tekst 18) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Laat zien welke regels van een rekening in een periode zijn afgeletterd, bijvoorbeeld om af te drukken bij het bankafschrift.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {r} en de periode met {v} en {t}.", r=hl("Rekening"), v=hl("Van"), t=hl("Tot en met")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Tonen")) }}</li>
+  <li>{{ ht("Bewaar de lijst met CSV, Excel of {p}, of gebruik {a}.", p=hl("PDF"), a=hl("Afdrukken")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: de datum waarop de regel is afgeletterd. De periode kijkt naar die datum, niet naar de boekdatum.", f=hl("Afgeletterd")) }}</li>
+  <li>{{ ht("{s} / {d}: regels met hetzelfde kenmerk samen, of elke boeking apart.", s=hl("Samenvatting (per kenmerk)"), d=hl("Detail")) }}</li>
+  <li>{{ ht("{f}: ook andere rekeningen dan bank en kas.", f=hl("Alle balansrekeningen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Klik op een kenmerk om de boeking te openen (alleen als er één boeking achter zit).") }}</li>
+  <li>{{ ht("Met {a} bovenaan gaat u naar het afletterscherm voor dezelfde rekening.", a=hl("Afletteren")) }}</li>
+</ul>
+</details>

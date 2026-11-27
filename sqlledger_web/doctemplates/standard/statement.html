@@ -1,0 +1,50 @@
+{% extends "_base.html" %}
+{#- Rekeningoverzicht per klant en valuta (fase 4 stap 4a, SB5): openstaande posten op de peildatum met de
+    ouderdomskolommen die bij het maken gekozen zijn (``columns``: sleutel + dagen). -#}
+{% block title %}{{ t('Rekeningoverzicht') }} {{ name }}{% endblock %}
+{% block body %}
+{% include "_parties.html" %}
+
+<div class="titlebar">
+  <h1>{{ t('Rekeningoverzicht') }}</h1>
+  <table>
+    <tr><td>{{ t('Per datum') }}</td><td>{{ statementdate }}</td></tr>
+    {% if customernumber %}<tr><td>{{ t('Klantnummer') }}</td><td>{{ customernumber }}</td></tr>{% endif %}
+  </table>
+</div>
+
+<p class="intro">{% if doc.intro %}{{ doc.intro }}{% else %}{{ t('Hieronder vindt u het overzicht van uw openstaande posten. Neemt u bij vragen of verschillen contact met ons op.') }}{% endif %}</p>
+
+<table class="lines{% if columns|length > 4 %} dense{% endif %}">
+  <thead><tr>
+    <th>{{ t('Factuurnummer') }}</th><th>{{ t('Factuurdatum') }}</th><th>{{ t('Vervaldatum') }}</th>
+    {% for c in columns %}<th class="r">{{ c.days }}</th>{% endfor %}
+    <th class="r">{{ t('Totaal') }}</th>
+  </tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td class="num">{{ r.invnumber }}{% if r.ponumber %}<div class="note">{{ t('Uw referentie') }} {{ r.ponumber }}</div>{% endif %}</td>
+      <td class="num">{{ r.invdate }}</td><td class="num">{{ r.duedate }}</td>
+      {% for c in columns %}<td class="r">{{ r[c.key] }}</td>{% endfor %}
+      <td class="r">{{ r.total }}</td>
+    </tr>
+  {% endfor %}
+    <tr class="subtotal">
+      <td colspan="3">{{ t('Totaal') }}</td>
+      {% for c in columns %}<td class="r">{{ totals[c.key] }}</td>{% endfor %}
+      <td class="r"><strong>{{ total }}</strong></td>
+    </tr>
+  </tbody>
+</table>
+<div class="currency">{{ t('Ouderdom in dagen vanaf de vervaldatum') if overdue else t('Ouderdom in dagen vanaf de factuurdatum') }}. {{ t('Alle bedragen in') }} <strong>{{ currency }}</strong>.</div>
+{% if doc.note %}<div class="docnote">{{ doc.note }}</div>{% endif %}
+
+{% if doc.payinfo and iban %}
+<div class="payinfo">
+  {{ t('Graag het bedrag van') }} <strong>{{ currency }} {{ total }}</strong> {{ t('overmaken op rekening') }} <strong>{{ iban }}</strong>{% if doc.bankname %} {{ t('bij') }} {{ doc.bankname }}{% endif %}{% if bic %} (BIC {{ bic }}){% endif %}
+  {{ t('t.n.v.') }} {{ company }}.
+</div>
+{% endif %}
+{% if doc.closing %}<div class="closing">{{ doc.closing }}</div>{% endif %}
+{% endblock %}

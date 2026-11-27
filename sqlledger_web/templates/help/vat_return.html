@@ -1,0 +1,28 @@
+{# Btw > Btw-aangifte (HELP_ANALYSE golf 1, tekst 13) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Dit scherm berekent per rubriek de bedragen voor uw btw-aangifte. Na het indienen maakt u hier ook de btw-boeking.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies het {t} en klik op {b}. Het laatst afgelopen tijdvak staat al klaar. Voor andere datums gebruikt u {a}.", t=hl("Tijdvak"), b=hl("Toon"), a=hl("Andere periode")) }}</li>
+  <li>{{ _("Lees de gele meldingen, zoals btw-rekeningen zonder rubriek of relaties zonder geldig EU-btw-nummer, en los ze eerst op.") }}</li>
+  <li>{{ _("Klik op een rubriek om de boekingen erachter te zien.") }}</li>
+  <li>{{ ht("Klik op {f} en neem de bedragen over in de aangifte bij de Belastingdienst.", f=hl("Aangifteformulier")) }}</li>
+  <li>{{ ht("Na het indienen klikt u op {b}. Er opent een ingevulde boeking die de btw-rekeningen tegenboekt op de afdrachtrekening. Sla die op.", b=hl("Btw-boeking maken")) }}</li>
+  <li>{{ ht("Sluit daarna de periode af via {m}, zodat er niets meer in kan veranderen.", m=hm("Beheer", "Afsluiten")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: maand, kwartaal of jaar, zoals ingesteld bij {s} in {m}.", f=hl("Tijdvak"), s=hl("Btw-aangifte per"), m=hm("Beheer", "Instellingen")) }}</li>
+  <li>{{ ht("{f}: dezelfde bedragen in de opmaak van de Belastingdienst. Zolang er geen btw-boeking is, staat er {p} op.", f=hl("Aangifteformulier"), p=hl("Proefafdruk")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Alle bedragen zijn in hele euro's, afgerond in uw voordeel. 5D (kleineondernemersregeling) en correcties worden niet berekend; die vult u zelf in.") }}</li>
+  <li>{{ _("Wijzigt er na de btw-boeking nog iets in het tijdvak, dan toont dit scherm het verschil en de boekingen die het veroorzaken. Dat verschil verwerkt u in een suppletie of in de volgende aangifte.") }}</li>
+  <li>{{ ht("Hebt u omzet in rubriek 3B, dan moet u ook de ICP-opgaaf doen ({m}).", m=hm("Btw", "ICP-opgaaf")) }}</li>
+  <li>{{ _("Britse administratie (VAT Return): alle boxes in hele ponden. Overtypen bij HMRC mag niet (Making Tax Digital); lees het CSV-bestand in uw bridging software in.") }}</li>
+  <li>{{ ht("Belgische administratie (periodieke aangifte): alle roosters in hele euro's, creditnota's apart in 48/49, 84/85, 63 en 64. Neem de bedragen over in Intervat. De jaarlijkse klantenlisting vindt u onder {b}.", b=hl("Klantenlisting")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: SQL-Ledger kende geen btw-aangifte.") }}</li>
+</ul>
+</details>

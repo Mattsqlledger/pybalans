@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Mijn uren") if own else _("Maandstaat") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Mijn uren") if own else _("Maandstaat") }}</h2>
+  <span><a href="{{ action }}?maand={{ prev }}{% if not own and employee_id %}&medewerker={{ employee_id }}{% endif %}">‹ {{ _("vorige maand") }}</a> <a href="{{ action }}?maand={{ next }}{% if not own and employee_id %}&medewerker={{ employee_id }}{% endif %}">{{ _("volgende maand") }} ›</a></span></div>
+{% include "help/jc_sheet.html" %}
+{% if own and not employee_id %}<p class="small">{% if ctx.user.is_sysadmin %}<a href="/systeem/gebruikers/{{ ctx.user.id }}#adm-{{ ctx.company.id }}">{{ _("Koppel uw login aan een medewerker") }}</a>{% else %}{{ _("Vraag dit aan de beheerder.") }}{% endif %}</p>{% endif %}
+<form method="get" action="{{ action }}" class="filters">
+  {% if not own %}<label>{{ _("Medewerker") }} <select name="medewerker"><option value=""></option>
+    {% for e in links.employees %}<option value="{{ e.id }}"{% if e.id == employee_id %} selected{% endif %}>{{ e.name }}</option>{% endfor %}</select></label>{% endif %}
+  <label>{{ _("Maand") }} <input type="month" name="maand" value="{{ month_value }}"></label>
+  <button class="secondary">{{ _("Tonen") }}</button>
+</form>
+{% if employee_id %}
+{% if rows %}
+<form method="post" action="{{ action }}">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="maand" value="{{ month_value }}">
+  {% if not own %}<input type="hidden" name="medewerker" value="{{ employee_id }}">{% endif %}
+  <div class="table-wrap"><table class="list sheet">
+    <thead><tr><th>{{ _("Project") }} / {{ _("Dienst") }}</th>{% for d in days %}<th class="num{% if d.weekday() >= 5 %} weekend{% endif %}">{{ d.day }}</th>{% endfor %}<th class="num">{{ _("Totaal") }}</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr><th scope="row">{{ r.projectnumber }} · {{ r.partnumber }}{% if r.internal %} <span class="tag">{{ _("intern") }}</span>{% endif %}<br><span class="muted small">{{ r.description }}</span></th>
+      {% for d in days %}<td>{% if d.day in r.locked %}<span class="locked" title="{{ _('op een order') if r.locked[d.day] == 'order' else (_('afgesloten periode') if r.locked[d.day] == 'closed' else (_('meer tijdkaarten: vraag de boekhouder') if ctx.role == 'hours' else _('meer tijdkaarten: wijzigen via Tijdkaarten'))) }}">{{ cell(r, d.day) }}</span>{% else %}<input name="h_{{ r.project_id }}_{{ r.parts_id }}_{{ d.day }}" value="{{ cell(r, d.day) }}" class="num hours" inputmode="decimal" size="3" aria-label="{{ r.projectnumber }} {{ r.partnumber }} {{ d.isoformat() }}">{% endif %}</td>{% endfor %}
+      <td class="num">{{ r.hours.values() | sum | amount(ctx.user.numberformat, places) }}</td></tr>
+    {% endfor %}
+    </tbody>
+    <tfoot><tr><th>{{ _("Totaal") }}</th>{% for d in days %}<td class="num">{{ totals[d.day] | amount(ctx.user.numberformat, places) if totals[d.day] else "" }}</td>{% endfor %}<td class="num">{{ total | amount(ctx.user.numberformat, places) }}</td></tr></tfoot>
+  </table></div>
+  <p class="muted small">{{ _("Uren per dag, bijvoorbeeld 7,5. Leeg of 0 = geen uren. Grijze dagen staan al op een order, vallen in een afgesloten periode of hebben meer tijdkaarten.") }}</p>
+  <p class="actions"><button>{{ _("Opslaan") }}</button>
+    <a class="button secondary" href="/uren/urenstaat.pdf?maand={{ month_value }}{% if not own %}&medewerker={{ employee_id }}{% endif %}" target="_blank" rel="noopener">{{ _("Urenstaat (PDF)") }}</a></p>
+  {% if rows | selectattr("assigned") | list | length > 1 %}<p class="muted small">{{ _("Urenstaat per project:") }}
+    {% for r in rows | unique(attribute="project_id") %}<a href="/uren/urenstaat.pdf?maand={{ month_value }}&project={{ r.project_id }}{% if not own %}&medewerker={{ employee_id }}{% endif %}" target="_blank" rel="noopener">{{ r.projectnumber }}</a>{{ " · " if not loop.last }}{% endfor %}</p>{% endif %}
+</form>
+{% else %}<p class="muted">{{ _("Geen toegewezen projecten in deze maand.") }}</p>{% endif %}
+{% endif %}
+{% endblock %}

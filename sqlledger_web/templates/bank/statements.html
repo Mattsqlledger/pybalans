@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Ingelezen afschriften") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Ingelezen afschriften") }}</h2>
+  <p class="actions noprint"><a href="/bank/inlezen">{{ _("Bankafschrift inlezen") }}</a> <a href="/bank/regels">{{ _("Bankregels verwerken") }}</a></p>
+</div>
+<div class="table-wrap">
+<table class="list">
+  <thead><tr><th>{{ _("Rekening") }}</th><th>{{ _("Afschrift") }}</th><th>{{ _("Periode") }}</th><th class="num">{{ _("Beginsaldo") }}</th>
+    <th class="num">{{ _("Eindsaldo") }}</th><th class="num">{{ _("Regels") }}</th><th class="num">{{ _("Open") }}</th><th>{{ _("Bestand") }}</th><th>{{ _("Ingelezen") }}</th></tr></thead>
+  <tbody>
+  {% for s in statements %}
+    <tr><td>{{ s.accno }} <span class="muted small">{{ s.account }}</span></td>
+      <td><a href="/bank/afschriften/{{ s.id }}">{{ s.sequence or s.statement_ref or s.id }}</a>{% if s.warnings %} <span class="warn" title="{{ s.warnings }}">!</span>{% endif %}</td>
+      <td class="nowrap">{{ s.begindate or "" }} – {{ s.enddate or "" }}</td>
+      <td class="num">{{ amount(s.beginbalance) }}</td><td class="num">{{ amount(s.endbalance) }}</td>
+      <td class="num">{{ s.lines_total - s.lines_skipped }}{% if s.lines_skipped %} <span class="muted small">(+{{ s.lines_skipped }} {{ _("overgeslagen") }})</span>{% endif %}</td>
+      <td class="num">{% if s.lines_open %}<a href="/bank/regels?rekening={{ s.accno }}">{{ s.lines_open }}</a>{% else %}0{% endif %}</td>
+      <td class="small">{{ s.filename or "" }}</td><td class="small nowrap">{{ s.imported.strftime("%Y-%m-%d %H:%M") }} {{ s.login or "" }}</td></tr>
+  {% else %}
+    <tr><td colspan="9" class="muted">{{ _("Nog geen afschriften ingelezen.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

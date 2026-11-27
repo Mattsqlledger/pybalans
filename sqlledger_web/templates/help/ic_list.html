@@ -1,0 +1,24 @@
+{# Artikelen > Overzicht (HELP_ANALYSE golf 4, tekst A3) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Uw artikelen, diensten en samengestelde artikelen zoeken en openen. U kunt ook zoeken in de factuur-, order- en offerteregels waarin ze voorkomen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul zo nodig {n} of {o} in en kies een {s} of {g}.", n=hl("Nummer"), o=hl("Omschrijving"), s=hl("Soort"), g=hl("Groep")) }}</li>
+  <li>{{ ht("Kies bij {s} welke artikelen u wilt zien. Standaard is dat {a}.", s=hl("Status"), a=hl("Actief")) }}</li>
+  <li>{{ ht("Klik op {z}. Klik op een nummer of omschrijving om het artikel te openen.", z=hl("Zoeken")) }}</li>
+  <li>{{ ht("Wilt u de regels zien, bijvoorbeeld alles wat u van een artikel verkocht? Vink onder {m} bij {r} bijvoorbeeld {v} aan, kies zo nodig een periode en klik op {z}.", m=hl("Meer opties"), r=hl("Regels uit"), v=hl("Verkocht"), z=hl("Zoeken")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{s}: {u} zijn artikelen zonder voorraad die nog nergens in staan (die kunt u verwijderen). {o} zijn artikelen met minder voorraad dan het {b}.", s=hl("Status"), u=hl("Ongebruikt"), o=hl("Onder bestelniveau"), b=hl("Bestelniveau")) }}</li>
+  <li>{{ ht("{o} en {g} (bij {r}): bij facturen openstaand of betaald, bij orders en offertes open of gesloten.", o=hl("open"), g=hl("gesloten/betaald"), r=hl("Regels uit")) }}</li>
+  <li>{{ ht("{k}: kies welke kolommen de lijst toont.", k=hl("Kolommen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Met {r} zoekt {o} in de omschrijving op de regel. Het nummer opent de factuur, order of offerte (een order of offerte alleen als die module aanstaat). De prijs is de ingevoerde prijs vóór korting, omgerekend naar de standaardvaluta.", r=hl("Regels uit"), o=hl("Omschrijving")) }}</li>
+  <li>{{ ht("De soorten {l} en {k} komen alleen uit SQL-Ledger. U kunt ze bekijken, maar niet wijzigen.", l=hl("Loon/overhead"), k=hl("Kits")) }}</li>
+  <li>{{ _("Met CSV, Excel of PDF bovenaan de lijst exporteert u alle gevonden regels.") }}</li>
+</ul>
+</details>

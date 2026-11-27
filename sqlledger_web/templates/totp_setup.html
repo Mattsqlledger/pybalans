@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Tweestapsverificatie instellen") }}{% endblock %}
+{% block plain %}{% if ctx.request.query_params.get("welkom") %}{% set step = 3 %}{% include "start/_steps.html" %}{% endif %}{% include "_totp_setup_body.html" %}
+<form method="post" action="/uitloggen"><input type="hidden" name="csrf" value="{{ ctx.csrf }}"><button class="link small">{{ _("Annuleren") }}</button></form>
+{% endblock %}
+{% block content %}{% with show_help=True %}{% include "_totp_setup_body.html" %}{% endwith %}{% endblock %}

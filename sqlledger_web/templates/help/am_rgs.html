@@ -1,0 +1,21 @@
+{# Beheer > RGS-koppeling (HELP_ANALYSE golf 3, tekst A6) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Elke rekening een code geven uit het Referentie Grootboekschema (RGS). Dan sluit uw rekeningschema aan op de standaardindeling die banken, accountants en de Belastingdienst gebruiken.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Kies per rekening een van de voorstellen. Het programma geeft er tot drie; er wordt niets vanzelf gekoppeld.") }}</li>
+  <li>{{ ht("Staat de goede code er niet bij? Zoek hem bij {c} op code of woorden en klik op {z}. Kies dan {a} en typ de code in het vak ernaast.", c=hl("Code zoeken"), z=hl("Zoeken"), a=hl("Andere code")) }}</li>
+  <li>{{ ht("Klik op {b}. Rekeningen zonder keuze blijven zoals ze zijn.", b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: {z} toont alleen de rekeningen die nog geen code hebben; {a} ook de rest, met de huidige code bovenaan.", f=hl("Tonen"), z=hl("Zonder code"), a=hl("Alle rekeningen")) }}</li>
+  <li>{{ ht("{f}: haalt een bestaande koppeling weg.", f=hl("Geen code")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Eerst moet de systeembeheerder de RGS-lijst inlezen bij {m}. Tot dan ziet u hier alleen een melding.", m=hm("Systeem", "RGS-lijst")) }}</li>
+  <li>{{ _("Een code die niet in de ingelezen RGS-versie bestaat, wordt geweigerd.") }}</li>
+</ul>
+</details>

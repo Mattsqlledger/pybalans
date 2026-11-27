@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Vaste bankregels") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Vaste bankregels") }}</h2>
+  <p class="actions noprint"><a href="/bank/regels">{{ _("Bankregels verwerken") }}</a></p>
+</div>
+{% include "help/bank_rules.html" %}
+<p class="muted small">{{ _("Een bankregel met dit rekeningnummer en/of trefwoord (en richting) krijgt als voorstel een memoriaalboeking tegen de gekozen rekening; het bedrag is inclusief btw als er een btw-rekening is gekozen. Er wordt pas geboekt na bevestiging.") }}</p>
+<form method="post" action="/bank/vaste-regels">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="table-wrap">
+  <table class="list">
+    <thead><tr><th>{{ _("Bankrekening") }}</th><th>{{ _("Rekeningnummer") }}</th><th>{{ _("Trefwoord") }}</th><th>{{ _("Richting") }}</th>
+      <th>{{ _("Tegenrekening") }}</th><th>{{ _("Btw") }}</th><th>{{ _("Omschrijving") }}</th><th></th></tr></thead>
+    <tbody>
+    {% for r in rules %}
+      <tr><td>{{ r.chart_accno or _("alle") }}</td><td>{{ r.iban or "" }}</td><td>{{ r.keyword or "" }}</td>
+        <td>{{ {"+": _("bij"), "-": _("af")}.get(r.direction, _("beide")) }}</td>
+        <td>{{ r.accno }} <span class="muted small">{{ r.account or "" }}</span></td><td>{{ r.tax_accno or "" }}</td>
+        <td>{{ r.description or "" }}</td>
+        <td><button name="action" value="delete:{{ r.id }}" class="secondary danger">{{ _("Verwijderen") }}</button></td></tr>
+    {% else %}
+      <tr><td colspan="8" class="muted">{{ _("Nog geen vaste regels.") }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</form>
+
+<h3>{{ _("Nieuwe vaste regel") }}</h3>
+<datalist id="bank-accounts">{% for a in ch.accounts %}<option value="{{ a.accno }} {{ a.description }}" data-n="{{ a.accno }}" data-name="{{ a.description }}"></option>{% endfor %}</datalist>
+<form method="post" action="/bank/vaste-regels">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <fieldset class="glhead">
+    <label>{{ _("Bankrekening") }}
+      <select name="chart_accno"><option value="">{{ _("alle") }}</option>
+        {% for a in accounts %}<option value="{{ a.accno }}"{% if values.get('chart_accno') == a.accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+      </select></label>
+    <label>{{ _("Rekeningnummer tegenpartij") }} <input name="iban" value="{{ values.get('iban', '') }}" maxlength="34"></label>
+    <label>{{ _("Trefwoord") }} <input name="keyword" value="{{ values.get('keyword', '') }}" maxlength="60"></label>
+    <label>{{ _("Richting") }}
+      <select name="direction"><option value="">{{ _("beide") }}</option>
+        <option value="+"{% if values.get('direction') == '+' %} selected{% endif %}>{{ _("bij") }}</option>
+        <option value="-"{% if values.get('direction') == '-' %} selected{% endif %}>{{ _("af") }}</option></select></label>
+    <label class="vc">{{ _("Tegenrekening") }} * <input name="accno" list="bank-accounts" value="{{ values.get('accno', '') }}" required autocomplete="off"></label>
+    <label>{{ _("Btw") }}
+      <select name="tax_accno"><option value="">{{ _("geen") }}</option>
+        {% for t in ch.taxes %}<option value="{{ t.accno }}"{% if values.get('tax_accno') == t.accno %} selected{% endif %}>{{ t.accno }} {{ t.description }}</option>{% endfor %}
+      </select></label>
+    {% if ch.departments %}
+    <label>{{ _("Afdeling") }}
+      <select name="department_id"><option value=""></option>
+        {% for d in ch.departments %}<option value="{{ d.id }}">{{ d.description }}</option>{% endfor %}</select></label>
+    {% endif %}
+    <label class="vc">{{ _("Omschrijving boeking") }} <input name="description" value="{{ values.get('description', '') }}" maxlength="250"></label>
+    <p class="wide"><button name="action" value="add">{{ _("Opslaan") }}</button></p>
+  </fieldset>
+</form>
+{% endblock %}

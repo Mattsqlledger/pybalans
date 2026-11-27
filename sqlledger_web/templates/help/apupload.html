@@ -1,0 +1,26 @@
+{# Inkoop > Inkoopfactuur uploaden (HELP_ANALYSE golf 1, tekst 3) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een inkoopfactuur snel boeken vanuit de PDF of een foto. U vult alleen de basisgegevens in, het programma stelt de rest voor, en de PDF wordt automatisch als bijlage bewaard.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Sleep de PDF of foto in het vak, of kies een bestand. De factuur verschijnt naast het formulier.") }}</li>
+  <li>{{ ht("Kies de {v} en neem {d}, {n} en {t} over van de factuur.", v=hl("Leverancier"), d=hl("Factuurdatum"), n=hl("Factuurnummer"), t=hl("Totaalbedrag incl. btw")) }}</li>
+  <li>{{ ht("Controleer het blok {b}: {a}, {t} en {d}.", b=hl("Voorstel (aan te passen)"), a=hl("Kostenrekening"), t=hl("Btw"), d=hl("Vervaldatum")) }}</li>
+  <li>{{ ht("Klik op {b}. Het scherm wordt leeg voor de volgende factuur, met bovenaan een link naar de boeking die u net maakte.", b=hl("Boeken")) }}</li>
+  <li>{{ ht("Heeft de factuur meer kostenregels of btw-tarieven? Klik dan op {f} en maak de boeking daar af.", f=hl("Volledig scherm")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: de vaste kostenrekening van deze leverancier, of anders die van zijn laatste boeking. Staat er niets, kies dan zelf.", f=hl("Kostenrekening")) }}</li>
+  <li>{{ ht("{f}: de btw-rekening. Kies {n} als er geen btw op de factuur staat.", f=hl("Btw"), n=hl("geen btw")) }}</li>
+  <li>{{ ht("{f}: wordt uitgerekend uit het totaal. Wijkt de factuur af, vul dan het bedrag van de factuur in. {n} past zich aan.", f=hl("Btw-bedrag"), n=hl("Netto")) }}</li>
+  <li>{{ ht("{f}: alleen bij een leverancier in een andere valuta.", f=hl("Koers")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Het programma waarschuwt als het factuurnummer al bestaat bij deze leverancier, of als hetzelfde bestand al bij een andere boeking hangt. Dan is de factuur waarschijnlijk al geboekt.") }}</li>
+  <li>{{ ht("De valuta komt van de leverancier en kunt u hier niet wijzigen. Gebruik daarvoor {f}.", f=hl("Volledig scherm")) }}</li>
+  <li>{{ ht("Verkeerd bestand gesleept? Klik op {f}.", f=hl("ander bestand")) }}</li>
+</ul>
+</details>

@@ -1,0 +1,24 @@
+{# Btw > Btw verkoop, Btw inkoop, Onbelaste omzet en Onbelaste inkoop (HELP_ANALYSE golf 2, tekst 4) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Een lijst van de verkoop- of inkoopfacturen met btw per btw-rekening, of van de facturen zonder btw. Handig om te controleren of de btw op elke factuur klopt, of om een bedrag in de btw-aangifte terug te zoeken. De aangifte zelf doet u bij {a}.", a=hm("Btw", "Btw-aangifte")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {p}, bijvoorbeeld het kwartaal van uw aangifte.", p=hl("Periode")) }}</li>
+  <li>{{ ht("Laat bij {f} alles aangevinkt, of vink alleen het tarief aan dat u wilt zien.", f=hl("Btw-rekeningen")) }}</li>
+  <li>{{ ht("Klik op {b}. U ziet per btw-rekening de facturen en een totaal. Klik op een factuurnummer om de factuur te openen.", b=hl("Toon")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{w}: {f} of {r} (elke factuurregel apart).", w=hl("Weergave"), f=hl("Per factuur"), r=hl("Per regel")) }}</li>
+  <li>{{ ht("{s} (onder {m}): bij {k} ziet u alleen volledig betaalde facturen, op de datum van betalen.", s=hl("Stelsel"), m=hl("Meer opties"), k=hl("Kasstelsel")) }}</li>
+  <li>{{ ht("{s} begint op {k} als bij {m} het vinkje {f} aanstaat.", s=hl("Stelsel"), k=hl("Kasstelsel"), m=hm("Beheer", "Instellingen"), f=hl("Rapporten standaard op kasbasis")) }}</li>
+  <li>{{ ht("{o} en {i} tonen alleen facturen waarop helemaal geen btw staat, zoals leveringen naar het buitenland.", o=hl("Onbelaste omzet"), i=hl("Onbelaste inkoop")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Verschil met {a}: deze overzichten tonen alleen verkoop- en inkoopboekingen, met de exacte bedragen per btw-rekening. De btw-aangifte telt ook memoriaalboekingen mee (bijvoorbeeld bankkosten met btw), deelt in per rubriek en rondt af op hele euro's. Het totaal hier hoeft dus niet gelijk te zijn aan de aangifte.", a=hm("Btw", "Btw-aangifte")) }}</li>
+  <li>{{ ht("Staan er op één boeking twee btw-tarieven, dan kan het hele nettobedrag bij elk tarief staan. Tel de kolom {n} dan niet zomaar op.", n=hl("Netto")) }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

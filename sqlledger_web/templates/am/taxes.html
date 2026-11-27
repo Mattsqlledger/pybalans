@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Btw-tarieven") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Btw-tarieven") }}</h2>
+{% include "help/am_taxes.html" %}
+<p class="muted small">{{ _("Per btw-rekening een of meer tarieven. 'Geldig tot' leeg = huidig tarief (alleen de laatste regel); de datums lopen op. Een nieuw tarief: vul bij \"Nieuw tarief per datum\" het percentage en de ingangsdatum in; het huidige tarief krijgt dan vanzelf de einddatum. Een tarief waarin al geboekt is, kan niet meer veranderen of verdwijnen, zodat oude facturen hun tarief houden. Een rekening krijgt hier een regel zodra u bij de rekening een btw-koppeling aanzet.") }}</p>
+<form method="post" action="/beheer/btw">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="rowcount" value="{{ f.rowcount }}">
+  <div class="table-wrap"><table class="list">
+    <thead><tr><th>{{ _("Rekening") }}</th><th>{{ _("Omschrijving") }}</th><th>{{ _("Gesloten") }}</th>
+      <th class="num">{{ _("Tarief (%)") }}</th><th>{{ _("Nummer") }}</th><th>{{ _("Geldig tot") }}</th><th></th></tr></thead>
+    <tbody>
+    {% for ln in lines %}
+      <tr>
+        {% if ln.first %}
+        <td>{{ ln.accno }}</td>
+        <td>{{ ln.description or "" }}{% if not ln.has_tax_link %} <span class="muted small">{{ _("(geen btw-koppeling meer; historie)") }}</span>{% endif %}</td>
+        <td><input type="checkbox" name="closed_{{ ln.chart_id }}" value="1"{% if f['closed_' ~ ln.chart_id] %} checked{% endif %} aria-label="{{ _('Gesloten') }} {{ ln.accno }}"></td>
+        {% else %}<td></td><td></td><td></td>{% endif %}
+        <td class="num"><input type="hidden" name="chart_id_{{ ln.i }}" value="{{ ln.chart_id }}">
+          <input name="rate_{{ ln.i }}" value="{{ f['rate_' ~ ln.i] }}" class="num short" inputmode="decimal" aria-label="{{ _('Tarief') }}"></td>
+        <td><input name="taxnumber_{{ ln.i }}" value="{{ f['taxnumber_' ~ ln.i] }}" aria-label="{{ _('Nummer') }}"></td>
+        <td><input type="date" name="validto_{{ ln.i }}" value="{{ f['validto_' ~ ln.i] }}" aria-label="{{ _('Geldig tot') }}"></td>
+        <td></td>
+      </tr>
+      {% if loop.last or lines[loop.index].chart_id != ln.chart_id %}
+      <tr class="newrate">
+        <td></td><td colspan="2" class="muted small">{{ _("Nieuw tarief per datum") }}</td>
+        <td class="num"><input name="newrate_{{ ln.chart_id }}" value="{{ f['newrate_' ~ ln.chart_id] }}" class="num short" inputmode="decimal" aria-label="{{ _('Nieuw tarief (%)') }} {{ ln.accno }}"></td>
+        <td class="muted small">{{ _("ingangsdatum") }}</td>
+        <td><input type="date" name="newstart_{{ ln.chart_id }}" value="{{ f['newstart_' ~ ln.chart_id] }}" aria-label="{{ _('Ingangsdatum') }} {{ ln.accno }}"></td>
+        <td></td>
+      </tr>
+      {% endif %}
+    {% else %}
+      <tr><td colspan="7" class="muted">{{ _("Nog geen btw-rekeningen. Zet bij een rekening de koppeling 'Btw' aan.") }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% if lines %}<p class="actions glbuttons"><button name="action" value="save">{{ _("Opslaan") }}</button></p>{% endif %}
+</form>
+{% endblock %}

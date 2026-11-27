@@ -1,0 +1,47 @@
+# Plan comptable vide, France (numéros du PCG) : seulement les comptes dont le programme a besoin.
+# id: leeg-fr
+# land: FR
+# talen: fr en nl de
+# valuta: EUR
+# naam.nl: Leeg schema
+# naam.en: Empty chart
+# naam.de: Leerer Kontenplan
+# naam.fr: Plan vide
+# bron: sqlledger-py, eigen werk
+# licentie: GPL-2.0-or-later
+# voorraad: 370000
+# omzet: 707000
+# kosten: 607000
+# koersverschil: 656000
+# btw-afdracht: 445510
+# btw-afronding: 658000
+rekening;soort;categorie;koppeling;contra;tarief;rubriek;rgs;fr;en;nl;de
+1;H;Q;;;;;;Capitaux;Equity;Eigen vermogen;Eigenkapital
+101000;A;Q;;;;;;Capital;Share capital;Kapitaal;Gezeichnetes Kapital
+110000;A;Q;;;;;;Report à nouveau;Retained earnings;Onverdeelde winst;Gewinnvortrag
+3;H;A;;;;;;Stocks;Inventory;Voorraden;Vorräte
+370000;A;A;IC;;;;;Stocks de marchandises;Goods for resale;Voorraad handelsgoederen;Handelswaren
+40;H;L;;;;;;Fournisseurs et dettes;Creditors and liabilities;Crediteuren en schulden;Lieferanten und Verbindlichkeiten
+401000;A;L;AP;;;;;Fournisseurs;Trade creditors;Crediteuren;Verbindlichkeiten aus Lieferungen und Leistungen
+41;H;A;;;;;;Clients et créances;Debtors and receivables;Debiteuren en vorderingen;Kunden und Forderungen
+411000;A;A;AR;;;;;Clients;Trade debtors;Debiteuren;Forderungen aus Lieferungen und Leistungen
+445510;A;L;;;;;;TVA à décaisser;VAT payable;Af te dragen btw;Umsatzsteuer-Zahllast
+445660;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.20;20;;TVA déductible 20 %;Input VAT 20%;Te vorderen btw 20 %;Vorsteuer 20 %
+445661;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.10;20;;TVA déductible 10 %;Input VAT 10%;Te vorderen btw 10 %;Vorsteuer 10 %
+445662;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.055;20;;TVA déductible 5,5 %;Input VAT 5.5%;Te vorderen btw 5,5 %;Vorsteuer 5,5 %
+445663;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.021;20;;TVA déductible 2,1 %;Input VAT 2.1%;Te vorderen btw 2,1 %;Vorsteuer 2,1 %
+445710;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.20;08;;TVA collectée 20 %;VAT payable 20%;Te betalen btw 20 %;Umsatzsteuer 20 %
+445711;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.10;9B;;TVA collectée 10 %;VAT payable 10%;Te betalen btw 10 %;Umsatzsteuer 10 %
+445712;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.055;09;;TVA collectée 5,5 %;VAT payable 5.5%;Te betalen btw 5,5 %;Umsatzsteuer 5,5 %
+445713;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.021;T6;;TVA collectée 2,1 %;VAT payable 2.1%;Te betalen btw 2,1 %;Umsatzsteuer 2,1 %
+5;H;A;;;;;;Trésorerie;Cash and bank;Liquide middelen;Flüssige Mittel
+512000;A;A;AR_paid:AP_paid;;;;;Banque;Bank;Bank;Bank
+530000;A;A;AR_paid:AP_paid;;;;;Caisse;Cash;Kas;Kasse
+6;H;E;;;;;;Charges;Expenses;Kosten;Aufwand
+606000;A;E;AP_amount:IC_expense;;;;;Achats non stockés de matières et fournitures;General expenses;Algemene kosten;Allgemeiner Aufwand
+607000;A;E;AP_amount:IC_cogs;;;;;Achats de marchandises;Purchases of goods for resale;Inkoop handelsgoederen;Wareneinkauf
+656000;A;E;;;;;;Pertes et gains de change sur créances et dettes commerciales;Exchange differences on trade receivables and payables;Koersverschillen op debiteuren en crediteuren;Kursdifferenzen aus Lieferungen und Leistungen
+658000;A;E;;;;;;Écarts d'arrondi;Rounding differences;Afrondingsverschillen;Rundungsdifferenzen
+7;H;I;;;;;;Produits;Income;Opbrengsten;Erträge
+706000;A;I;AR_amount:IC_income;;;;;Prestations de services;Services;Omzet diensten;Dienstleistungserlöse
+707000;A;I;AR_amount:IC_sale;;;;;Ventes de marchandises;Sales of goods;Omzet handelsgoederen;Warenverkauf

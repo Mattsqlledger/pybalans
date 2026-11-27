@@ -1,0 +1,27 @@
+{# Grootboek > Memoriaal (HELP_ANALYSE golf 1, tekst 9) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een vrije boeking tussen twee of meer rekeningen, zonder klant of leverancier. Denk aan afschrijvingen, een correctie, een privéstorting of een overboeking tussen eigen rekeningen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul de {d} en een {o} in.", d=hl("Boekdatum"), o=hl("Omschrijving")) }}</li>
+  <li>{{ ht("Kies op de eerste regel een {r} door een nummer of naam te typen. Vul het bedrag in bij {d} of bij {c}.", r=hl("Rekening"), d=hl("Debet"), c=hl("Credit")) }}</li>
+  <li>{{ _("Doe hetzelfde op de volgende regel voor de tegenrekening. Er komt steeds vanzelf een lege regel bij.") }}</li>
+  <li>{{ ht("Controleer onderaan het {t}. Debet en credit moeten gelijk zijn, anders ziet u een {v}.", t=hl("Totaal"), v=hl("Verschil")) }}</li>
+  <li>{{ ht("Klik op {s}. De boeking krijgt dan haar {n}.", s=hl("Opslaan"), n=hl("Nummer")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: laat dit leeg, dan krijgt de boeking bij opslaan het volgende nummer.", f=hl("Nummer")) }}</li>
+  <li>{{ ht("{a} en {b}: per regel, bijvoorbeeld een bonnummer en een korte toelichting.", a=hl("Kenmerk"), b=hl("Memo")) }}</li>
+  <li>{{ ht("{f}: alleen als u een andere {v} kiest. Zonder koers kunt u niet opslaan.", f=hl("Koers"), v=hl("Valuta")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een regel heeft een bedrag in debet óf in credit, niet allebei, en nooit een negatief bedrag.") }}</li>
+  <li>{{ ht("Een bestaande boeking wijzigen vraagt eerst om bevestiging. Met {n} maakt u er een kopie van.", n=hl("Opslaan als nieuw")) }}</li>
+  <li>{{ ht("Valt de datum in een afgesloten periode? Dan kunt u de boeking alleen bekijken of kopiëren met {c}.", c=hl("Kopiëren naar nieuwe boeking")) }}</li>
+  <li>{{ ht("Een bon of PDF sleept u in het vak bij {b}; die wordt bewaard bij {s}. Na het opslaan voegt u er nog een toe met {t}, ook in een afgesloten periode.", b=hl("Bijlagen"), s=hl("Opslaan"), t=hl("Bijlage toevoegen")) }}</li>
+  <li>{{ ht("Voor een boeking die elke maand terugkomt gebruikt u na het opslaan {h}.", h=hl("Herhalen")) }}</li>
+</ul>
+</details>

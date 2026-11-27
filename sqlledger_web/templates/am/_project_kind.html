@@ -1,0 +1,15 @@
+{# v1.1 interne uren (UREN_ANALYSE.md IN1/IN2): soort project en kostenplaats #}
+<fieldset class="project-kind"><legend>{{ _("Soort project") }} *</legend>
+  {% if f.key and current and current.kind == "none" %}<p class="notice small">{{ _("Dit project is nog niet ingedeeld (het komt uit SQL-Ledger of is van vóór deze versie). Het werkt zoals voorheen; kies Klantproject of Intern project om het in te delen.") }}</p>{% endif %}
+  <label class="check"><input type="radio" name="kind" value="customer"{% if f.kind == "customer" or (not f.kind and f.customer_id) %} checked{% endif %}> {{ _("Klantproject: uren factureren") }}</label>
+  <p class="muted small">{{ _("Kies de klant hierboven; de uren gaan via Verkooporders uit uren naar een order en factuur.") }}</p>
+  <label class="check"><input type="radio" name="kind" value="internal"{% if f.kind == "internal" %} checked{% endif %}> {{ _("Intern project: uren tegen een intern tarief, niet factureren") }}</label>
+  <p class="muted small">{{ _("Zonder klant, met een kostenplaats; de uren tellen mee in het rapport Uren per project.") }}</p>
+</fieldset>
+<div class="grid">
+  <label>{{ _("Kostenplaats") }} <select name="department_id"><option value="">—</option>
+    {% for d in cost_centres %}<option value="{{ d.id }}"{% if d.id|string == f.department_id %} selected{% endif %}>{{ d.description }}</option>{% endfor %}
+  </select></label>
+  <label>{{ _("of nieuwe kostenplaats") }} <input name="new_department" value="{{ f.new_department }}" maxlength="100"></label>
+</div>
+<p class="muted small">{{ _("Alleen bij een intern project. Een nieuwe kostenplaats wordt een afdeling van het soort kostenplaats.") }}</p>

@@ -1,0 +1,82 @@
+<!doctype html>
+{#- Rapport of lijst als PDF (fase 4 stap 5, RP3/RP4/RP6): kop op elke pagina met administratie, titel en
+    periode/filters, kolomkoppen op elke pagina, voet met afdrukmoment en paginanummer. Geen links.
+    Te brede tabellen in kolomblokken (v1.0.1 PB28): elk blok op een nieuwe pagina, vaste tekstkolommen herhaald.
+    Grafiek bij winst en verlies (v1.1 GR3) bovenaan. -#}
+{% import "reports/_plchart.html" as pl %}
+<html lang="{{ lang() }}">
+<head>
+<meta charset="utf-8">
+<title>{{ title }}</title>
+<style>
+  @page {
+    size: A4 {{ 'landscape' if layout.landscape else 'portrait' }};
+    margin: 24mm 12mm 14mm 12mm;
+    @top-center { content: element(pagehead); width: 100%; vertical-align: bottom; }
+    @bottom-left { content: "{{ printed }}"; font: 7pt "Helvetica Neue", Helvetica, Arial, sans-serif; color: #555; }
+    @bottom-right { content: "{{ _('Pagina') }} " counter(page) " / " counter(pages);
+                    font: 7pt "Helvetica Neue", Helvetica, Arial, sans-serif; color: #555; }
+  }
+  * { box-sizing: border-box; }
+  body { font: {{ layout.font_pt }}pt/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif; color: #111; margin: 0; }
+  .pagehead { position: running(pagehead); width: 100%; border-collapse: collapse; margin: 0; font-size: 8pt; }
+  .pagehead td { border-bottom: 0.6pt solid #111; padding: 0 0 1.5mm; vertical-align: bottom; }
+  .pagehead .t { font-size: 11pt; font-weight: bold; }
+  .pagehead .i { color: #444; }
+  .pagehead .c { text-align: right; font-weight: bold; }
+  h3 { font-size: 9pt; margin: 4mm 0 1mm; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 3mm; }
+  thead { display: table-header-group; }
+  th { text-align: left; vertical-align: bottom; font-weight: bold; border-bottom: 0.6pt solid #111; padding: 0.8mm 1mm; }
+  td { padding: 0.5mm 1mm; vertical-align: top; border-bottom: 0.2pt solid #e2e2e2; }
+  tr { page-break-inside: avoid; }
+  .num { text-align: right; white-space: nowrap; }
+  th.num { white-space: pre-line; }
+  .nowrap { white-space: nowrap; }
+  tr.k-section td { font-weight: bold; padding-top: 2.5mm; border-bottom: 0.6pt solid #111; }
+  tr.k-heading td { font-weight: bold; background: #f1f1f1; }
+  tr.k-subtotal td { font-weight: bold; border-top: 0.4pt solid #777; }
+  tr.k-total td, tr.k-result td { font-weight: bold; border-top: 0.6pt solid #111; border-bottom: 1.6pt double #111; }
+  tr.k-balance td { font-style: italic; color: #444; }
+  .empty { color: #666; font-style: italic; }
+  .newpage { break-before: page; }
+  .part { font-size: 7pt; color: #444; margin: 0 0 1mm; }
+  .plchart { margin: 2mm 0 5mm; page-break-inside: avoid; }
+  .plchart h3 { margin-top: 0; }
+  .plchart svg.pl-svg { max-width: 100%; height: auto; }
+  .pl-legend { display: flex; flex-wrap: wrap; gap: 1mm 5mm; color: #444; }
+  .pl-legend span { white-space: nowrap; }
+  .pl-legend svg { vertical-align: -1pt; margin-right: 1mm; }
+</style>
+</head>
+<body>
+<table class="pagehead"><tr>
+  <td><div class="t">{{ title }}</div>{% for line in info %}<div class="i">{{ line }}</div>{% endfor %}</td>
+  <td class="c">{{ company }}</td>
+</tr></table>
+{% if chart %}
+<div class="plchart">
+<h3>{{ chart.title }}</h3>
+{% if chart.empty %}<p class="empty">{{ _("Geen bedragen om te tonen in deze periode.") }}</p>
+{% else %}{{ pl.svg(chart) }}{{ pl.legend(chart) }}{% endif %}
+</div>
+{% endif %}
+{% for t, rows in tables %}{% set tloop = loop %}
+{% set parts = layout.parts[loop.index0] if layout.parts else [range(t.columns | length) | list] %}
+{% for cols in parts %}{% set ploop = loop %}
+{% if t.title and (loop.first or parts | length > 1) %}<h3{% if not loop.first %} class="newpage"{% endif %}>{{ t.title }}</h3>{% endif %}
+{% if parts | length > 1 %}<p class="part{% if not loop.first and not t.title %} newpage{% endif %}">{{ _("Kolommen, deel {n} van {total}").format(n=loop.index, total=parts | length) }}</p>{% endif %}
+<table>
+<thead><tr>{% for i in cols %}{% set c = t.columns[i] %}<th{% if c.kind == 'amount' %} class="num"{% endif %}>{{ _(c.label) | replace(" t/m ", " t/m\n") }}</th>{% endfor %}</tr></thead>
+<tbody>
+{% for r in t.rows %}{% set cells = rows[loop.index0] %}
+<tr class="k-{{ r.kind }}">{% for i in cols %}{% set c = t.columns[i] %}<td{% if c.kind == 'amount' %} class="num"{% elif c.kind == 'date' %} class="nowrap"{% endif %}>{{ cells[i] }}</td>{% endfor %}</tr>
+{% else %}
+<tr><td colspan="{{ cols | length }}" class="empty">{{ _("Niets gevonden.") }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+{% endfor %}
+{% endfor %}
+</body>
+</html>

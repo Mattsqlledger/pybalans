@@ -1,0 +1,23 @@
+{# Dashboard (HELP_ANALYSE golf 1, tekst 16) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Het startscherm toont hoe uw administratie ervoor staat en wat er te doen is. Elk getal kunt u aanklikken voor het rapport erachter.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Bekijk de tegels bovenaan: {a}, {b}, {c} en {d}.", a=hl("Bank en kas"), b=hl("Te ontvangen"), c=hl("Te betalen"), d=hl("Resultaat")) }}</li>
+  <li>{{ _("Klik op een tegel of bedrag voor de details.") }}</li>
+  <li>{{ ht("Werk de lijst {t} af. Elke regel brengt u naar het juiste scherm.", t=hl("Te doen")) }}</li>
+  <li>{{ ht("Hebt u de btw-aangifte buiten dit programma gedaan, klik dan bij de btw-regel op {a}.", a=hl("Afgehandeld")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{a} / {b}: openstaande facturen, verdeeld naar {d}.", a=hl("Te ontvangen"), b=hl("Te betalen"), d=hl("Dagen na de vervaldatum")) }}</li>
+  <li>{{ ht("{f}: omzet min kosten van dit boekjaar tot vandaag, naast dezelfde periode een jaar eerder. Klik op een maand in de grafiek voor de winst en verlies van die maand.", f=hl("Resultaat")) }}</li>
+  <li>{{ ht("{f}: onder meer de btw-aangifte, bankregels om te verwerken, vervallen facturen en terugkerende boekingen die klaarstaan.", f=hl("Te doen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("U ziet alleen blokken van onderdelen die aanstaan. Met de rol alleen-lezen ziet u de cijfers, maar geen actieknoppen.") }}</li>
+  <li>{{ ht("Bij een nieuwe administratie ziet de beheerder de lijst {a}; na het inlezen van een SQL-Ledger-back-up {b}.", a=hl("Aan de slag"), b=hl("Overstap uit SQL-Ledger")) }}</li>
+</ul>
+</details>

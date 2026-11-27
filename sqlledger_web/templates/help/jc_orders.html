@@ -1,0 +1,24 @@
+{# Afdelingen en projecten > Verkooporders uit uren (HELP_ANALYSE golf 4, tekst B9) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Uren van klantprojecten factureren. Het programma zet de gekozen uren op een verkooporder; daarna maakt u de factuur vanuit de order.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies zo nodig {p}, {m} en een periode, en klik op {b}.", p=hl("Project"), m=hl("Medewerker"), b=hl("Tonen")) }}</li>
+  <li>{{ _("Vink de regels aan die op de order moeten. Standaard staan ze allemaal aan.") }}</li>
+  <li>{{ ht("Staat er bij {k} een keuzelijst (project zonder klant), kies dan de klant.", k=hl("Klant")) }}</li>
+  <li>{{ ht("Klik op {b}. Per klant komt er één order; bovenaan staan de nummers.", b=hl("Verkooporders maken")) }}</li>
+  <li>{{ _("Open de order en maak de factuur zoals gewoonlijk.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: uren die achter elkaar met hetzelfde project, dezelfde klant en dezelfde dienst staan, worden één orderregel, met de prijs van de eerste tijdkaart.", f=hl("Samenvatten per project, klant en dienst")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("De order krijgt de datum van vandaag. Elke regel krijgt het project en als leverdatum de datum van de uren.") }}</li>
+  <li>{{ _("Uren van interne projecten staan hier niet en worden nooit gefactureerd.") }}</li>
+  <li>{{ _("Uren die op een order staan, zijn daarna niet meer te wijzigen of te verwijderen.") }}</li>
+  <li>{{ _("Dit scherm is er alleen als de module Orders aan staat.") }}</li>
+</ul>
+</details>

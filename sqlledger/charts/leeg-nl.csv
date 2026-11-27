@@ -1,0 +1,42 @@
+# Leeg rekeningschema Nederland: alleen de rekeningen die het programma nodig heeft.
+# id: leeg-nl
+# land: NL
+# talen: nl en de fr
+# valuta: EUR
+# naam.nl: Leeg schema
+# naam.en: Empty chart
+# naam.de: Leerer Kontenplan
+# naam.fr: Plan vide
+# bron: sqlledger-py, eigen werk
+# licentie: GPL-2.0-or-later
+# voorraad: 3001
+# omzet: 8001
+# kosten: 7001
+# koersverschil: 4910
+# btw-afdracht: 1590
+# btw-afronding: 4900
+rekening;soort;categorie;koppeling;contra;tarief;rubriek;rgs;nl;en;de;fr
+0000;H;Q;;;;;;Eigen vermogen;Equity;Eigenkapital;Capitaux propres
+0100;A;Q;;;;;;Eigen vermogen;Equity;Eigenkapital;Capitaux propres
+0900;A;Q;;;;;;Onverdeelde winst;Retained earnings;Gewinnvortrag;Report à nouveau
+1000;H;A;;;;;;Liquide middelen en vorderingen;Cash and receivables;Flüssige Mittel und Forderungen;Trésorerie et créances
+1001;A;A;AR_paid:AP_paid;;;;;Kas;Cash;Kasse;Caisse
+1100;A;A;AR_paid:AP_paid;;;;;Bank;Bank;Bank;Banque
+1300;A;A;AR;;;;;Debiteuren;Accounts receivable;Forderungen aus Lieferungen und Leistungen;Clients
+1500;H;L;;;;;;Kortlopende schulden;Current liabilities;Kurzfristige Verbindlichkeiten;Dettes à court terme
+1510;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.21;1A;;Te betalen btw hoog;VAT payable standard rate;Umsatzsteuer Regelsatz;TVA collectée taux normal
+1520;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.09;1B;;Te betalen btw laag;VAT payable reduced rate;Umsatzsteuer ermäßigter Satz;TVA collectée taux réduit
+1530;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.21;5B;;Te vorderen btw hoog;Input VAT standard rate;Vorsteuer Regelsatz;TVA déductible taux normal
+1540;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.09;5B;;Te vorderen btw laag;Input VAT reduced rate;Vorsteuer ermäßigter Satz;TVA déductible taux réduit
+1590;A;L;;;;;;Af te dragen btw;VAT settlement;Umsatzsteuer-Zahllast;TVA à décaisser
+1600;A;L;AP;;;;;Crediteuren;Accounts payable;Verbindlichkeiten aus Lieferungen und Leistungen;Fournisseurs
+3000;H;A;;;;;;Voorraad;Inventory;Vorräte;Stocks
+3001;A;A;IC;;;;;Voorraad;Inventory;Vorräte;Stocks de marchandises
+4000;H;E;;;;;;Kosten;Expenses;Aufwand;Charges
+4001;A;E;AP_amount:IC_expense;;;;;Algemene kosten;General expenses;Allgemeiner Aufwand;Charges diverses
+4900;A;E;;;;;;Afrondingsverschillen;Rounding differences;Rundungsdifferenzen;Écarts d'arrondi
+4910;A;E;;;;;;Koersverschillen;Exchange differences;Kursdifferenzen;Écarts de change
+7000;H;E;;;;;;Kostprijs van de omzet;Cost of sales;Wareneinsatz;Coût des ventes
+7001;A;E;AP_amount:IC_cogs;;;;;Inkoopwaarde van de omzet;Cost of goods sold;Wareneinsatz;Achats de marchandises vendues
+8000;H;I;;;;;;Omzet;Sales;Umsatzerlöse;Chiffre d'affaires
+8001;A;I;AR_amount:IC_sale:IC_income;;;;;Omzet;Sales;Umsatzerlöse;Ventes

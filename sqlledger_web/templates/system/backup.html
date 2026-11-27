@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Back-up maken") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Back-up maken") }}</h2><a href="/systeem/back-up">{{ _("Back-up inlezen") }}</a></div>
+{% include "help/sys_backup.html" %}
+<p>{{ _("Download per administratie een volledige back-up van de database (.sql.gz), met alle gegevens van deze versie en de bijlagen. Inlezen kan met Systeem > Back-up inlezen, ook op een andere server.") }}</p>
+<p class="muted small">{{ _("Eigen sjablonen en het logo staan niet in de database: download die apart (.zip) en kies ze bij het inlezen als tweede bestand. Gebruikers, rechten en het logboek staan in de app-database; die gaat mee met de back-up via de opdrachtregel.") }}</p>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+<p class="notice" aria-live="polite" data-backup-status hidden data-busy="{{ _('Bezig met maken…') }}"
+   data-done="{{ _('Back-up gedownload: {name}') }}" data-failed="{{ _('De back-up is niet gelukt. Probeer het opnieuw.') }}"></p>
+<div class="table-wrap"><table class="list">
+<thead><tr><th>{{ _("Code") }}</th><th>{{ _("Naam") }}</th><th>{{ _("Database") }}</th><th>{{ _("Laatste back-up") }}</th><th></th></tr></thead>
+<tbody>
+{% for c in companies %}
+<tr>
+  <td class="admcode">{{ c.code }}</td>
+  <td>{{ c.name }}{% if not c.active %} <span class="muted">({{ _("uit") }})</span>{% endif %}</td>
+  <td>{{ c.dbname }}</td>
+  <td class="nowrap">{% if c.last_backup %}{{ c.last_backup.astimezone().strftime("%Y-%m-%d %H:%M") }}{% else %}{{ _("nog nooit") }}{% endif %}{% if c.overdue and c.last_backup %} <span class="warn">({{ _("ouder dan {n} dagen").format(n=remind_days) }})</span>{% endif %}</td>
+  <td class="actions">
+    <form method="post" action="/systeem/back-up-maken/{{ c.id }}" class="inline" data-download><input type="hidden" name="csrf" value="{{ ctx.csrf }}"><button>{{ _("Database (.sql.gz)") }}</button></form>
+    {% if c.templates %}<form method="post" action="/systeem/back-up-maken/{{ c.id }}/sjablonen" class="inline" data-download><input type="hidden" name="csrf" value="{{ ctx.csrf }}"><button class="secondary">{{ _("Sjablonen en logo (.zip)") }}</button></form>{% endif %}
+  </td>
+</tr>
+{% else %}
+<tr><td colspan="5" class="muted">{{ _("Nog geen administraties.") }}</td></tr>
+{% endfor %}
+</tbody>
+</table></div>
+<h3>{{ _("Automatisch, op een vast tijdstip") }}</h3>
+<p>{{ _("Op de server maakt deze opdracht van alle administraties en de app-database een back-up in een map, en bewaart de laatste 30 van elk:") }}</p>
+<pre class="cmd">{{ COMMAND }}</pre>
+<p class="muted small">{{ _("Plan die dagelijks in (cron, launchd of een systemd-timer) en zorg dat de map ook buiten de server wordt bewaard. Een back-up die alleen op dezelfde machine staat, helpt niet als die machine stuk gaat.") }}</p>
+<script src="/static/backup.js" defer></script>
+{% endblock %}

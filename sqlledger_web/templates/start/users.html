@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Gebruikers uitnodigen") }}{% endblock %}
+{% block content %}
+{% include "start/_steps.html" %}
+<h2>{{ _("Gebruikers uitnodigen") }}</h2>
+{% if created %}{% include "start/_codes.html" %}{% endif %}
+<p>{{ _("Wie werkt er nog meer in {name}? Elke gebruiker krijgt een eenmalige code en kiest daarmee zelf een wachtwoord. Dit kan ook later via Systeem > Gebruikers.").format(name=company.name) }}</p>
+<form method="post" action="/welkom/gebruikers" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="company_id" value="{{ company.id }}">
+  <input type="hidden" name="rows" value="{{ rows | length }}">
+  <div class="table-wrap">
+  <table class="list invite">
+  <thead><tr><th>{{ _("Naam") }}</th><th>{{ _("Login") }}</th><th>{{ _("E-mail") }}</th><th>{{ _("Rol") }}</th></tr></thead>
+  <tbody>
+  {% for r in rows %}{% set i = loop.index0 %}
+  <tr>
+    <td><input name="name_{{ i }}" value="{{ r.name }}" aria-label="{{ _('Naam') }}"></td>
+    <td><input name="login_{{ i }}" value="{{ r.login }}" autocomplete="off" aria-label="{{ _('Login') }}"></td>
+    <td><input type="email" name="email_{{ i }}" value="{{ r.email }}" aria-label="{{ _('E-mail') }}"></td>
+    <td><select name="role_{{ i }}" aria-label="{{ _('Rol') }}">
+      {% for k, v in ROLES.items() %}<option value="{{ k }}"{% if k == r.role %} selected{% endif %}>{{ _(v) }}</option>{% endfor %}
+    </select></td>
+  </tr>
+  {% if r.error %}<tr><td colspan="4" class="err">{{ r.error }}</td></tr>{% endif %}
+  {% endfor %}
+  </tbody>
+  </table>
+  </div>
+  <div class="actions">
+    <button name="action" value="add" class="secondary" formnovalidate>{{ _("Regel toevoegen") }}</button>
+    <button name="action" value="save">{{ _("Gebruikers aanmaken") }}</button>
+  </div>
+</form>
+<form method="post" action="/welkom/klaar" class="actions">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="company_id" value="{{ company.id }}">
+  <button class="secondary">{{ _("Overslaan en naar het dashboard") if not created else _("Klaar, naar het dashboard") }}</button>
+</form>
+{% endblock %}

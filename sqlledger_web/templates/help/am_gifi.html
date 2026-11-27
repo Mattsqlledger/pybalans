@@ -1,0 +1,24 @@
+{# Beheer > GIFI-indeling (bouwstap 3, GF1–GF6) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een eigen, grovere indeling van uw rekeningen. Meerdere rekeningen krijgen dezelfde GIFI-code; de rapporten tellen ze dan samen onder die code.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Klik op {b} en vul een code en omschrijving in.", b=hl("GIFI-code toevoegen")) }}</li>
+  <li>{{ ht("Koppel rekeningen bij {m}: kies in het veld {f} een code uit de lijst.", m=hm("Beheer", "Rekeningschema"), f=hl("GIFI")) }}</li>
+  <li>{{ ht("Kies in de rapporten (balans, winst en verlies, proefbalans) bij {r} voor {g}.", r=hl("Rekeningen"), g=hl("GIFI")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: hoeveel rekeningen en kopregels deze code hebben.", f=hl("Aantal rekeningen")) }}</li>
+  <li>{{ ht("{f}: wijzigt u een code, dan krijgen alle rekeningen met de oude code de nieuwe.", f=hl("Code")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Voor Nederland is RGS de officiële standaardindeling, die banken, accountants en de Belastingdienst gebruiken. GIFI is vooral nuttig voor een eigen verdichting of voor administraties uit SQL-Ledger die het al gebruiken.") }} {{ ht("Koppelen aan RGS doet u bij {m}.", m=hm("Beheer", "RGS-koppeling")) }}</li>
+  <li>{{ _("Een code verwijderen kan alleen als geen rekening hem meer gebruikt.") }}</li>
+  <li>{{ _("Staat er boven de codes een lijst met rekeningen, dan verwijzen die naar een code die niet bestaat. Voeg de code toe of kies bij de rekening een andere.") }}</li>
+  <li>{{ ht("De codes in- of uitlezen kan bij {i} en {e}, soort {s}. Zet in Excel de kolom met codes op tekst, anders wordt 020 het getal 20.", i=hm("Beheer", "Importeren"), e=hm("Beheer", "Exporteren"), s=hl("GIFI-indeling")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: een code als 020 blijft 020. SQL-Ledger maakte er bij wijzigen of verwijderen 20 van, waardoor er niets gebeurde.") }}</li>
+</ul>
+</details>

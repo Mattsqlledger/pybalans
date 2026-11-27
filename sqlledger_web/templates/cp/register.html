@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}{{ _(k.register_title) }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _(k.register_title) }}</h2>
+  <p class="actions noprint">
+    <a href="/{{ k.prefix }}/nieuw">{{ _(k.title) }}</a>
+    <a href="/{{ k.many }}">{{ _(k.many_label) }}</a>
+  </p>
+</div>
+{% include "help/cp_register.html" %}
+<p class="muted small">{{ _("Storneren boekt de hele betaling terug (bank, debiteuren/crediteuren, korting en koersverschil); opnieuw uitgeven geeft een nieuw kenmerk en/of een nieuwe datum. Betalingsspecificatie: vink betalingen aan en kies Voorbeeld, PDF of Mailen.") }}</p>
+
+<form method="get" action="/{{ k.many }}/corrigeren" class="glhead">
+  <label>{{ _("Betaalrekening") }}
+    <select name="rekening"><option value="">{{ _("alle") }}</option>
+      {% for a in ch.paid_accounts %}<option value="{{ a.accno }}"{% if a.accno == flt.rekening %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+    </select></label>
+  <label>{{ _(k.vc_label) }} <input name="relatie" value="{{ flt.relatie }}" placeholder="{{ _('naam of nummer') }}"></label>
+  <label>{{ _("Kenmerk van") }} <input name="kenmerk_van" value="{{ flt.kenmerk_van }}" class="short"></label>
+  <label>{{ _("Kenmerk tot en met") }} <input name="kenmerk_tot" value="{{ flt.kenmerk_tot }}" class="short"></label>
+  <label>{{ _("Datum van") }} <input type="date" name="van" value="{{ flt.van }}"></label>
+  <label>{{ _("Datum tot en met") }} <input type="date" name="tot" value="{{ flt.tot }}"></label>
+  <label>{{ _("Weergave") }}
+    <select name="weergave">
+      {% for v, label in options %}<option value="{{ v }}"{% if v == flt.weergave %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}
+    </select></label>
+  <p class="wide"><button>{{ _("Zoeken") }}</button></p>
+</form>
+
+{% if searched %}
+<form method="post" action="/{{ k.many }}/corrigeren">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% for key, v in flt.items() %}<input type="hidden" name="{{ key }}" value="{{ v }}">{% endfor %}
+  <div class="table-wrap">
+  <table class="list">
+    <thead><tr><th></th><th>{{ _("Datum") }}</th><th>{{ _("Kenmerk") }}</th><th>{{ _(k.vc_label) }}</th>
+      <th class="num">{{ _("Bedrag") }}</th><th class="num">{{ _("Posten") }}</th><th>{{ _("Status") }}</th></tr></thead>
+    <tbody>
+    {% set ns = namespace(acc=None) %}
+    {% for r in rows %}
+      {% if r.accno != ns.acc %}{% set ns.acc = r.accno %}
+      <tr class="group"><th colspan="7">{{ r.accno }} {{ r.account }}</th></tr>
+      {% endif %}
+      <tr>
+        <td>{% if r.can %}<input type="checkbox" name="sel" value="{{ r.key }}"{% if r.key in selected %} checked{% endif %}
+               aria-label="{{ _('Selecteren') }} {{ r.source }}">{% endif %}</td>
+        <td>{{ r.datepaid }}</td>
+        <td>{% if r.source %}<a href="/rapporten/{{ k.many }}?accounts={{ r.accno }}&amp;source={{ r.source|urlencode }}&amp;fromdate={{ r.datepaid }}&amp;todate={{ r.datepaid }}">{{ r.source }}</a>{% endif %}</td>
+        <td>{{ r.vcnumber or "" }} {{ r.name }}</td>
+        <td class="num">{{ amount(r.amount, "0") }}</td>
+        <td class="num">{{ r.invoices|length }}</td>
+        <td>{% if r.reversal %}{{ _("stornering") }}{% elif r.void %}{{ _("gestorneerd") }}{% elif not r.source %}<span class="muted">{{ _("zonder kenmerk") }}</span>{% elif r.printed %}{{ _("afgedrukt") }}{% endif %}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7" class="muted">{{ _("Geen betalingen gevonden.") }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  {% if confirm == "void" %}
+  <div class="confirm" role="alert">
+    <p><strong>{{ _("Storneren") }}:</strong>
+      {% for r in sel %}{{ r.source }} ({{ r.name }}, {{ amount(r.amount) }}){{ ", " if not loop.last }}{% endfor %}</p>
+    <label>{{ _("Stornodatum") }} <input type="date" name="voiddate" value="{{ voiddate }}" required></label>
+    <p><button name="action" value="void_confirmed" class="danger">{{ _("Ja, storneren") }}</button>
+      <button name="action" value="search" class="secondary" formnovalidate>{{ _("Terug") }}</button></p>
+  </div>
+  {% elif confirm == "reissue" %}
+  <div class="confirm" role="alert">
+    <p><strong>{{ _("Opnieuw uitgeven") }}:</strong>
+      {% for r in sel %}{{ r.source }} ({{ r.name }}, {{ r.datepaid }}){{ ", " if not loop.last }}{% endfor %}</p>
+    <label>{{ _("Nieuw kenmerk") }} <input name="new_source" value="{{ new_source }}" required class="short"></label>
+    <label>{{ _("Nieuwe datum (leeg = zelfde datum)") }} <input type="date" name="new_date" value="{{ new_date }}"></label>
+    {% if sel|length > 1 %}<p class="muted small">{{ _("Bij meerdere betalingen loopt het kenmerk per betaling op.") }}</p>{% endif %}
+    <p><button name="action" value="reissue_confirmed">{{ _("Ja, opnieuw uitgeven") }}</button>
+      <button name="action" value="search" class="secondary" formnovalidate>{{ _("Terug") }}</button></p>
+  </div>
+  {% elif rows | selectattr("can") | list %}
+  <p class="actions glbuttons">
+    <button name="action" value="void" class="danger">{{ _("Storneren") }}</button>
+    <button name="action" value="reissue" class="secondary">{{ _("Opnieuw uitgeven") }}</button>
+  </p>
+  <p class="actions glbuttons">
+    <input type="hidden" name="soort" value="{{ k.many }}">
+    <span>{{ _("Betalingsspecificatie") }}:</span>
+    <button name="action" value="preview" class="secondary" formaction="/betalingsregister" formtarget="_blank">{{ _("Voorbeeld") }}</button>
+    <button name="action" value="pdf" formaction="/betalingsregister" formtarget="_blank">{{ _("PDF") }}</button>
+    <button name="action" value="mail" formaction="/betalingsregister">{{ _("Mailen") }}</button>
+  </p>
+  {% endif %}
+</form>
+{% endif %}
+{% endblock %}

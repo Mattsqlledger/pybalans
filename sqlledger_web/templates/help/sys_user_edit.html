@@ -1,0 +1,27 @@
+{# Systeem > Gebruikers > een login (HELP_ANALYSE golf 3, tekst C4) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Gegevens, rechten per administratie en beveiliging van één gebruiker.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies onder {s} per administratie een {r}, of {g}.", s=hl("Toegang per administratie"), r=hl("Rol"), g=hl("geen toegang")) }}</li>
+  <li>{{ ht("Controleer de {f} bij elke administratie waar de gebruiker toegang krijgt.", f=hl("Medewerker")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: {u} ziet alleen zijn eigen uren ({m}). {l} ziet overzichten en rapporten maar boekt niet. {k} boekt. {a} krijgt ook het menu {b}; tweestapsverificatie is dan verplicht.", f=hl("Rol"), u=hl("Urenschrijver"), m=hm("Mijn uren"), l=hl("Alleen lezen"), k=hl("Boekhouder"), a=hl("Beheerder"), b=hm("Beheer")) }}</li>
+  <li>{{ ht("{f}: wie deze gebruiker in de administratie is. Bepaalt de uren bij {m} en wie er bij een boeking als boeker staat. Staat de gebruiker er nog niet in, kies dan de keuze om een nieuwe medewerker aan te maken (met naam en login van deze gebruiker).", f=hl("Medewerker"), m=hm("Mijn uren")) }}</li>
+  <li>{{ _("Twee actieve gebruikers kunnen in één administratie niet dezelfde medewerker zijn; ze zouden elkaars vertrouwelijke bijlagen en uren zien. Kiest u een andere medewerker terwijl er vertrouwelijke bijlagen onder de oude login staan, dan toont de app hoeveel en vraagt of ze meeverhuizen.") }}</li>
+  <li>{{ ht("{f}: uit = de gebruiker kan niet meer inloggen, wordt meteen uitgelogd en verliest alle toegang per administratie. Zet u hem later weer aan, stel dan ook de toegang opnieuw in.", f=hl("Actief")) }}</li>
+  <li>{{ ht("{f}: zie {s}.", f=hl("Systeembeheerder"), s=hl("Nieuwe gebruiker")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Onder {s} staan knoppen die alleen verschijnen als ze nodig zijn: {c} (wachtwoord vergeten), {t} (telefoon kwijt; de gebruiker stelt 2FA opnieuw in bij de volgende keer inloggen als dat verplicht is), {b} en {e} (overal uitloggen).", s=hl("Toegang en beveiliging"), c=hl("Nieuwe eenmalige code"), t=hl("2FA resetten"), b=hl("Blokkade opheffen"), e=hl("Sessies beëindigen")) }}</li>
+  <li>{{ _("Na 5 foute pogingen is een account 15 minuten geblokkeerd. Daarna gaat het vanzelf weer open.") }}</li>
+  <li>{{ _("Uw eigen account of uw eigen systeembeheer kunt u hier niet uitzetten. Er blijft ook altijd minstens één actieve systeembeheerder.") }}</li>
+  <li>{{ ht("{b} staat er alleen voor een gebruiker die nog nooit heeft ingelogd. U bevestigt eerst; de login blijft in het logboek staan.", b=hl("Gebruiker verwijderen")) }}</li>
+  <li>{{ ht("{l} toont alles wat deze login deed.", l=hl("Logboek van deze gebruiker")) }}</li>
+</ul>
+</details>

@@ -1,0 +1,42 @@
+# Lokaal of op een server: app + PostgreSQL. Alleen bereikbaar op 127.0.0.1;
+# voor hosting een https-proxy (bv. Caddy) ervoor zetten.
+#   echo 'een-sterk-wachtwoord' > db_password.txt
+#   docker compose up -d
+#   docker compose logs app        # startcode voor de eerste start; open dan /welkom in de browser
+# (noodroute, beheerder kwijt: docker compose exec app pybalans create-admin <login>)
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: sqlledger
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: sqlledger_app
+    secrets: [db_password]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sqlledger"]
+      interval: 5s
+      retries: 10
+  app:
+    build: .
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      SQLLEDGER_APP_DSN: "host=db user=sqlledger dbname=sqlledger_app"
+      SQLLEDGER_DB_HOST: db
+      SQLLEDGER_DB_USER: sqlledger
+      SQLLEDGER_DB_PASSWORD_FILE: /run/secrets/db_password
+      # zonder https-proxy lokaal: cookies ook over http toestaan
+      SQLLEDGER_SECURE_COOKIES: "false"
+      # adres in de startmelding (docker compose logs app); pas aan bij een andere poort of een server
+      SQLLEDGER_PUBLIC_URL: "http://localhost:8000"
+    secrets: [db_password]
+    # bijlagen, sjablonen, geüploade back-ups en de sleutel blijven bewaard als de container opnieuw wordt gemaakt
+    volumes: [appdata:/data]
+    ports: ["127.0.0.1:8000:8000"]
+volumes:
+  pgdata:
+  appdata:
+secrets:
+  db_password:
+    file: ./db_password.txt

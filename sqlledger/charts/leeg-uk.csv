@@ -1,0 +1,47 @@
+# Empty chart of accounts, United Kingdom (Sage-style number bands): only the accounts the program needs.
+# id: leeg-uk
+# land: GB
+# talen: en nl de fr
+# valuta: GBP
+# naam.nl: Leeg schema
+# naam.en: Empty chart
+# naam.de: Leerer Kontenplan
+# naam.fr: Plan vide
+# bron: sqlledger-py, eigen werk
+# licentie: GPL-2.0-or-later
+# voorraad: 1001
+# omzet: 4001
+# kosten: 5001
+# koersverschil: 7906
+# btw-afdracht: 2202
+# btw-afronding: 7907
+rekening;soort;categorie;koppeling;contra;tarief;rubriek;rgs;en;nl;de;fr
+1000;H;A;;;;;;Current assets;Vlottende activa;Umlaufvermögen;Actif circulant
+1001;A;A;IC;;;;;Stock;Voorraad;Vorräte;Stocks
+1100;A;A;AR;;;;;Trade debtors;Debiteuren;Forderungen aus Lieferungen und Leistungen;Clients
+1200;A;A;AR_paid:AP_paid;;;;;Bank current account;Bank;Bank;Banque
+1230;A;A;AR_paid:AP_paid;;;;;Petty cash;Kas;Kasse;Caisse
+2000;H;L;;;;;;Current liabilities;Kortlopende schulden;Kurzfristige Verbindlichkeiten;Dettes à court terme
+2100;A;L;AP;;;;;Trade creditors;Crediteuren;Verbindlichkeiten aus Lieferungen und Leistungen;Fournisseurs
+2200;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.20;1;;VAT on sales 20%;Btw op verkopen 20 %;Umsatzsteuer 20 %;TVA collectée 20 %
+2201;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.05;1;;VAT on sales 5%;Btw op verkopen 5 %;Umsatzsteuer 5 %;TVA collectée 5 %
+2202;A;L;;;;;;VAT liability;Af te dragen btw;Umsatzsteuer-Zahllast;TVA à décaisser
+2204;A;L;AP_tax:IC_taxpart:IC_taxservice;;-0.20;1;;VAT due on services from abroad 20% (reverse charge);Btw verlegd diensten uit het buitenland 20 % te betalen;Umsatzsteuer Reverse-Charge Leistungen Ausland 20 %;TVA autoliquidée services de l'étranger 20 % à payer
+2205;A;L;AP_tax:IC_taxpart:IC_taxservice;;-0.20;1R;;VAT due, domestic reverse charge 20%;Btw verlegd binnenland 20 % te betalen;Umsatzsteuer Reverse-Charge Inland 20 %;TVA autoliquidée nationale 20 % à payer
+2206;A;L;AP_tax:IC_taxpart:IC_taxservice;;-0.20;1R;;Postponed import VAT 20%;Uitgestelde invoer-btw 20 % te betalen;Einfuhrumsatzsteuer aufgeschoben 20 %;TVA à l'importation autoliquidée 20 % à payer
+2210;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.20;4;;VAT on purchases 20%;Btw op inkopen 20 %;Vorsteuer 20 %;TVA déductible 20 %
+2211;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.05;4;;VAT on purchases 5%;Btw op inkopen 5 %;Vorsteuer 5 %;TVA déductible 5 %
+2214;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.20;4;;Input VAT on services from abroad 20% (reverse charge);Btw verlegd diensten uit het buitenland 20 % te vorderen;Vorsteuer Reverse-Charge Leistungen Ausland 20 %;TVA autoliquidée services de l'étranger 20 % déductible
+2215;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.20;4;;Input VAT, domestic reverse charge 20%;Btw verlegd binnenland 20 % te vorderen;Vorsteuer Reverse-Charge Inland 20 %;TVA autoliquidée nationale 20 % déductible
+2216;A;L;AP_tax:IC_taxpart:IC_taxservice;;0.20;4;;Input VAT, postponed import VAT 20%;Uitgestelde invoer-btw 20 % te vorderen;Vorsteuer aufgeschobene Einfuhrumsatzsteuer 20 %;TVA à l'importation autoliquidée 20 % déductible
+3000;H;Q;;;;;;Capital and reserves;Eigen vermogen;Eigenkapital;Capitaux propres
+3001;A;Q;;;;;;Capital;Kapitaal;Kapital;Capital
+3200;A;Q;;;;;;Retained earnings;Onverdeelde winst;Gewinnvortrag;Report à nouveau
+4000;H;I;;;;;;Sales;Omzet;Umsatzerlöse;Chiffre d'affaires
+4001;A;I;AR_amount:IC_sale:IC_income;;;;;Sales;Omzet;Umsatzerlöse;Ventes
+5000;H;E;;;;;;Direct costs;Kostprijs van de omzet;Wareneinsatz;Coût des ventes
+5001;A;E;AP_amount:IC_cogs;;;;;Cost of sales;Inkoopwaarde van de omzet;Wareneinsatz;Achats de marchandises vendues
+7000;H;E;;;;;;Overheads;Algemene kosten;Gemeinkosten;Frais généraux
+7001;A;E;AP_amount:IC_expense;;;;;General expenses;Algemene kosten;Allgemeiner Aufwand;Charges diverses
+7906;A;E;;;;;;Exchange differences;Koersverschillen;Kursdifferenzen;Écarts de change
+7907;A;E;;;;;;Rounding differences;Afrondingsverschillen;Rundungsdifferenzen;Écarts d'arrondi

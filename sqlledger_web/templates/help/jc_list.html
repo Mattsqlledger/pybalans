@@ -1,0 +1,21 @@
+{# Afdelingen en projecten > Tijdkaarten (HELP_ANALYSE golf 4, tekst B7) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Alle geschreven uren, één regel per tijdkaart, met het totaal aan uren en bedrag.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies zo nodig {p}, {m}, een periode ({v}, {t}) en de {s}, en klik op {b}.", p=hl("Project"), m=hl("Medewerker"), v=hl("Van"), t=hl("Tot en met"), s=hl("Status"), b=hl("Tonen")) }}</li>
+  <li>{{ _("Klik op een datum om de tijdkaart te openen.") }}</li>
+  <li>{{ ht("Nieuwe uren voert u in met {b}, of per maand op {m}.", b=hl("Tijdkaart toevoegen"), m=hm("Maandstaat")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: {n} of {o} (via {m}).", f=hl("Status"), n=hl("nog niet op een order"), o=hl("op een order"), m=hm("Verkooporders uit uren")) }}</li>
+  <li>{{ ht("{f}: hoeveel uren van deze tijdkaart al op een verkooporder staan.", f=hl("Op order")) }}</li>
+  <li>{{ ht("{f}: uren maal de prijs op de tijdkaart.", f=hl("Bedrag")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Met de rol alleen lezen kunt u tijdkaarten bekijken, maar niet wijzigen.") }}</li>
+</ul>
+</details>

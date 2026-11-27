@@ -1,0 +1,15 @@
+{# Mijn instellingen > Tweestapsverificatie instellen (HELP_ANALYSE golf 3, tekst C15) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een tweede stap bij het inloggen: naast uw wachtwoord een code van 6 cijfers uit een app op uw telefoon.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Open een authenticator-app op uw telefoon en scan de QR-code. Lukt scannen niet, typ dan de sleutel onder de QR-code over.") }}</li>
+  <li>{{ ht("Vul bij {f} de 6 cijfers uit de app in en klik op {b}.", f=hl("Code"), b=hl("Bevestigen")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Code onjuist? Controleer of de tijd op uw telefoon klopt.") }}</li>
+  <li>{{ ht("Telefoon kwijt? De systeembeheerder zet 2FA terug bij {m} ({b}).", m=hm("Systeem", "Gebruikers"), b=hl("2FA resetten")) }}</li>
+</ul>
+</details>

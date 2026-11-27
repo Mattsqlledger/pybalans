@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{#- Dashboard (fase 4 stap 5b, DB1–DB13): indeling meteen, elk blok laadt los (DB7). -#}
+{% block title %}{{ ctx.company.name }}{% endblock %}
+{% block content %}
+<script src="/static/dashboard.js" defer></script>
+<div class="dash">
+<h2>{{ (info.company if info and info.company) or ctx.company.name }}</h2>
+{% include "help/dashboard.html" %}
+{% if db_error %}
+<p class="error">{{ _("Geen verbinding met de database van deze administratie:") }} {{ db_error }}</p>
+{% else %}
+{% macro slot(name, cls="card") %}
+<section class="{{ cls }} dash-{{ name }}" hx-get="/dashboard/blok/{{ name }}" hx-trigger="load" hx-swap="outerHTML"
+         data-dash-error="{{ _('Dit blok kon niet worden geladen.') }}">
+  <p class="muted">{{ _("bezig…") }}</p>
+</section>
+{% endmacro %}
+{% if "start" in blocks %}{{ slot("start", "dash-start-wrap") }}{% endif %}
+{{ slot("tegels", "dash-tiles-wrap") }}
+{% set three = blocks | select("in", ["bank", "verkoop", "inkoop"]) | list %}
+{% if three %}<div class="dash-grid n{{ three|length }}">{% for b in three %}{{ slot(b) }}{% endfor %}</div>{% endif %}
+<div class="dash-grid2{{ ' single' if 'resultaat' not in blocks }}">
+  {% if "resultaat" in blocks %}{{ slot("resultaat") }}{% endif %}
+  {{ slot("tedoen") }}
+</div>
+{% endif %}
+<details class="about">
+  <summary>{{ _("Over deze administratie") }}</summary>
+  {% if info %}
+  <dl class="facts">
+    <dt>{{ _("Bedrijfsnaam") }}</dt><dd>{{ info.company or "—" }}</dd>
+    <dt>{{ _("Database") }}</dt><dd>{{ ctx.company.dbname }} <span class="muted">(SQL-Ledger {{ info.version }})</span></dd>
+    <dt>{{ _("Afgesloten t/m") }}</dt><dd>{{ info.closedto or "—" }}</dd>
+    <dt>{{ _("Medewerker") }}</dt>
+    <dd>{% if info.employee %}{{ info.employee }} <span class="muted">({{ ctx.employee_login }})</span>{% else %}—{% endif %}</dd>
+    <dt>{{ _("Uw rol") }}</dt><dd>{{ _(ROLES[ctx.role]) }}</dd>
+  </dl>
+  {% endif %}
+</details>
+{% if info and not info.employee %}<p class="warn small">{{ _("Geen medewerker met login '{login}' in deze administratie; boekingen krijgen geen medewerker.").format(login=ctx.employee_login) }}</p>{% endif %}
+</div>
+{% endblock %}

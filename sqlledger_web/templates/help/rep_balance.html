@@ -1,0 +1,22 @@
+{# Rapporten > Balans (HELP_ANALYSE golf 2, tekst 11) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Bezittingen, schulden en eigen vermogen op één datum.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies bij {d} de datum, of bij {s} een {m}, {k} of {j} (dan telt het einde daarvan).", d=hl("Per datum"), s=hl("Soort"), m=hl("Maand"), k=hl("Kwartaal"), j=hl("Jaar")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Toon")) }}</li>
+  <li>{{ _("Klik op een rekening om de mutaties te zien.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{k}: {m} toont 12 kolommen, {q} 4, telkens een maand of kwartaal vóór de gekozen datum.", k=hl("Kolommen"), m=hl("Per maand"), q=hl("Per kwartaal")) }}</li>
+  <li>{{ ht("{v}: dezelfde datum een jaar eerder.", v=hl("Vorig jaar ernaast")) }}</li>
+  <li>{{ ht("{v} (onder {m}): rekent om met de koers op de gekozen datum.", v=hl("Valuta"), m=hl("Meer opties")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{r} is het resultaat dat nog niet met een jaarafsluiting is geboekt. Zijn eerdere jaren niet afgesloten, dan zit hun resultaat er ook in.", r=hl("Resultaat lopend boekjaar")) }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

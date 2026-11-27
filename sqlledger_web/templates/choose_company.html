@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Administratie kiezen") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Administratie kiezen") }}</h2>
+{% include "help/choose_company.html" %}
+{% if search %}
+<form method="get" action="/administratie" class="choosesearch" role="search">
+  <input type="search" name="q" value="{{ q }}" placeholder="{{ _('Naam, code of database') }}" aria-label="{{ _('Andere administratie openen') }}">
+  <button class="secondary">{{ _("Zoeken") }}</button>
+  {% if q %}<a href="/administratie">{{ _("Alle tonen") }}</a>{% endif %}
+</form>
+{% endif %}
+{% if companies %}
+<form method="post" action="/administratie">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <ul class="choices">
+  {% for c in companies %}
+    {% set closed = c.locked and c.role != 'admin' %}
+    <li><button name="company_id" value="{{ c.id }}" class="choice{% if ctx.company and ctx.company.id == c.id %} current{% endif %}{% if closed %} closed{% endif %}"{% if closed %} disabled{% endif %}>
+      {% if c.code %}<span class="admcode">{{ c.code }}</span> {% endif %}{{ c.name }} <span class="muted">{{ _(ROLES[c.role]) }}</span>
+      {% if c.locked %}<span class="tag">{{ _("op slot") }}</span>{% if c.lock_message %} <span class="muted small">{{ c.lock_message }}</span>{% endif %}{% endif %}</button></li>
+  {% endfor %}
+  </ul>
+</form>
+{% elif q %}
+<p>{{ _("Geen administratie gevonden met “{q}”.").format(q=q) }}</p>
+{% else %}
+<p>{{ _("U hebt nog geen toegang tot een administratie. Vraag de beheerder om u toe te voegen.") }}</p>
+{% endif %}
+{% endblock %}

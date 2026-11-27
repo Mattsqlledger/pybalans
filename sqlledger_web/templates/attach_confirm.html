@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{# Bijlage toevoegen aan een opgeslagen record terwijl hetzelfde bestand al elders hangt (fase 4 stap 6b, RB5) #}
+{% import "_attach.html" as att with context %}
+{% block title %}{{ _("Bijlage toevoegen") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Bijlage toevoegen") }}</h1>
+<p><a href="/bijlage/tijdelijk/{{ pf.token }}" target="_blank" rel="noopener">{{ pf.filename }}</a></p>
+{{ att.dupwarn(d) }}
+<form method="post" action="/bijlagen/toevoegen" class="confirm">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="trans_id" value="{{ trans_id }}">
+  <input type="hidden" name="formname" value="{{ formname }}">
+  <input type="hidden" name="token" value="{{ pf.token }}">
+  <input type="hidden" name="description" value="{{ description }}">
+  {% if confidential %}<input type="hidden" name="confidential" value="1">{% endif %}
+  <input type="hidden" name="dup_ok" value="1">
+  <p>{{ _("Toch als nieuwe bijlage toevoegen?") }}</p>
+  <button>{{ _("Ja, toch toevoegen") }}</button>
+  <button class="secondary" formaction="/bijlagen/annuleren" formnovalidate>{{ _("Annuleren") }}</button>
+</form>
+{% endblock %}

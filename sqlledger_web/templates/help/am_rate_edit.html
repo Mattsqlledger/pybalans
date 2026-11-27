@@ -1,0 +1,18 @@
+{# Beheer > Koersen > Koers invoeren/wijzigen (HELP_ANALYSE golf 3, tekst A11) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De koersen van alle vreemde valuta op één datum invoeren of wijzigen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul de {f} in.", f=hl("Datum")) }}</li>
+  <li>{{ _("Vul per valuta de koers in. Laat een vak leeg als u voor die valuta op deze datum geen koers hebt.") }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Een vak leegmaken haalt de koers van die datum weg. {b} haalt alle koersen van deze datum weg, na bevestiging.", b=hl("Verwijderen")) }}</li>
+  <li>{{ ht("Verandert u bij een bestaande datum de {f}, dan verhuizen de koersen naar de nieuwe datum.", f=hl("Datum")) }}</li>
+  <li>{{ _("Een koers wijzigen verandert geen boekingen die al gemaakt zijn; die hebben hun eigen koers. Een rekeningoverzicht en een aanmaning rekenen wel met de koers die hier op de factuurdatum staat.") }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: bij een andere datum blijft de koers niet ook op de oude datum staan.") }}</li>
+</ul>
+</details>

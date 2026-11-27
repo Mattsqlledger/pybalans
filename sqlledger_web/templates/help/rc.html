@@ -1,0 +1,27 @@
+{# Kas en bank > Afletteren (HELP_ANALYSE golf 1, tekst 8) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Hier controleert u of uw boekhouding klopt met het bankafschrift. U vinkt de boekingen aan die op het afschrift staan, tot het saldo gelijk is aan het saldo op het afschrift.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {r} en de periode met {v} en {t} en klik op {b}. De periode begint vanzelf op de dag na de vorige keer afletteren.", r=hl("Rekening"), v=hl("Van"), t=hl("Tot en met (afschriftdatum)"), b=hl("Tonen")) }}</li>
+  <li>{{ ht("Vul bij {f} het eindsaldo van uw bankafschrift in.", f=hl("Afschriftsaldo")) }}</li>
+  <li>{{ _("Vink de regels aan die ook op het afschrift staan.") }}</li>
+  <li>{{ ht("Kijk naar {f} onderaan. Bij 0 klopt alles.", f=hl("Verschil")) }}</li>
+  <li>{{ ht("Klik op {s}.", s=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: het vinkje per regel. {d} betekent dat de regel al voor een deel is afgeletterd.", f=hl("Afgeletterd"), d=hl("deels")) }}</li>
+  <li>{{ ht("{a} / {b}: in de samenvatting staan regels met hetzelfde kenmerk samen, zoals op veel bankafschriften. {b} toont elke boeking apart.", a=hl("Samenvatting (per kenmerk)"), b=hl("Detail")) }}</li>
+  <li>{{ ht("{f}: alleen van belang bij een rekening in vreemde valuta.", f=hl("Koersverschillen meenemen")) }}</li>
+  <li>{{ ht("{f}: u ziet dan ook andere rekeningen dan bank en kas, zoals een tussenrekening.", f=hl("Alle balansrekeningen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{s} kan alleen als het {v} 0 is.", s=hl("Opslaan"), v=hl("Verschil")) }}</li>
+  <li>{{ ht("Wat u bij {m} boekte, is al afgeletterd.", m=hm("Kas en bank", "Bankregels verwerken")) }}</li>
+  <li>{{ _("Een melding dat het beginsaldo afwijkt van de vorige keer betekent dat er in een al afgeletterde periode iets is gewijzigd of uitgevinkt.") }}</li>
+  <li>{{ _("Aanvinken boekt niets. Staat er een post op het afschrift die niet in de lijst staat, boek die dan eerst.") }}</li>
+</ul>
+</details>

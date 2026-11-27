@@ -1,0 +1,784 @@
+/* SQL-Ledger-indeling (menu links, werkvlak rechts), rustiger uiterlijk. */
+:root {
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --text: #1f2933;
+  --muted: #6b7684;
+  --line: #d9dee5;
+  --accent: #1f4e79;
+  --accent-soft: #e6eef6;
+  --menu-bg: #eef1f5;
+  --ok-bg: #e7f4ea; --ok: #1d6b34;
+  --err-bg: #fbeaea; --err: #a32020;
+  --warn-bg: #fdf3dc; --warn-fg: #7a5200;
+  --warn: #9a5b00;
+  --radius: 4px;
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15191e; --panel: #1d2228; --text: #e4e8ed; --muted: #95a0ad; --line: #333b45;
+    --accent: #7fb0e0; --accent-soft: #23303d; --menu-bg: #1a1f25;
+    --ok-bg: #18301f; --ok: #8fd3a2; --err-bg: #3a1c1c; --err: #f0a0a0; --warn: #e6b45c; --warn-bg: #3a2e14; --warn-fg: #f0cf8a;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); }
+a { color: var(--accent); }
+h1, h2, h3 { font-weight: 600; line-height: 1.25; }
+h2 { font-size: 1.3rem; margin: 0 0 1rem; }
+h3 { font-size: 1.05rem; margin: 1.5rem 0 .6rem; }
+.muted { color: var(--muted); }
+.small { font-size: .88em; }
+.warn { color: var(--warn); }
+.nowrap { white-space: nowrap; }
+
+/* bovenbalk */
+.topbar {
+  display: flex; align-items: center; gap: 1rem; padding: .55rem 1rem;
+  background: var(--accent); color: #fff;
+}
+.topbar a, .topbar .link { color: #fff; }
+.topbar .brand { font-weight: 700; text-decoration: none; }
+.topbar .company .muted { color: #d6e2ee; }
+.topbar .company { display: flex; align-items: center; gap: .4rem; min-width: 0; }
+.topbar .company > a { opacity: .85; }
+.admcode { font-variant-numeric: tabular-nums; font-weight: 600; }
+/* keuzemenu administratie wisselen (AW1) */
+.switcher { position: relative; }
+.switcher > summary { cursor: pointer; list-style: none; padding: .1rem .45rem; margin-left: -.45rem;
+  border-radius: var(--radius); }
+.switcher > summary::-webkit-details-marker { display: none; }
+.switcher > summary:hover, .switcher[open] > summary { background: rgba(255, 255, 255, .15); }
+.switcher .caret { font-size: .8em; opacity: .85; }
+.switchmenu { position: absolute; z-index: 20; top: calc(100% + .35rem); left: -.45rem;
+  width: min(340px, calc(100vw - 2rem)); max-height: 70vh; overflow-y: auto;
+  background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .18); padding: .6rem 0; }
+.topbar .switchmenu a { color: var(--accent); }
+.topbar .switchmenu .muted { color: var(--muted); }
+.switchmenu p { margin: 0; padding: .2rem .9rem; }
+.switchmenu .switchcur { padding-bottom: .5rem; border-bottom: 1px solid var(--line); margin-bottom: .3rem; }
+.switchmenu .heading { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--muted); padding-top: .4rem; }
+.switchmenu ul { list-style: none; margin: 0; padding: 0; }
+.switchmenu ul button { display: block; width: 100%; text-align: left; background: none; border: 0;
+  border-radius: 0; color: var(--text); padding: .3rem .9rem; font: inherit; cursor: pointer; }
+.switchmenu ul button:hover, .switchmenu ul button:focus-visible { background: var(--accent-soft); }
+.switchmenu button.closed, .choice.closed { color: var(--muted); cursor: not-allowed; opacity: .75; }
+.switchmenu button.closed:hover { background: none; }
+.switchsearch { padding: .2rem .9rem .4rem; }
+.switchsearch input { width: 100%; }
+.switchmenu .switchall { border-top: 1px solid var(--line); margin-top: .3rem; padding-top: .45rem; }
+.choosesearch { display: flex; gap: .5rem; align-items: center; margin-bottom: 1rem; max-width: 420px; }
+.choosesearch input { flex: 1; min-width: 0; }
+.spacer { flex: 1; }
+@media (prefers-color-scheme: dark) { .topbar { background: #12304d; } }
+
+/* menu + werkvlak */
+.layout { display: flex; min-height: calc(100vh - 42px); }
+.menu { width: 210px; flex: none; background: var(--menu-bg); border-right: 1px solid var(--line); padding: .5rem 0; }
+.menu details { border-bottom: 1px solid var(--line); }
+.menu summary { cursor: pointer; padding: .4rem .9rem; font-weight: 600; }
+.menu ul { list-style: none; margin: 0 0 .4rem; padding: 0; }
+.menu li a, .menu li.planned { display: block; padding: .2rem .9rem .2rem 1.6rem; text-decoration: none; }
+.menu li a[aria-current] { background: var(--accent-soft); font-weight: 600; }
+.menu li a:hover { background: var(--accent-soft); }
+.menu li.planned { color: var(--muted); cursor: default; opacity: .7; }
+.menu li.heading { padding: .45rem .9rem .1rem 1.1rem; font-size: .75rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .04em; color: var(--muted); }
+.menu li.heading:first-child { padding-top: .1rem; }
+.content { flex: 1; min-width: 0; padding: 1.25rem 1.5rem; }
+@media (max-width: 720px) {
+  .layout { flex-direction: column; }
+  .menu { width: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  .content { padding: 1rem; }
+  .topbar { flex-wrap: wrap; }
+}
+
+/* losse kaart (inloggen e.d.) */
+body.plain { display: flex; justify-content: center; padding: 8vh 16px; }
+.card {
+  width: 100%; max-width: 380px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 1.5rem;
+}
+.card .brand { font-size: 1.25rem; margin: 0 0 1rem; color: var(--accent); }
+
+/* formulieren (v1.0.1 PB18: één vaste opmaak; het raster staat onder "v1.0.1 opmaak" onderaan) */
+:root { --fh: 2.25rem; --lab-gap: .25rem; --row-gap: .85rem; --cap: calc(1.45em + var(--lab-gap)); }
+label { display: flex; flex-direction: column; gap: var(--lab-gap); font-weight: 500; }
+label.check { flex-direction: row; align-items: center; gap: .4rem; font-weight: 400; }
+input, select, button, .button { font: inherit; }
+input:not([type=checkbox]):not([type=radio]), select {
+  padding: 0 .5rem; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--panel); color: var(--text); min-width: 0;
+}
+/* alle velden even hoog: tekst, getal, datum, keuzelijst, zoeklijst (PB18) */
+input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=file]):not([type=range]), select {
+  height: var(--fh); line-height: normal;
+}
+input[type=checkbox], input[type=radio] { width: 1rem; height: 1rem; margin: 0; flex: none; }
+textarea { padding: .4rem .5rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel);
+  color: var(--text); font: inherit; min-width: 0; max-width: 100%; }
+button, .button {
+  display: inline-flex; align-items: center; justify-content: center; gap: .3rem; min-height: var(--fh);
+  padding: .3rem .9rem; border: 1px solid var(--accent); border-radius: var(--radius); line-height: 1.2;
+  background: var(--accent); color: #fff; cursor: pointer; text-decoration: none; vertical-align: middle;
+}
+@media (prefers-color-scheme: dark) { button, .button { color: #10202f; } }
+/* hoofdknop = gevuld; PDF, Afdrukken, Terug, Annuleren e.d. = secundair (ook als link-knop) (PB9) */
+button.secondary, .button.secondary { background: transparent; color: var(--accent); }
+button.link { display: inline; min-height: 0; background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; }
+form.inline { display: inline; }
+.stack { display: flex; flex-direction: column; gap: .8rem; max-width: 340px; }
+.stack.wide { max-width: none; }
+.filters { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: stretch; margin-bottom: 1rem; }
+.actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+fieldset { border: 1px solid var(--line); border-radius: var(--radius); display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; max-width: 900px;
+  align-items: flex-start; align-content: flex-start; margin: 0; padding: .45rem .8rem .7rem; min-width: 0; }
+legend { font-weight: 500; padding: 0 .3rem; }
+fieldset > .full { flex-basis: 100%; min-width: 0; }
+fieldset > label.full select { max-width: 100%; }
+fieldset:has(> .full) { min-inline-size: 0; }
+section { margin-bottom: 1.5rem; }
+
+/* meldingen */
+.notice, .error { padding: .55rem .8rem; border-radius: var(--radius); margin: 0 0 1rem; }
+.notice { background: var(--ok-bg); color: var(--ok); }
+.error { background: var(--err-bg); color: var(--err); }
+.err { color: var(--err); font-weight: 600; }
+.notice.warning { background: var(--warn-bg); color: var(--warn-fg); }
+
+/* tabellen en gegevens */
+.head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+table.list { border-collapse: collapse; width: 100%; background: var(--panel); border: 1px solid var(--line); }
+table.list th, table.list td { text-align: left; padding: .4rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.list th { background: var(--menu-bg); font-weight: 600; }
+.content { overflow-x: auto; }
+.tag { font-size: .78em; background: var(--accent-soft); color: var(--accent); padding: .05rem .4rem; border-radius: 999px; }
+dl.facts { display: grid; grid-template-columns: max-content 1fr; gap: .35rem 1.2rem; margin: 0 0 1rem; }
+dl.facts dt { color: var(--muted); }
+dl.facts dd { margin: 0; }
+.choices { list-style: none; padding: 0; display: flex; flex-direction: column; gap: .5rem; max-width: 420px; }
+.choice { width: 100%; text-align: left; background: var(--panel); color: var(--text); border-color: var(--line); }
+.choice.current { border-color: var(--accent); }
+.choice:hover { border-color: var(--accent); }
+.code { font: 600 1.6rem/1.2 ui-monospace, Menlo, monospace; letter-spacing: .08em; }
+.qr svg { display: block; background: #fff; padding: 8px; border-radius: var(--radius); }
+code.secret { word-break: break-all; }
+.pager { display: flex; gap: 1rem; }
+
+/* rapporten */
+.table-wrap { overflow-x: auto; max-width: 100%; }
+table.report { width: auto; min-width: 100%; }
+.report-form { margin-bottom: 1rem; }
+.report-form .filters { margin-bottom: .6rem; }
+.report-form fieldset { padding: .3rem .7rem .5rem; }
+.report-form legend { font-weight: 500; padding: 0 .3rem; }
+fieldset.period label[hidden] { display: none; }
+details.more { margin: 0 0 .8rem; }
+details.more > summary { cursor: pointer; color: var(--accent); margin-bottom: .5rem; }
+/* "Hoe werkt het?" (6d-1): uitklapbare uitleg; lange paden breken af, codeblokken scrollen binnen zichzelf */
+details.help { margin: 0 0 1rem; max-width: 52rem; min-width: 0; overflow-wrap: anywhere; }
+details.help > summary { cursor: pointer; color: var(--accent); }
+details.help[open] { border-left: 3px solid var(--line); padding-left: .8rem; }
+details.help h4 { margin: 1rem 0 .4rem; }
+details.help ol, details.help ul { padding-left: 1.3rem; margin: .3rem 0; }
+details.help li { margin: .25rem 0; }
+details.help pre.cmd { white-space: pre; word-break: normal; overflow-wrap: normal; overflow-x: auto; max-width: 100%; font-size: .8rem; }
+/* pagina Help "Hoe doe ik …?" (golf 4, HL10) */
+nav.toc ul { list-style: none; padding: 0; margin: 0 0 1rem; display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; }
+details.task { margin: .3rem 0; max-width: 52rem; min-width: 0; overflow-wrap: anywhere; }
+details.task > summary { cursor: pointer; color: var(--accent); }
+details.task[open] { border-left: 3px solid var(--line); padding-left: .8rem; margin-bottom: .8rem; }
+details.task ol { padding-left: 1.3rem; margin: .3rem 0; }
+details.task li { margin: .25rem 0; }
+input.short { width: 5rem; }
+.busy { display: none; }
+.htmx-request .busy, .busy.htmx-request { display: inline; }
+.report-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: .8rem; }
+table.report td, table.report th { padding: .25rem .55rem; }
+table.report td { white-space: nowrap; }
+table.report th { font-size: .9em; vertical-align: bottom; }
+table.report th.num { text-align: right; white-space: pre; }
+table.report .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+table.report tr.k-section td { font-weight: 700; font-size: 1.02rem; padding-top: .9rem; border-bottom: 2px solid var(--line); }
+table.report tr.k-heading td { font-weight: 600; background: var(--menu-bg); }
+table.report tr.k-subtotal td { font-weight: 600; border-top: 1px solid var(--muted); }
+table.report tr.k-total td, table.report tr.k-result td { font-weight: 700; border-top: 2px solid var(--text); border-bottom: 3px double var(--text); }
+table.report tr.k-balance td { font-style: italic; color: var(--muted); }
+table.report a { text-decoration: none; }
+table.report a:hover { text-decoration: underline; }
+.prewrap { white-space: pre-wrap; }
+
+@media print {
+  .topbar, .menu, .noprint, .notice { display: none !important; }
+  body, .layout, .content { background: #fff; color: #000; padding: 0; display: block; }
+  table.report { border: 0; font-size: 10pt; }
+  table.report a { color: inherit; }
+  table.list th { background: none; }
+  tr { break-inside: avoid; }
+}
+
+/* grafiek bij winst en verlies (v1.1, GR1–GR4); de SVG heeft lichte kleuren als attribuut (PDF/afdrukken) */
+.plchart { --pl-inc: #3f78b5; --pl-inc-prev: #b4cbe4; --pl-exp: #c47a2c; --pl-exp-prev: #ecc9a2;
+  --pl-res: #1f2933; --pl-res-prev: #6b7684; margin: .2rem 0 1.2rem; max-width: 100%; }
+@media (prefers-color-scheme: dark) {
+  .plchart { --pl-inc: #7fb0e0; --pl-inc-prev: #3d5670; --pl-exp: #e0a560; --pl-exp-prev: #6b5236;
+    --pl-res: #e4e8ed; --pl-res-prev: #95a0ad; }
+}
+.pl-views { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin: 0 0 .8rem; }
+.pl-views a { padding: .3rem .8rem; text-decoration: none; color: var(--accent); border-left: 1px solid var(--line); }
+.pl-views a:first-child { border-left: 0; }
+.pl-views a[aria-current] { background: var(--accent); color: var(--panel); font-weight: 600; }
+.plchart .pl-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; margin-bottom: .4rem; }
+.plchart .pl-pick { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-left: auto; }
+.plchart .pl-pick select { max-width: 22rem; }
+.plchart .pl-scroll { position: relative; overflow-x: auto; max-width: 100%; }
+.plchart svg.pl-svg { display: block; max-width: none; }
+.plchart svg.pl-svg text { fill: var(--muted); }
+.plchart .pl-grid line { stroke: var(--line); }
+.plchart line.pl-zero { stroke: var(--muted); }
+.plchart .pl-inc { fill: var(--pl-inc); } .plchart .pl-inc-prev { fill: var(--pl-inc-prev); }
+.plchart .pl-exp { fill: var(--pl-exp); } .plchart .pl-exp-prev { fill: var(--pl-exp-prev); }
+.plchart .pl-sel { fill: var(--pl-inc); } .plchart .pl-sel-prev { fill: var(--pl-inc-prev); }
+.plchart polyline.pl-res, .plchart line.pl-res { stroke: var(--pl-res); }
+.plchart polyline.pl-res-prev, .plchart line.pl-res-prev { stroke: var(--pl-res-prev); }
+.plchart circle.pl-res { stroke: var(--pl-res); fill: var(--pl-res); }
+.plchart circle.pl-res-prev { stroke: var(--pl-res-prev); fill: var(--panel); }
+.plchart rect[data-tip]:hover, .plchart circle[data-tip]:hover { opacity: .75; }
+.plchart .pl-legend { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; font-size: .85em; color: var(--muted); margin: .3rem 0; }
+.plchart .pl-legend span { white-space: nowrap; }
+.plchart .pl-legend svg { vertical-align: -1px; margin-right: .3em; }
+.plchart .pl-tip { position: absolute; z-index: 2; pointer-events: none; background: var(--panel); color: var(--text);
+  border: 1px solid var(--line); border-radius: var(--radius); padding: .2rem .5rem; font-size: .85em; white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .15); }
+.plchart details.pl-data summary { cursor: pointer; color: var(--accent); font-size: .9em; }
+.plchart details.pl-data table { width: auto; margin-top: .4rem; }
+a.pl-row { display: inline-block; margin-left: .45rem; color: var(--muted); vertical-align: -1px; }
+a.pl-row svg { fill: currentColor; display: block; }
+a.pl-row:hover, a.pl-row:focus-visible, a.pl-row[aria-current] { color: var(--accent); }
+@media print {
+  .plchart { --pl-inc: #3f78b5; --pl-inc-prev: #b4cbe4; --pl-exp: #c47a2c; --pl-exp-prev: #ecc9a2;
+    --pl-res: #1f2933; --pl-res-prev: #6b7684; --muted: #555; --line: #ccc; --panel: #fff; break-inside: avoid; }
+  .plchart .pl-scroll { overflow: visible; }
+  .plchart svg.pl-svg { max-width: 100%; height: auto; }
+}
+
+/* memoriaal */
+.glhead { padding: .6rem .8rem .1rem; margin-bottom: 1rem; }
+.glhead textarea { width: 100%; font: inherit; }
+.glhead[disabled] input, .glhead[disabled] select, .glhead[disabled] textarea { background: transparent; color: var(--text); }
+table.gllines { width: auto; min-width: 100%; }
+table.gllines td { padding: .2rem .3rem; }
+table.gllines input.acc { width: 18rem; }
+table.gllines input.short { width: 7rem; }
+table.gllines input:disabled, table.gllines select:disabled { background: transparent; border-color: transparent; color: var(--text); }
+input.num { width: 8rem; text-align: right; }
+input.invalid { border-color: var(--err); background: var(--err-bg); }
+th.num, td.num { text-align: right; white-space: nowrap; }
+table.gllines tfoot th { background: var(--panel); }
+tr.diff th { color: var(--err); }
+.glbuttons { margin-top: 1rem; }
+.confirm { border: 1px solid var(--warn); border-radius: var(--radius); padding: .6rem .9rem; margin-top: 1rem; max-width: 700px; }
+.confirm p { margin: 0 0 .6rem; }
+button.danger { color: var(--err); border-color: var(--err); }
+button.danger:not(.secondary) { background: var(--err); color: #fff; }
+@media (max-width: 640px) { table.gllines input.acc { width: 12rem; } input.num { width: 6.5rem; } }
+[hidden] { display: none !important; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+/* verkoop/inkoop */
+.glhead .vc input { width: 100%; }
+.glhead .facts { display: flex; flex-direction: column; gap: .15rem; font-size: .9em; color: var(--muted); }
+.pair { display: flex; gap: .4rem; min-width: 0; }
+.pair > input { flex: 1 1 0; min-width: 0; width: auto; }
+label.inline { display: inline-flex; flex-direction: row; align-items: center; gap: .3rem; margin: 0 .8rem 0 0; font-weight: normal; }
+table.araplines tr.tax td, table.araplines tr.total td, table.araplines tr.total th { background: var(--menu-bg); }
+table.araplines tr.total select { max-width: 20rem; }
+.arapform h3 { margin: 1.2rem 0 .4rem; font-size: 1rem; }
+.arapform label.notes { display: flex; flex-direction: column; margin: 1rem 0 .3rem; max-width: 900px; }
+.arapform label.notes textarea { width: 100%; font: inherit; }
+.neg { color: var(--err); }
+
+/* bankregels */
+table.banktable details > summary { cursor: pointer; }
+table.banktable .bankdetail { padding: .4rem 0; }
+table.banktable .bankdetail .glhead { margin: .4rem 0 0; }
+table.banktable tr.checked td { background: var(--accent-soft); }
+
+/* samengestelde artikelen (fase 3, stuklijst) */
+fieldset.outputs { padding: .4rem .8rem .7rem; margin-top: .8rem; }
+fieldset.outputs > p, fieldset.outputs > label.wide { flex-basis: 100%; margin: .2rem 0; }
+fieldset.outputs textarea { width: 100%; box-sizing: border-box; }
+fieldset.bom { margin-bottom: 1rem; padding: .6rem .8rem .8rem; }
+fieldset.bom p { margin: .3rem 0; }
+table.bomlines td { vertical-align: middle; }
+table.bomlines input.num { width: 6rem; }
+table.bomlines select { max-width: 22rem; margin-bottom: .2rem; }
+table.list tr.short td { background: var(--warn-bg); color: var(--warn-fg); }
+table.bomlist tr.heading td { background: var(--menu-bg); font-weight: 600; }
+
+/* factuur met artikelen (fase 3) */
+input.tiny { width: 3.5rem; }
+table.islines input.acc { width: 14rem; }
+table.islines td.num { white-space: nowrap; }
+table.islines span.warn { font-size: .85em; }
+@media (max-width: 640px) { table.islines input.acc { width: 10rem; } }
+p.issum { margin: .4rem 0 0; text-align: right; }
+
+/* mailen (fase 4): onderwerp en bericht over de volle breedte */
+.mailtext > label { display: flex; flex-direction: column; width: 100%; max-width: 700px; }
+.mailtext > label input, .mailtext > label textarea { width: 100%; max-width: 700px; box-sizing: border-box; font: inherit; }
+.grid select { max-width: 100%; }
+/* documenten: keuzelijst bij PDF/E-mail (fase 4, DS2) */
+details.docmenu { position: relative; display: inline-block; }
+details.docmenu > summary { list-style: none; }
+details.docmenu > summary::-webkit-details-marker { display: none; }
+details.docmenu > summary::after { content: " ▾"; }
+details.docmenu > ul { position: absolute; z-index: 20; left: 0; top: 100%; margin: .2rem 0 0; padding: .3rem 0;
+  list-style: none; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  min-width: 11rem; box-shadow: 0 4px 12px rgba(0, 0, 0, .12); }
+details.docmenu > ul a { display: block; padding: .35rem .8rem; text-decoration: none; }
+details.docmenu > ul a:hover, details.docmenu > ul a:focus { background: var(--line); }
+details.mailtext { margin: 0 0 .6rem; }
+details.mailtext > summary { cursor: pointer; font-weight: 600; margin-bottom: .4rem; }
+/* Beheer > Sjablonen (fase 4, DS11) */
+nav.tabs { display: flex; flex-wrap: wrap; gap: .3rem; margin: .5rem 0 1rem; border-bottom: 1px solid var(--line); }
+nav.tabs a { padding: .35rem .8rem; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0;
+  text-decoration: none; }
+nav.tabs a[aria-current="page"] { border-color: var(--line); background: var(--panel); font-weight: 600; }
+ul.plain { list-style: none; padding: 0; margin: .3rem 0; }
+ul.plain li { margin: .15rem 0; }
+img.logo-preview { max-height: 60px; max-width: 220px; vertical-align: middle; background: #fff; padding: 4px;
+  border: 1px solid var(--line); }
+
+/* lange woorden (vooral Duits): geen automatische afbreekstreepjes meer in labels, hulpteksten, kolomkoppen en
+   vinkjes (v1.0.1 PB18); alleen het smalle menu breekt nog af volgens <html lang> (TL7). Een woord dat echt niet past
+   breekt zonder streepje (overflow-wrap). */
+body { hyphens: manual; -webkit-hyphens: manual; overflow-wrap: break-word; }
+.menu li a { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 10 4 4; }
+/* e-mailadressen: niet met een koppelteken afbreken; heel laten (de tabel scrolt), alleen breken als het niet anders kan */
+.addr { hyphens: manual; -webkit-hyphens: manual; overflow-wrap: break-word; }
+/* Beheer > Documentinstellingen (fase 4 stap 3) */
+.docsettings fieldset { padding: .4rem .8rem .7rem; align-items: end; }
+.docsettings fieldset select { max-width: 100%; }
+table.doccols select, table.doccols input { max-width: 100%; }
+table.doccols select { width: 17rem; }
+.mailtext > label.check { flex-direction: row; align-items: center; }
+table.doccols input { width: 14rem; }
+@media (max-width: 640px) { table.doccols input, table.doccols select { width: 8rem; } }
+ul.doclinks { columns: 2; max-width: 700px; padding-left: 1.2rem; }
+@media (max-width: 640px) { ul.doclinks { columns: 1; } }
+
+/* bijlagen en Inkoop > Inkoopfactuur uploaden (fase 4 stap 4e) */
+.dropzone {
+  display: block; border: 2px dashed var(--line); border-radius: 8px; padding: 1.1rem 1rem;
+  text-align: center; color: var(--muted); background: var(--panel); cursor: pointer; margin: .4rem 0 .8rem;
+}
+.dropzone.over { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.dropzone.busy { opacity: .6; }
+.attachments { margin-top: 1.5rem; max-width: 900px; }
+ul.attlist { list-style: none; padding: 0; margin: 0 0 .6rem; }
+table.attoverview td { overflow-wrap: anywhere; }
+.dupwarn { flex-basis: 100%; background: var(--warn-bg); color: var(--warn-fg); border-radius: var(--radius);
+  padding: .45rem .7rem; margin: .3rem 0; max-width: 700px; }
+.dupwarn ul { margin: .2rem 0 .3rem 1.1rem; padding: 0; }
+.dupwarn a { color: inherit; }
+.dupwarn label.check { display: block; margin-top: .3rem; font-weight: 600; }
+ul.attlist li { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .8rem; padding: .35rem 0;
+  border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+ul.attlist form.inline { display: inline; margin: 0; }
+.attadd .attfields { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: end; }
+.attadd .attfields label:not(.check) { display: flex; flex-direction: column; flex: 1 1 14rem; }
+.upload-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem 1.5rem; align-items: start; }
+@media (min-width: 1000px) {
+  .upload-grid { grid-template-columns: minmax(22rem, 30rem) minmax(0, 1fr); }
+  .upload-preview { position: sticky; top: .5rem; }
+}
+.upload-preview iframe { width: 100%; height: 82vh; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.upload-preview img { max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+.upload-grid:not(.has-file) .upload-preview { display: none; }
+@media (max-width: 999px) { .upload-preview iframe { height: 70vh; } }
+.uploadform .glhead { max-width: none; }
+.uploadfile { display: flex; flex-wrap: wrap; gap: .3rem .8rem; align-items: baseline; overflow-wrap: anywhere; }
+.calcrow { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; align-items: flex-start; }
+.calcrow p { margin: 0 0 .35rem; }
+button.link.danger { background: none; color: var(--err); border: 0; }
+
+/* vertaalde bestandsknop (_file.html): het echte veld verborgen maar bereikbaar */
+.vh { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.filepick { position: relative; display: inline-flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem;
+  margin: .2rem 0; overflow-wrap: anywhere; }
+.filepick .button { cursor: pointer; }
+.filepick input:focus-visible + .button { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dropzone .filepick { display: flex; justify-content: center; margin-bottom: .5rem; }
+.dropzone > span:last-of-type { display: block; }
+.dropzone > [data-size-error]:not([hidden]) { display: block; margin: .5rem 0 0; }
+
+/* dashboard (fase 4 stap 5b) */
+.menu a.home { display: block; padding: .45rem .9rem; font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--line); }
+.menu a.home.current, .menu a.home:hover { background: var(--accent-soft); }
+.dash { --bar: #5b8cc0; --bar-prev: #c9d3de; --late1: #e2b4b4; --late2: #cf7f7f; --late3: #a32020; }
+@media (prefers-color-scheme: dark) { .dash { --bar: #7fb0e0; --bar-prev: #4a5562; --late1: #8a5a5a; --late2: #b86a6a; --late3: #e08080; } }
+.dash h2 { margin-bottom: .2rem; }
+.dash-sub { margin: 0 0 .8rem; }
+.dash-note { background: var(--warn-bg); color: var(--warn-fg); padding: .4rem .7rem; border-radius: var(--radius); margin: 0 0 .6rem; }
+.dash .card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .8rem 1rem; min-width: 0; margin: 0;
+              max-width: none; width: auto; box-shadow: none; }
+.dash .acts .button { padding: .25rem .65rem; font-size: .88em; }
+.dash ul.todo form.done button { padding: .15rem .5rem; font-size: .8em; white-space: nowrap; }
+.dash-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .8rem; margin-bottom: .8rem; }
+.dash .tile { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+              padding: .8rem 1rem; color: inherit; text-decoration: none; min-width: 0; }
+.dash .tile:hover { border-color: var(--accent); }
+.dash .tile .label { font-weight: 600; }
+.dash .tile .what { color: var(--muted); font-size: .88em; overflow-wrap: anywhere; }
+.dash .tile .amount { font-size: 1.5rem; font-weight: 600; text-align: right; margin-top: auto; padding-top: .4rem;
+                      font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dash .tile .extra { text-align: right; font-size: .85em; color: var(--muted); min-height: 1.3em; }
+.dash .tile .extra.bad { color: var(--err); }
+.dash .up { color: var(--ok); } .dash .down { color: var(--err); }
+.dash-grid { display: grid; gap: .8rem; margin-bottom: .8rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.dash-grid.n2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dash-grid.n1 { grid-template-columns: minmax(0, 1fr); }
+.dash-grid2 { display: grid; gap: .8rem; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); margin-bottom: .8rem; }
+.dash-grid2.single { grid-template-columns: minmax(0, 1fr); }
+.dash .card h3 { margin: 0 0 .6rem; font-size: 1.02rem; display: flex; justify-content: space-between; gap: .5rem; }
+.dash .card h3 small { font-weight: 400; color: var(--muted); white-space: nowrap; }
+.dash .acts { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
+.dash .acc { display: flex; justify-content: space-between; gap: .5rem; padding: .45rem 0; border-bottom: 1px solid var(--line); }
+.dash .acc:last-of-type { border-bottom: 0; }
+.dash .acc .meta { color: var(--muted); font-size: .82em; }
+.dash .acc .todo { color: var(--warn); font-size: .82em; }
+.dash .acc .amt { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dash svg.chart { width: 100%; height: auto; display: block; }
+.dash svg.chart text { fill: var(--muted); font-size: 11px; }
+.dash svg.chart text.v { fill: var(--text); font-size: 10.5px; }
+.dash svg.chart .grid line { stroke: var(--line); }
+.dash svg.chart line.zero { stroke: var(--muted); }
+.dash svg.chart a rect:hover { opacity: .8; }
+.dash .b-ok, .dash .b-this { fill: var(--bar); background: var(--bar); }
+.dash .b-prev { fill: var(--bar-prev); background: var(--bar-prev); }
+.dash .b-late1 { fill: var(--late1); } .dash .b-late2 { fill: var(--late2); } .dash .b-late3 { fill: var(--late3); }
+.dash .center { text-align: center; margin: .2rem 0 0; }
+.dash table.cmp { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; margin-bottom: .6rem; }
+.dash table.cmp th, .dash table.cmp td { padding: .25rem .4rem; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.dash table.cmp th:first-child, .dash table.cmp td:first-child { text-align: left; }
+.dash table.cmp th { font-weight: 600; color: var(--muted); font-size: .85em; }
+.dash table.cmp tr.res td { font-weight: 600; border-top: 2px solid var(--text); }
+.dash .legend { font-size: .82em; color: var(--muted); display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
+.dash .legend i { display: inline-block; width: .8em; height: .8em; border-radius: 2px; vertical-align: -1px; margin-right: .3em; }
+.dash ul.todo { list-style: none; margin: 0; padding: 0; }
+.dash ul.todo li { padding: .5rem 0; border-bottom: 1px solid var(--line); display: flex; gap: .5rem; align-items: flex-start; }
+.dash ul.todo li:last-child { border-bottom: 0; }
+.dash ul.todo .dot { width: .6rem; height: .6rem; border-radius: 50%; background: var(--warn); margin-top: .45rem; flex: none; }
+.dash ul.todo .dot.red { background: var(--err); } .dash ul.todo .dot.blue { background: var(--accent); }
+.dash ul.todo a { color: inherit; } .dash ul.todo form.done { margin-left: auto; }
+.dash details.about { margin-top: 1rem; color: var(--muted); font-size: .9em; }
+@media (max-width: 1000px) { .dash-grid, .dash-grid.n2 { grid-template-columns: minmax(0, 1fr); } .dash-grid2 { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 420px) { .dash-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; } .dash .tile { padding: .6rem .7rem; } .dash .tile .amount { font-size: 1.1rem; } }
+/* btw-aangifte: knop Btw-boeking maken goed zichtbaar boven het overzicht (BA6) */
+.vat-book { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .8rem; margin: 0 0 1rem; }
+/* Btw-rubrieken: keuzelijst met lange rubriekomschrijvingen past in de kolom */
+table.vatboxes { width: 100%; }
+table.vatboxes td:nth-child(2) { min-width: 9rem; }
+table.vatboxes select { width: 100%; min-width: 11rem; max-width: 24rem; text-overflow: ellipsis; }
+/* btw-aangifte: rubriekomschrijving en naam mogen afbreken, de bedragen blijven in beeld */
+.vatreturn table.report td:nth-child(2) { white-space: normal; min-width: 12rem; }
+.vatdetail table.report td:nth-child(2) { white-space: nowrap; min-width: 0; }
+.vatdetail table.report td:nth-child(4), .vatdetail table.report td:nth-child(7) { white-space: normal; min-width: 10rem; }
+
+/* eerste start (wizard) */
+.wizsteps { list-style: none; padding: 0; margin: 0 0 1.2rem; display: flex; flex-wrap: wrap; gap: .3rem .9rem;
+  font-size: .85em; color: var(--muted); }
+.wizsteps span { display: inline-block; min-width: 1.4em; height: 1.4em; line-height: 1.4em; text-align: center;
+  border-radius: 50%; border: 1px solid var(--line); margin-right: .15rem; }
+.wizsteps li.current { color: var(--text); font-weight: 600; }
+.wizsteps li.current span { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.wizsteps li.done span { background: var(--accent-soft); border-color: var(--accent-soft); }
+.langpick { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.tiles { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .8rem; max-width: 900px; }
+.tile { display: flex; flex-direction: column; gap: .35rem; height: 100%; box-sizing: border-box; padding: 1rem;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--text);
+  text-decoration: none; }
+a.tile:hover, a.tile:focus-visible { border-color: var(--accent); background: var(--accent-soft); }
+.tile strong { color: var(--accent); }
+.tile.disabled { opacity: .6; cursor: not-allowed; }
+.tile.disabled strong { color: var(--muted); }
+.tile .tag { align-self: flex-start; }
+table.invite input, table.invite select { width: 100%; box-sizing: border-box; }
+.codes td.code { font: 600 1rem ui-monospace, Menlo, monospace; letter-spacing: .04em; white-space: nowrap; }
+.codes code { word-break: break-all; }
+@media print { .menu, .topbar, .wizsteps, form.actions { display: none; } }
+.dash-start .head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.dash-switch > summary { cursor: pointer; display: flex; align-items: baseline; gap: .6rem; }
+.dash-switch > summary h3 { display: inline; margin: 0; }
+.dash-switch > summary::before { content: "▸"; color: var(--accent); }
+.dash-switch[open] > summary::before { content: "▾"; }
+.dash-switch > summary::-webkit-details-marker { display: none; }
+.startlist { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }
+.startlist li { display: grid; grid-template-columns: 1.3em 1fr; align-items: baseline; gap: .45rem; }
+.startlist .mark { display: inline-block; width: 1.2em; height: 1.2em; line-height: 1.2em; text-align: center; flex: none;
+  border: 1px solid var(--line); border-radius: 50%; font-size: .8em; }
+.startlist li.done .mark { background: var(--ok-bg); color: var(--ok); border-color: var(--ok-bg); }
+.startlist li.done .txt, .startlist li.skipped .txt { color: var(--muted); }
+table.invite td:last-child { min-width: 9.5em; }
+.codes tr.who td { border-bottom: 0; padding-bottom: .1rem; }
+.codes tr.how td { padding-top: 0; font-size: .88em; }
+/* Beheer > Huisstijl: instellingen links, voorbeeld rechts (meeschuivend); op mobiel onder elkaar */
+.style-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .5rem 1rem; }
+.style-copy summary { cursor: pointer; }
+.style-copy form { display: flex; flex-wrap: wrap; gap: .5rem; align-items: end; margin-top: .4rem; }
+.style-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 1.2rem; align-items: start; }
+.style-box { border: 1px solid var(--line); border-radius: var(--radius); padding: .5rem .9rem .8rem; margin: 0 0 .8rem; background: var(--panel); }
+.style-box h3 { margin-top: 0; }
+.style-settings fieldset.style-box { display: block; max-width: none; }
+.style-settings fieldset.style-box > label { display: block; margin: .3rem 0; }
+.style-settings .choices { display: flex; flex-wrap: wrap; gap: .3rem 1rem; align-items: baseline; margin-bottom: .4rem; }
+.style-settings .choices .label { min-width: 5.5em; color: var(--muted); }
+.style-preview { position: sticky; top: 1rem; }
+.style-preview .sheet { position: relative; overflow: hidden; border: 1px solid var(--line); background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .12); }
+.style-preview iframe { width: 210mm; height: 297mm; border: 0; transform-origin: 0 0; display: block; background: #fff; }
+.colorpick { display: flex; gap: .5rem; align-items: center; }
+.colorpick input[type=color] { width: 2.6rem; height: 2.2rem; padding: 0; border: 1px solid var(--line); }
+.colorpick input[name=color] { width: 7em; font-family: ui-monospace, Menlo, monospace; }
+.swatches { display: flex; flex-wrap: wrap; gap: .4rem; }
+.swatch { width: 1.8rem; height: 1.8rem; padding: 0; border-radius: 50%; border: 2px solid var(--panel);
+  box-shadow: 0 0 0 1px var(--line); cursor: pointer; }
+.swatch:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+.style-warnings { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }
+.style-warnings li { padding: .45rem .7rem; border-radius: var(--radius); background: var(--warn-bg); color: var(--warn-fg); }
+.fontlicense pre { white-space: pre-wrap; font-size: .8rem; max-height: 22rem; overflow: auto; background: var(--panel);
+  border: 1px solid var(--line); padding: .6rem; }
+@media (max-width: 900px) {
+  .style-layout { grid-template-columns: minmax(0, 1fr); }
+  .style-preview { position: static; }
+}
+
+/* maandstaat (fase Uren U-3): smalle invoervakken per dag, weekend lichter, vergrendelde dagen grijs */
+table.sheet th, table.sheet td { padding: .25rem .2rem; }
+table.sheet input.hours { width: 3.2em; min-width: 0; padding: .2rem .25rem; text-align: right; }
+table.sheet th.weekend { color: var(--muted, #6b7280); }
+table.sheet .locked { display: inline-block; min-width: 3.2em; text-align: right; color: var(--muted, #6b7280); }
+table.sheet tbody th { white-space: nowrap; text-align: left; }
+
+/* RGS-koppeling: voorstellen als lijst; op een smal scherm onder de rekening */
+table.rgs td.codes label.check { display: flex; gap: .4rem; align-items: baseline; margin: .15rem 0; }
+table.rgs td.codes input[type=radio], table.rgs td.codes code { flex: none; white-space: nowrap; }
+@media (max-width: 600px) {
+  table.rgs thead, table.rgs .cat { display: none; }
+  table.rgs tr { display: grid; grid-template-columns: auto 1fr; }
+  table.rgs td.codes { grid-column: 1 / -1; padding-top: 0; }
+}
+
+/* Systeem > Back-up maken (6d-1): opdracht om in te plannen */
+pre.cmd { white-space: pre-wrap; word-break: break-all; font: .9rem ui-monospace, Menlo, monospace; background: var(--panel);
+          padding: .5rem .7rem; border-radius: 4px; }
+/* Beheer > Ingebruikname (6d-2): de lijst over de hele breedte, uitleg per punt */
+.card.switch-page { max-width: 52rem; }
+.switch-page .startlist { gap: .7rem; }
+.startlist .item { min-width: 0; overflow-wrap: anywhere; }
+.substeps, .steplinks { list-style: none; padding: 0; margin: .3rem 0 0; display: grid; gap: .25rem; }
+.substeps > li { display: grid; grid-template-columns: 1.3em minmax(0, 1fr); align-items: baseline; gap: .45rem; font-size: .92em; }
+.substeps .mark { display: inline-block; width: 1em; height: 1em; line-height: 1em; text-align: center;
+  border: 1px solid var(--line); border-radius: 50%; font-size: .75em; }
+.substeps li.done .mark { background: var(--ok-bg); color: var(--ok); border-color: var(--ok-bg); }
+.substeps li.done .txt { color: var(--muted); }
+.steplinks { margin-left: .2rem; gap: .15rem; }
+.steplinks li::before { content: "– "; color: var(--muted); }
+
+/* v1.0.1 inlezen en overstap: voortgang (PB4), balkje "Overstap: …" (PB10), controleblad (PB8) */
+.progress-block { max-width: 36rem; margin: .5rem 0 1rem; }
+progress.progressbar { width: 100%; height: 1.1rem; accent-color: var(--accent); }
+ol.phases { list-style: none; padding: 0; margin: 0 0 .5rem; display: flex; flex-wrap: wrap; gap: .3rem .9rem; font-size: .92em; }
+ol.phases li { color: var(--muted); }
+ol.phases li.done::before { content: "✓ "; color: var(--ok); }
+ol.phases li.now { color: var(--text); font-weight: 600; }
+.switchbar { display: flex; flex-wrap: wrap; gap: .3rem .9rem; align-items: baseline; background: var(--accent-soft);
+  border-left: 3px solid var(--accent); padding: .45rem .8rem; border-radius: var(--radius); margin: 0 0 1rem; }
+.switchbar .links { display: flex; flex-wrap: wrap; gap: .2rem .8rem; }
+.sheet-verdict { margin-top: 1.5rem; display: grid; gap: .8rem; max-width: 42rem; }
+.sheet-verdict textarea { width: 100%; min-height: 4rem; font: inherit; }
+ol.steps3 { margin: 0 0 1rem; padding-left: 1.3rem; }
+.switch-note { display: block; margin-top: .15rem; color: var(--warn); }
+/* v1.0.1 schermen (PB11, PB17, PB19) */
+.logoform .dropzone > span { display: block; }
+.logoform .dropzone { margin: 0; }
+.logostatus { margin: 0; }
+.logostatus.ok { color: var(--ok); }
+.logostatus.error { color: var(--err); }
+/* datumveld met wisknopje (PB19, static/dates.js) */
+.datefield { display: inline-flex; align-items: center; gap: .15rem; max-width: 100%; }
+label > .datefield, .glhead .datefield { display: flex; }
+.datefield > input { flex: 1 1 auto; min-width: 0; }
+button.dateclear { flex: none; padding: 0 .35rem; line-height: 1.6; border: 0; background: none; color: var(--muted);
+  font-size: 1.15rem; cursor: pointer; border-radius: var(--radius); }
+button.dateclear:hover, button.dateclear:focus-visible { color: var(--err); background: var(--err-bg); }
+/* zoeklijst (PB17, static/combo.js) */
+.combo-box { position: fixed; z-index: 50; overflow-y: auto; overscroll-behavior: contain; background: var(--panel);
+  border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 4px 14px rgba(0, 0, 0, .15);
+  -webkit-overflow-scrolling: touch; }
+.combo-list { list-style: none; margin: 0; padding: 0; }
+.combo-list li { padding: .32rem .6rem; line-height: 1.35; cursor: pointer; overflow-wrap: anywhere; font-weight: 400; }
+.combo-list li b { font-weight: 700; }
+.combo-list li:hover { background: var(--menu-bg); }
+.combo-list li[aria-selected=true] { background: var(--accent-soft); color: var(--accent); }
+.combo-list .combo-hint { margin-left: .5rem; color: var(--muted); font-size: .85em; }
+.combo-more { position: sticky; bottom: 0; padding: .3rem .6rem; color: var(--muted); font-size: .85em;
+  background: var(--panel); border-top: 1px solid var(--line); }
+@media (pointer: coarse) { .combo-list li { padding: .55rem .7rem; } }
+.combo-list li.combo-group { cursor: default; padding: .35rem .6rem .2rem; font-size: .8em; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .03em; color: var(--muted); background: var(--panel); }
+.combo-list li.combo-group:hover { background: var(--panel); }
+/* "Voortaan zo boeken?" na een bankregel (PB27) */
+form.rulehint { max-width: 900px; margin: 0 0 1rem; }
+form.rulehint fieldset { border: 0; padding: 0; margin: .3rem 0; }
+form.rulehint .choices { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: .2rem 1rem; }
+form.rulehint p { margin: .3rem 0; }
+
+/* ===== v1.0.1 opmaak (PB18, PB9, PB12, PB15): één vaste formulieropmaak voor de hele app =====
+   Raster per kader: 4 kolommen op breed, 2 op middel, 1 op telefoon. Elk veld is een <label> met drie regels
+   (subgrid): bijschrift – veld – hulptekst. Zo staan de bijschriften van één rij op één lijn, de velden direct
+   daaronder op één lijn, en duwt een hulptekst onder het veld de buren niet weg.
+   Breedte: bedragen, aantallen, datums en codes 1 kolom; namen, omschrijvingen en keuzelijsten 2 kolommen;
+   tekstvakken (textarea) en .wide de volle breedte. Zelf kiezen kan met .w1/.w2/.w3/.wide. */
+.grid, .glhead, .fgrid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 1rem; row-gap: 0;
+  align-items: start; max-width: 900px; min-width: 0;
+}
+fieldset:is(.grid, .glhead, .fgrid) { padding: .55rem .8rem .05rem; }
+.glhead { max-width: 900px; }
+.uploadform .glhead { max-width: none; }
+/* alles wat geen veld is (uitleg, tabellen, groepen vinkjes) krijgt een eigen rij over de volle breedte */
+:is(.grid, .glhead, .fgrid) > * { grid-column: 1 / -1; margin: 0 0 var(--row-gap); min-width: 0; }
+:is(.grid, .glhead, .fgrid) > legend { margin: 0; }
+:is(.grid, .glhead, .fgrid) > p { margin-top: 0; }
+:is(.grid, .glhead, .fgrid) > label:not(.check), :is(.grid, .glhead, .fgrid) > .ro {
+  grid-column: span 1; grid-row: span 3; display: grid; grid-template-rows: subgrid; grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--lab-gap); align-content: start;
+}
+:is(.grid, .glhead, .fgrid) > label:not(.check) > :is(input, select, textarea, .datefield, .pair, .filepick, .colorpick) {
+  width: 100%; max-width: 100%;
+}
+/* namen, omschrijvingen, adressen e.d. en keuzelijsten: 2 kolommen */
+:is(.grid, .glhead, .fgrid) > label:has(> select:not(.short)),
+:is(.grid, .glhead, .fgrid) > label:has(> input:is([name*=name], [name*=description], [name*=email], [name*=address],
+  [name*=street], [name*=city], [name*=company], [name*=subject], [name*=website], [name*=homepage], [name*=url],
+  [name*=_text], [name*=iban], [name=login], [list])),
+:is(.grid, .glhead, .fgrid) > :is(label.vc:not(.check), .vc) { grid-column: span 2; }
+:is(.grid, .glhead, .fgrid) > label:has(> textarea) { grid-column: 1 / -1; }
+/* databasenaam is een code: 1 kolom */
+:is(.grid, .glhead, .fgrid) > label:has(> input[name=dbname]) { grid-column: span 1; }
+/* zelf gekozen breedte gaat voor de vuistregels hierboven */
+:is(.grid, .glhead, .fgrid) > .w1 { grid-column: span 1 !important; }
+:is(.grid, .glhead, .fgrid) > .w2 { grid-column: span 2 !important; }
+:is(.grid, .glhead, .fgrid) > .w3 { grid-column: span 3 !important; }
+:is(.grid, .glhead, .fgrid) > :is(.wide, .full) { grid-column: 1 / -1 !important; }
+:is(.grid, .glhead, .fgrid) > .facts { grid-column: span 2; grid-row: span 3; }
+/* vinkje of keuzerondje in het raster: op de hoogte van het veld (regel 2), bijschrift op één regel ernaast */
+:is(.grid, .glhead, .fgrid) > label.check {
+  grid-column: span 2; grid-row: span 3; display: grid; grid-template-rows: subgrid; grid-template-columns: auto minmax(0, 1fr);
+  row-gap: var(--lab-gap); column-gap: .45rem; align-items: center; justify-items: start;
+}
+:is(.grid, .glhead, .fgrid) > label.check::before { content: ""; grid-row: 1; grid-column: 1 / -1; }
+:is(.grid, .glhead, .fgrid) > label.check > input { grid-row: 2; grid-column: 1; }
+:is(.grid, .glhead, .fgrid) > label.check > :is(.muted, .small, .help) { grid-row: 3; grid-column: 1 / -1; align-self: start; }
+:is(.grid, .glhead, .fgrid) > label.check { min-height: 0; }
+:is(.grid, .glhead, .fgrid) > label.check > input ~ * { min-width: 0; }
+/* de veldregel van een vinkje is even hoog als een veld */
+:is(.grid, .glhead, .fgrid) > label.check > input { margin: calc((var(--fh) - 1rem) / 2) 0; }
+/* alleen-lezen waarde als veldachtig blok; buiten een raster gewoon onder elkaar */
+.ro { display: flex; flex-direction: column; gap: var(--lab-gap); min-width: 0; }
+.calcrow > .ro { flex: 0 1 12rem; }
+/* (vervolg) alleen-lezen waarde (bv. "Op voorraad"): bijschrift, waarde, eventueel een link eronder */
+.ro > .ro-value { display: flex; align-items: center; gap: .4rem; min-height: var(--fh); padding: 0 .5rem;
+  border: 1px dashed var(--line); border-radius: var(--radius); background: var(--accent-soft); overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums; }
+.ro > .ro-value.num { justify-content: flex-end; }
+.ro > .ro-label { font-weight: 500; }
+.ro > .ro-help { font-size: .88em; }
+/* hulptekst onder het veld */
+label > .muted.small, label > .small.muted, label > .help { font-weight: 400; }
+/* getallen: rechts uitgelijnd en nooit afgekapt (volle celbreedte) */
+:is(.grid, .glhead, .fgrid) input.num { text-align: right; }
+/* het aantal kolommen volgt de breedte van het werkvlak (of van een smalle kolom zoals bij Inkoopfactuur uploaden),
+   niet van het hele venster */
+main.content, .upload-grid > *, .style-layout > * { container-type: inline-size; }
+@container (max-width: 760px) {
+  .grid, .glhead, .fgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :is(.grid, .glhead, .fgrid) > .w3 { grid-column: 1 / -1 !important; }
+}
+@container (max-width: 400px) {
+  .grid, .glhead, .fgrid { grid-template-columns: minmax(0, 1fr); }
+  :is(.grid, .glhead, .fgrid) > * { grid-column: 1 / -1 !important; }
+}
+/* bijschriften niet midden in een woord afbreken */
+:is(.grid, .glhead, .fgrid) > label, legend, .filters > label { overflow-wrap: normal; }
+
+/* zoek- en rapportfilters: kaders naast elkaar, even hoog; velden en vinkjes op één lijn (PB12) */
+.filters > label:not(.check) { min-width: 0; }
+.filters > label.check, .filters > fieldset > label.check, .filters > span > label.check {
+  align-self: flex-start; margin-top: var(--cap); min-height: var(--fh); white-space: nowrap;
+}
+.filters > fieldset { align-self: stretch; padding-top: .3rem; }
+/* staan er kaders in de rij, dan schuiven losse velden en vinkjes mee omlaag tot de veldlijn in de kaders */
+.filters:has(> fieldset) > label:not(.check) { margin-top: calc(1.45em + .3rem); }
+.filters:has(> fieldset) > label.check, .filters:has(> fieldset) > :is(button, .button, .actions) {
+  margin-top: calc(1.45em + .3rem + var(--cap)); }
+.filters > :is(button, .button, .actions) { align-self: flex-start; margin-top: var(--cap); }
+
+/* vinkjes en keuzerondjes: bijschrift op één regel, geen afbreekstreepjes */
+label.check, label.inline { hyphens: manual; -webkit-hyphens: manual; }
+
+/* linkrij bovenaan: een eigen rij onder de titel die op een smal scherm doorloopt (PB18) */
+.head { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .5rem; margin-bottom: 1rem; }
+.head > h2 { margin: 0; flex: 1 0 100%; }
+.head > :not(h2) { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem 0; margin: 0; max-width: 100%; }
+.head > :not(h2) > a:not(.button) { white-space: nowrap; }
+.head > :not(h2) > a:not(.button):not(:last-child)::after { content: "·"; display: inline-block; margin: 0 .55rem;
+  color: var(--muted); text-decoration: none; }
+.head > :not(h2) > :is(.button, button, form) { margin-right: .5rem; }
+
+/* kolomkoppen niet afbreken: nooit midden in een woord of met een streepje; in een scrollende tabel ook niet tussen
+   woorden (de tabel scrolt binnen zijn kader) */
+table.list th { hyphens: manual; -webkit-hyphens: manual; overflow-wrap: normal; word-break: normal; }
+.table-wrap table.list th:not(.num) { white-space: nowrap; }
+
+/* PB15: korte getalvelden inline in een zin ("Elke [1] [maand(en)] – [24] keer in totaal") */
+.inline-fields { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; }
+.inline-fields input.num { width: 5.5rem; text-align: right; }
+.inline-fields select { width: auto; }
+.inline-fields > .caption { font-weight: 500; flex-basis: 100%; }
+
+/* schermlezer-tekst die niet zichtbaar is (bestond nog niet, werd al gebruikt) */
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+/* Huisstijl "Overnemen van …": lange administratienamen passen op een telefoon */
+.style-copy { max-width: 100%; min-width: 0; }
+.style-copy form { align-items: flex-end; }
+.style-copy form > label { flex: 1 1 14rem; min-width: 0; max-width: 100%; }
+.style-copy select { width: 100%; max-width: 100%; }
+/* notities onder een formulier: bijschrift boven het tekstvak, even breed als de kaders erboven */
+label.notes { max-width: 900px; margin: 0 0 1rem; }
+label.notes textarea { width: 100%; }
+/* losse velden direct in een breed formulier: niet breder dan de kaders */
+.stack.wide > label:not(.check) { max-width: 900px; }
+/* tabelregels met invoervelden: tekst en velden op één lijn */
+table.list tr:has(> td > :is(input, select)) > td { vertical-align: middle; }
+.style-settings form.stack { max-width: none; }
+/* kleine knoppen (dashboard, in tabelregels) houden hun eigen, lagere hoogte */
+.dash .acts .button, .dash ul.todo form.done button, button.small, .button.small { min-height: 0; }
+/* keuzeknoppen (Administratie kiezen): tekst links, mag afbreken */
+.choice { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: baseline; gap: .2rem .4rem; text-align: left; }
+
+/* v1.0.1 naam PyBalans (NB2): ondertitel op de losse kaart en "Over PyBalans" onderaan het menu */
+.card .brand:has(+ .tagline) { margin-bottom: .2rem; }
+.tagline { font-size: .85rem; margin: 0 0 1rem; }
+.menu a.about { display: block; padding: .45rem .9rem; font-size: .85rem; color: var(--muted); text-decoration: none;
+  border-top: 1px solid var(--line); }
+.menu a.about.current, .menu a.about:hover { background: var(--accent-soft); color: var(--text); }

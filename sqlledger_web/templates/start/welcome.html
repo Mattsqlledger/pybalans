@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Welkom") }}{% endblock %}
+{% block tagline %}{% include "_tagline.html" %}{% endblock %}
+{% block plain %}
+{% include "start/_steps.html" %}
+<h2>{{ _("Welkom bij PyBalans") }}</h2>
+<p>{{ _("Er is nog niemand op deze server. In een paar stappen maakt u de beheerder en de eerste administratie aan.") }}</p>
+<p>{{ _("Kies eerst uw taal:") }}</p>
+<form method="post" action="/welkom" class="langpick">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% for code, name in languages.items() %}
+  <button name="language" value="{{ code }}" lang="{{ code }}" class="{{ '' if code == chosen else 'secondary' }}"{% if code == chosen %} autofocus{% endif %}>{{ name }}</button>
+  {% endfor %}
+</form>
+{% endblock %}

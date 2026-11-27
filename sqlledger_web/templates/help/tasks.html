@@ -1,0 +1,322 @@
+{# Pagina Help: Hoe doe ik …? (HELP_ANALYSE HL10, golf 4 deel K) #}
+{% macro see(k, title) %}<a href="#{{ k }}">{{ title }}</a>{% endmacro %}
+{# twee menupaden met "of"/"en"/komma; bestaat er één niet, dan alleen het andere #}
+{% macro alt(a, ga, b, gb, sep="of") %}{% if has(a) and has(b) %}{% if sep == "en" %}{{ ht("{a} en {b}", a=ga, b=gb) }}{% elif sep == "," %}{{ ga }}, {{ gb }}{% else %}{{ ht("{a} of {b}", a=ga, b=gb) }}{% endif %}{% elif has(a) %}{{ ga }}{% else %}{{ gb }}{% endif %}{% endmacro %}
+{% set t1 = task_on(["/klanten/nieuw", "/leveranciers/nieuw"]) %}
+{% set t2 = task_on(["/verkoopfactuur/nieuw", "/verkoop/nieuw"]) %}
+{% set t3 = task_on(["/offerte/nieuw", "/verkooporders"]) %}
+{% set t4 = task_on(["/aanmaningen"]) %}
+{% set t5 = task_on(["/inkoop/uploaden"]) %}
+{% set t6 = task_on(["/ontvangst/nieuw", "/betaling/nieuw"]) %}
+{% set t7 = task_on(["/betalingen/betaalbestand"]) %}
+{% set t8 = task_on(["/bank/inlezen", "/bank/regels"]) %}
+{% set t9 = task_on(["/btw/aangifte"]) %}
+{% set t10 = task_on(["/rapporten/winst-en-verlies", "/rapporten/balans"]) %}
+{% set t11 = task_on(["/bank/regels", "/afletteren"]) %}
+{% set t12 = task_on(["/beheer/jaarafsluiting"]) %}
+{% set t13 = task_on(["/bijlagen"]) %}
+{% set t14 = task_on(["/terugkerend"]) %}
+{% set t15 = task_on(["/uren/mijn"]) %}
+{% set t16 = task_on(["/beheer/importeren"]) %}
+{% set t17 = task_on(["/beheer/valuta"]) %}
+{% set t18 = show_system and task_on(["/systeem/administraties"]) %}
+{% set t19 = show_system and task_on(["/systeem/gebruikers"]) %}
+{% set t20 = show_system and task_on(["/systeem/back-up-maken"]) %}
+{% set t21 = show_system and task_on(["/systeem/administraties", "/beheer/ingebruikname"]) %}
+{% set sec1 = t1 or t2 or t3 or t4 %}
+{% set sec2 = t5 or t6 or t7 %}
+{% set sec3 = t8 %}
+{% set sec4 = t9 or t10 or t11 or t12 or t13 %}
+{% set sec5 = t14 or t15 %}
+{% set sec6 = t16 or t17 or t18 or t19 or t20 or t21 %}
+{% if no_company %}<p>{{ _("Kies eerst een administratie om alle taken te zien.") }}</p>{% endif %}
+<p>{{ ht("Per taak ziet u in welke volgorde u de schermen langsgaat. Op elk scherm staat onder {h} hoe dat scherm precies werkt.", h=hl("Hoe werkt het?")) }}</p>
+<nav class="toc"><ul>
+  {% if sec1 %}<li><a href="#verkopen">{{ _("Verkopen") }}</a></li>{% endif %}
+  {% if sec2 %}<li><a href="#inkopen">{{ _("Inkopen en betalen") }}</a></li>{% endif %}
+  {% if sec3 %}<li><a href="#bank">{{ _("Bank") }}</a></li>{% endif %}
+  {% if sec4 %}<li><a href="#afsluiten">{{ _("Btw, rapporten en afsluiten") }}</a></li>{% endif %}
+  {% if sec5 %}<li><a href="#terugkerend">{{ _("Terugkerend en uren") }}</a></li>{% endif %}
+  {% if sec6 %}<li><a href="#beheer">{{ _("Beheer") }}</a></li>{% endif %}
+</ul></nav>
+
+{% if sec1 %}
+<h3 id="verkopen">{{ _("Verkopen") }}</h3>
+
+{% if t1 %}
+<details class="task" id="k1"><summary>{{ _("Een klant of leverancier toevoegen") }}</summary>
+<p>{{ _("Leg een relatie één keer vast; op elke nieuwe boeking worden adres, betalingstermijn, valuta, rekeningen en btw dan vanzelf ingevuld. Na het opslaan staan op de kaart knoppen voor een nieuwe boeking voor deze relatie.") }}</p>
+<ol>
+  <li>{{ ht("{m}: vul de gegevens in en klik op {b}.", m=alt("/klanten/nieuw", go("/klanten/nieuw", "Verkoop", "Klant toevoegen"), "/leveranciers/nieuw", go("/leveranciers/nieuw", "Inkoop", "Leverancier toevoegen")), b=hl("Opslaan")) }}</li>
+  {% if has("/klanten") or has("/leveranciers") %}<li>{{ ht("Bestaande opzoeken of wijzigen: {m}.", m=alt("/klanten", go("/klanten", "Verkoop", "Klanten zoeken"), "/leveranciers", go("/leveranciers", "Inkoop", "Leveranciers zoeken"))) }}</li>{% endif %}
+  {% if has("/beheer/importeren") %}<li>{{ ht("Veel tegelijk: {m}, zie {k}.", m=go("/beheer/importeren", "Beheer", "Importeren"), k=see("k16", _("Gegevens importeren"))) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if t2 %}
+<details class="task" id="k2"><summary>{{ _("Een verkoopfactuur maken") }}</summary>
+<p>{{ ht("Verkoopt u artikelen of diensten uit uw artikellijst, gebruik dan de verkoopfactuur; voor een factuur met alleen een bedrag en een omzetrekening gebruikt u {m}. Het factuurnummer komt vanzelf bij het opslaan. Daarna mailt of print u de factuur en volgt u de betaling in de lijst met openstaande posten.", m=hm("Boeking toevoegen")) }}</p>
+<ol>
+  {% if has("/klanten/nieuw") %}<li>{{ ht("Nieuwe klant? {m}.", m=go("/klanten/nieuw", "Verkoop", "Klant toevoegen")) }}</li>{% endif %}
+  <li>{{ ht("{m}, of zonder artikelen {n}: vul de factuur in en klik op {b} of {p}.", m=go("/verkoopfactuur/nieuw", "Verkoop", "Verkoopfactuur"), n=go("/verkoop/nieuw", "Verkoop", "Boeking toevoegen"), b=hl("Opslaan"), p=hl("Opslaan en PDF")) }}</li>
+  <li>{{ ht("Op de opgeslagen factuur: {b} om hem te mailen. Mailen werkt pas als {m} is ingesteld.", b=hl("E-mail"), m=go("/beheer/email", "Beheer", "E-mail")) }}</li>
+  {% if has("/documenten/batch?soort=invoice") %}<li>{{ ht("Veel facturen tegelijk printen of mailen: {m}.", m=go("/documenten/batch?soort=invoice", "Verkoop", "Documenten in batch")) }}</li>{% endif %}
+  {% if has("/rapporten/openstaand-verkoop") %}<li>{{ ht("Betaald of niet: {m}.", m=go("/rapporten/openstaand-verkoop", "Verkoop", "Openstaand")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if t3 %}
+<details class="task" id="k3"><summary>{{ _("Van offerte naar order naar factuur") }}</summary>
+<p>{{ _("U maakt een offerte, zet die na akkoord om naar een order en de order daarna naar een factuur. Elke stap neemt de regels en de bijlagen over. De knoppen om om te zetten verschijnen pas als het document is opgeslagen; de offerte wordt gesloten zodra de order is opgeslagen, de order zodra de factuur is opgeslagen.") }}</p>
+<ol>
+  {% if has("/offerte/nieuw") %}<li>{{ ht("{m}: vul de offerte in en klik op {b}. Mailen kan met {e}.", m=go("/offerte/nieuw", "Offertes", "Offerte"), b=hl("Opslaan"), e=hl("E-mail")) }}</li>{% endif %}
+  {% if has("/verkooporders") %}<li>{{ ht("Akkoord? Klik op de offerte op {o}, controleer de order en klik op {b}.", o=hl("Verkooporder"), b=hl("Opslaan")) }}</li>{% endif %}
+  {% if has("/verkoopfactuur/nieuw") %}<li>{{ ht("Klik op de order op {f}, controleer de factuur en klik op {b}.", f=hl("Verkoopfactuur"), b=hl("Opslaan")) }}</li>{% endif %}
+  {% if has("/verkooporders") and has("/offertes") %}<li>{{ ht("Overzicht van lopende orders: {m}; offertes: {n}.", m=go("/verkooporders", "Orders", "Verkooporders"), n=go("/offertes", "Offertes", "Offertes")) }}</li>
+  {% elif has("/verkooporders") %}<li>{{ ht("Overzicht van lopende orders: {m}.", m=go("/verkooporders", "Orders", "Verkooporders")) }}</li>
+  {% elif has("/offertes") %}<li>{{ ht("Overzicht van de offertes: {m}.", m=go("/offertes", "Offertes", "Offertes")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if t4 %}
+<details class="task" id="k4"><summary>{{ _("Herinneringen en aanmaningen sturen") }}</summary>
+<p>{{ _("Klanten met vervallen facturen krijgen per valuta één brief met al hun vervallen facturen. Het programma houdt bij hoeveel brieven er al over een factuur zijn gestuurd en kiest zelf herinnering of aanmaning.") }}</p>
+<ol>
+  {% if has("/rapporten/ouderdom-verkoop") %}<li>{{ ht("Wie is laat? {m}.", m=go("/rapporten/ouderdom-verkoop", "Verkoop", "Ouderdomsanalyse")) }}</li>{% endif %}
+  <li>{{ ht("{m}: kies de {d}, klik op {t}, vink de facturen aan en bekijk ze met {v}.", m=go("/aanmaningen", "Verkoop", "Aanmaningen"), d=hl("Peildatum"), t=hl("Toon"), v=hl("Voorbeeld")) }}</li>
+  <li>{{ ht("Klik op {p} om te printen, of op {e} en daarna {s}.", p=hl("PDF"), e=hl("Mailen"), s=hl("Verzenden")) }}</li>
+  {% if has("/rekeningoverzichten") %}<li>{{ ht("Een overzicht van alles wat openstaat, zonder aanmaning: {m}.", m=go("/rekeningoverzichten", "Verkoop", "Rekeningoverzichten")) }}</li>{% endif %}
+  {% if has("/beheer/email") %}<li>{{ ht("Tekst van de mail: {m}.", m=go("/beheer/email", "Beheer", "E-mail")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+{% endif %}
+
+{% if sec2 %}
+<h3 id="inkopen">{{ _("Inkopen en betalen") }}</h3>
+
+{% if t5 %}
+<details class="task" id="k5"><summary>{{ _("Een inkoopfactuur boeken") }}</summary>
+<p>{{ _("De snelste weg is de PDF of foto van de factuur uploaden: u vult leverancier, datum, nummer en totaal in en het programma stelt de kostenrekening en de btw voor. De PDF wordt vanzelf als bijlage bewaard.") }}</p>
+<ol>
+  {% if has("/leveranciers/nieuw") %}<li>{{ ht("Nieuwe leverancier? {m}.", m=go("/leveranciers/nieuw", "Inkoop", "Leverancier toevoegen")) }}</li>{% endif %}
+  <li>{{ ht("{m}: sleep de PDF, vul de gegevens in en klik op {b}. Meer kostenregels of btw-tarieven? Klik op {v}.", m=go("/inkoop/uploaden", "Inkoop", "Inkoopfactuur uploaden"), b=hl("Boeken"), v=hl("Volledig scherm")) }}</li>
+  {% if has("/inkoop/nieuw") %}<li>{{ ht("Zonder PDF: {m}; met artikelen (voorraad): {n}.", m=go("/inkoop/nieuw", "Inkoop", "Boeking toevoegen"), n=go("/inkoopfactuur/nieuw", "Inkoop", "Inkoopfactuur")) }}</li>{% endif %}
+  {% if has("/rapporten/openstaand-inkoop") %}<li>{{ ht("Wat moet u nog betalen? {m}.", m=go("/rapporten/openstaand-inkoop", "Inkoop", "Openstaand")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if t6 %}
+<details class="task" id="k6"><summary>{{ _("Een ontvangst of betaling met de hand vastleggen") }}</summary>
+<p>{{ ht("Leest u geen bankafschriften in, of gaat het om contant geld, dan boekt u een betaling hier en verdeelt u het bedrag over de openstaande facturen. Leest u wél afschriften in, gebruik dan {k}; anders boekt u dezelfde betaling twee keer.", k=see("k8", _("Een bankafschrift inlezen en afletteren"))) }}</p>
+<ol>
+  <li>{{ ht("{m}: kies de relatie, vink de facturen aan, controleer {f} en klik op {b}.", m=alt("/ontvangst/nieuw", go("/ontvangst/nieuw", "Kas en bank", "Ontvangst"), "/betaling/nieuw", go("/betaling/nieuw", "Kas en bank", "Betaling")), f=hl("Betaald"), b=hl("Boeken")) }}</li>
+  {% if has("/ontvangsten") or has("/betalingen") %}<li>{{ ht("Veel relaties tegelijk: {m}.", m=alt("/ontvangsten", go("/ontvangsten", "Kas en bank", "Ontvangsten (meerdere klanten)"), "/betalingen", go("/betalingen", "Kas en bank", "Betalingen (meerdere leveranciers)"))) }}</li>{% endif %}
+  {% if has("/ontvangsten/corrigeren") or has("/betalingen/corrigeren") %}<li>{{ ht("Verkeerd geboekt: {m}.", m=alt("/ontvangsten/corrigeren", go("/ontvangsten/corrigeren", "Kas en bank", "Ontvangsten corrigeren"), "/betalingen/corrigeren", go("/betalingen/corrigeren", "Kas en bank", "Betalingen corrigeren"))) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if t7 %}
+<details class="task" id="k7"><summary>{{ _("Leveranciers betalen met een betaalbestand") }}</summary>
+<p>{{ _("U maakt een SEPA-bestand van de inkoopfacturen die u wilt betalen en leest dat in bij uw bank; de bank voert de overboekingen uit. In het programma wordt dan nog niets geboekt: dat gebeurt als u daarna het bankafschrift inleest. Alleen facturen in euro van leveranciers met een geldige IBAN gaan mee.") }}</p>
+<ol>
+  {% if has("/beheer/rekeningschema") or has("/leveranciers") %}<li>{{ ht("Eenmalig: IBAN bij uw bankrekening in {m}, en de IBAN van elke leverancier op zijn kaart via {n}.", m=go("/beheer/rekeningschema", "Beheer", "Rekeningschema"), n=go("/leveranciers", "Inkoop", "Leveranciers zoeken")) }}</li>{% endif %}
+  <li>{{ ht("{m}: kies de {d}, vink de facturen aan, klik op {b} en daarna op {l}.", m=go("/betalingen/betaalbestand", "Kas en bank", "Betaalbestand maken"), d=hl("Uitvoerdatum"), b=hl("Betaalbestand maken"), l=hl("Downloaden")) }}</li>
+  <li>{{ _("Lees het bestand in bij uw bank (internetbankieren).") }}</li>
+  {% if has("/bank/inlezen") or has("/bank/regels") %}<li>{{ ht("Na de uitvoering: {m}, zie {k}.", m=alt("/bank/inlezen", go("/bank/inlezen", "Kas en bank", "Bankafschrift inlezen"), "/bank/regels", go("/bank/regels", "Kas en bank", "Bankregels verwerken"), "en"), k=see("k8", _("Een bankafschrift inlezen en afletteren"))) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+{% endif %}
+
+{% if sec3 %}
+<h3 id="bank">{{ _("Bank") }}</h3>
+
+{% if t8 %}
+<details class="task" id="k8"><summary>{{ _("Een bankafschrift inlezen en afletteren") }}</summary>
+<p>{{ ht("U downloadt bij uw bank een afschrift (CAMT.053 of MT940) en leest het in. Het programma stelt per bankregel voor bij welke factuur of rekening hij hoort; u bevestigt elk voorstel zelf. Wat u zo boekt, is meteen afgeletterd; met {m} controleert u daarna of het saldo klopt met het afschrift.", m=hm("Afletteren")) }}</p>
+<ol>
+  {% if has("/beheer/rekeningschema") %}<li>{{ ht("Eenmalig: IBAN bij de bankrekening in {m}.", m=go("/beheer/rekeningschema", "Beheer", "Rekeningschema")) }}</li>{% endif %}
+  {% if has("/bank/inlezen") %}<li>{{ ht("{m}: kies het bestand, klik op {b} en daarna op {r}.", m=go("/bank/inlezen", "Kas en bank", "Bankafschrift inlezen"), b=hl("Inlezen"), r=hl("Regels verwerken")) }}</li>{% endif %}
+  {% if has("/bank/regels") %}<li>{{ ht("{m}: eerst {a}, daarna de rest één voor één met {v}.", m=go("/bank/regels", "Kas en bank", "Bankregels verwerken"), a=hl("Alle zekere voorstellen verwerken"), v=hl("Voorstel boeken")) }}</li>{% endif %}
+  {% if has("/bank/vaste-regels") %}<li>{{ ht("Komt een bankregel elke maand terug (huur, bankkosten)? Vink {f} aan, of beheer ze bij {m}.", f=hl("Opslaan als vaste regel"), m=go("/bank/vaste-regels", "Kas en bank", "Vaste bankregels")) }}</li>{% endif %}
+  {% if has("/afletteren") %}<li>{{ ht("{m}: vul het {f} in; bij een {v} van 0 klikt u op {b}.", m=go("/afletteren", "Kas en bank", "Afletteren"), f=hl("Afschriftsaldo"), v=hl("Verschil"), b=hl("Opslaan")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+{% endif %}
+
+{% if sec4 %}
+<h3 id="afsluiten">{{ _("Btw, rapporten en afsluiten") }}</h3>
+
+{% if t9 %}
+<details class="task" id="k9"><summary>{{ _("Btw-aangifte doen") }}</summary>
+<p>{{ _("Het programma rekent per rubriek de bedragen voor de aangifte uit; die neemt u over bij de Belastingdienst. Daarna maakt u de btw-boeking en sluit u het tijdvak af, zodat er niets meer verandert.") }}</p>
+<ol>
+  {% if has("/btw/rubrieken") %}<li>{{ ht("Eenmalig: {m}: elke btw-rekening een rubriek.", m=go("/btw/rubrieken", "Btw", "Btw-rubrieken")) }}</li>{% endif %}
+  <li>{{ ht("{m}: kies het {t}, klik op {b}, los de gele meldingen op en open het {f}.", m=go("/btw/aangifte", "Btw", "Btw-aangifte"), t=hl("Tijdvak"), b=hl("Toon"), f=hl("Aangifteformulier")) }}</li>
+  <li>{{ ht("Doe de aangifte bij de Belastingdienst en klik daarna op {b}; sla die boeking op.", b=hl("Btw-boeking maken")) }}</li>
+  {% if has("/btw/icp") %}<li>{{ ht("Omzet in rubriek 3B? {m}: neem de bedragen over en klik op {b}.", m=go("/btw/icp", "Btw", "ICP-opgaaf"), b=hl("ICP-opgaaf vastleggen")) }}</li>{% endif %}
+  {% if has("/beheer/afsluiten") %}<li>{{ ht("{m}: zet {f} op het einde van het tijdvak.", m=go("/beheer/afsluiten", "Beheer", "Afsluiten"), f=hl("Boeken afgesloten tot en met")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if t10 %}
+<details class="task" id="k10"><summary>{{ _("Winst en verlies en de balans bekijken") }}</summary>
+<p>{{ _("De belangrijkste cijfers staan al op het dashboard. Voor de details kiest u een periode, eventueel per maand of kwartaal en met vorig jaar ernaast. Klik op een rekening om de boekingen erachter te zien; elk rapport kan naar PDF, Excel of CSV.") }}</p>
+<ol>
+  {% if has("/rapporten/winst-en-verlies") %}<li>{{ ht("{m}: kies de periode en klik op {b}.", m=go("/rapporten/winst-en-verlies", "Rapporten", "Winst en verlies"), b=hl("Toon")) }}</li>{% endif %}
+  {% if has("/rapporten/balans") %}<li>{{ ht("{m}: kies de datum en klik op {b}.", m=go("/rapporten/balans", "Rapporten", "Balans"), b=hl("Toon")) }}</li>{% endif %}
+  {% if has("/rapporten/proefbalans") %}<li>{{ ht("Alle rekeningen met saldo: {m}.", m=go("/rapporten/proefbalans", "Rapporten", "Proefbalans")) }}</li>{% endif %}
+  {% if has("/rapporten/rekeningmutaties") %}<li>{{ ht("De boekingen op één rekening: {m}.", m=go("/rapporten/rekeningmutaties", "Rapporten", "Rekeningmutaties")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if t11 %}
+<details class="task" id="k11"><summary>{{ _("De maand of het kwartaal afsluiten") }}</summary>
+<p>{{ _("Een vaste ronde: alle bankregels verwerkt, het saldo afgeletterd, de openstaande posten nagekeken, de btw-aangifte gedaan, en dan de periode op slot. Rapporten blijven daarna gewoon werken.") }}</p>
+<ol>
+  {% if has("/bank/regels") %}<li>{{ ht("{m}: geen open regels meer.", m=go("/bank/regels", "Kas en bank", "Bankregels verwerken")) }}</li>{% endif %}
+  {% if has("/afletteren") %}<li>{{ ht("{m}: {v} 0 op de laatste afschriftdatum.", m=go("/afletteren", "Kas en bank", "Afletteren"), v=hl("Verschil")) }}</li>{% endif %}
+  {% if has("/rapporten/openstaand-verkoop") or has("/rapporten/openstaand-inkoop") %}<li>{{ ht("{m}: klopt wat er openstaat?", m=alt("/rapporten/openstaand-verkoop", go("/rapporten/openstaand-verkoop", "Verkoop", "Openstaand"), "/rapporten/openstaand-inkoop", go("/rapporten/openstaand-inkoop", "Inkoop", "Openstaand"), "en")) }}</li>{% endif %}
+  {% if has("/btw/aangifte") %}<li>{{ ht("Eind van het btw-tijdvak: {m}, zie {k}.", m=go("/btw/aangifte", "Btw", "Btw-aangifte"), k=see("k9", _("Btw-aangifte doen"))) }}</li>{% endif %}
+  {% if has("/beheer/afsluiten") %}<li>{{ ht("{m}: {f} op de laatste dag van de periode, en {b}.", m=go("/beheer/afsluiten", "Beheer", "Afsluiten"), f=hl("Boeken afgesloten tot en met"), b=hl("Opslaan")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if t12 %}
+<details class="task" id="k12"><summary>{{ _("Het jaar afsluiten") }}</summary>
+<p>{{ _("Aan het eind van het boekjaar boekt u alle opbrengst- en kostenrekeningen naar nul; het resultaat komt op een rekening van het eigen vermogen. Doe eerst de jaarafsluiting en zet daarna de periode op slot; in een afgesloten periode kan de jaarafsluiting niet meer worden geboekt. Sluit de jaren op volgorde af.") }}</p>
+<ol>
+  {% if has("/memoriaal/nieuw?fx=1") %}<li>{{ ht("Hebt u bank- of kasrekeningen in vreemde valuta? {m}.", m=go("/memoriaal/nieuw?fx=1", "Kas en bank", "Koersverschilboeking")) }}</li>{% endif %}
+  {% if has("/rapporten/winst-en-verlies") or has("/rapporten/balans") %}<li>{{ ht("Controleer {m}.", m=alt("/rapporten/winst-en-verlies", go("/rapporten/winst-en-verlies", "Rapporten", "Winst en verlies"), "/rapporten/balans", go("/rapporten/balans", "Rapporten", "Balans"), "en")) }}</li>{% endif %}
+  <li>{{ ht("{m}: kies de {r}, klik op {v} en daarna op {b}.", m=go("/beheer/jaarafsluiting", "Beheer", "Jaarafsluiting"), r=hl("Resultaatrekening"), v=hl("Voorbeeld berekenen"), b=hl("Jaarafsluiting boeken")) }}</li>
+  {% if has("/beheer/afsluiten") %}<li>{{ ht("{m}: {f} op de laatste dag van het boekjaar.", m=go("/beheer/afsluiten", "Beheer", "Afsluiten"), f=hl("Boeken afgesloten tot en met")) }}</li>{% endif %}
+  {% if has("/systeem/back-up-maken") %}<li>{{ ht("Bewaar een back-up van de afgesloten stand: {m}.", m=go("/systeem/back-up-maken", "Systeem", "Back-up maken")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if t13 %}
+<details class="task" id="k13"><summary>{{ _("Een bijlage terugzoeken") }}</summary>
+<p>{{ _("Alle PDF's en foto's die u bij boekingen, orders en relaties bewaarde, kunt u op één plek zoeken op bestandsnaam, soort of nummer.") }}</p>
+<ol>
+  <li>{{ ht("{m}: vul een zoekterm in en klik op {b}.", m=go("/bijlagen", "Rapporten", "Bijlagen"), b=hl("Zoeken")) }}</li>
+  <li>{{ _("Klik op de bestandsnaam om hem te openen, of op het nummer om naar de boeking te gaan.") }}</li>
+</ol>
+</details>
+{% endif %}
+{% endif %}
+
+{% if sec5 %}
+<h3 id="terugkerend">{{ _("Terugkerend en uren") }}</h3>
+
+{% if t14 %}
+<details class="task" id="k14"><summary>{{ _("Een boeking elke maand laten terugkomen") }}</summary>
+<p>{{ ht("Voor huur, een abonnement of een vaste factuur maakt u één keer een boeking en geeft u die een herhaalschema. Het programma boekt niets vanzelf: u verwerkt de schema's die klaarstaan; het dashboard meldt ze bij {t}.", t=hl("Te doen")) }}</p>
+<ol>
+  {% if has("/memoriaal/nieuw") or has("/verkoop/nieuw") %}<li>{{ ht("Maak en sla de boeking op, bijvoorbeeld via {m} of een order.", m=alt("/memoriaal/nieuw", go("/memoriaal/nieuw", "Grootboek", "Memoriaal"), "/verkoop/nieuw", go("/verkoop/nieuw", "Verkoop", "Boeking toevoegen"), ",")) }}</li>{% endif %}
+  <li>{{ ht("Klik op de opgeslagen boeking op {h}, vul het schema in en klik op {b}.", h=hl("Herhalen"), b=hl("Schema opslaan")) }}</li>
+  <li>{{ ht("{m}: controleer de aangevinkte schema's en klik op {b}.", m=go("/terugkerend", "Terugkerend", "Terugkerende boekingen"), b=hl("Verwerken")) }}</li>
+</ol>
+</details>
+{% endif %}
+
+{% if t15 %}
+<details class="task" id="k15"><summary>{{ _("Uren schrijven en factureren") }}</summary>
+<p>{{ _("Medewerkers schrijven uren op een project met een dienst. Uren op een klantproject zet u per klant om naar een verkooporder, en die order factureert u. Uren op een intern project worden niet gefactureerd.") }}</p>
+<ol>
+  {% if has("/artikelen/nieuw?soort=dienst") %}<li>{{ ht("Eenmalig: de dienst (bijvoorbeeld advies per uur) via {m}, en het project met de klant via {n}, soort {s}.", m=go("/artikelen/nieuw?soort=dienst", "Artikelen", "Dienst toevoegen"), n=go("/beheer/projecten", "Afdelingen en projecten", "Projecten"), s=hl("Klantproject: uren factureren")) }}</li>
+  {% elif has("/beheer/projecten") %}<li>{{ ht("Eenmalig: het project met de klant via {n}, soort {s}.", n=go("/beheer/projecten", "Afdelingen en projecten", "Projecten"), s=hl("Klantproject: uren factureren")) }}</li>{% endif %}
+  {% if has("/uren/toewijzingen") %}<li>{{ ht("{m}: {b} (welke medewerker, welk project, welke dienst).", m=go("/uren/toewijzingen", "Afdelingen en projecten", "Toewijzingen"), b=hl("Toewijzing toevoegen")) }}</li>{% endif %}
+  <li>{{ ht("{m}: de medewerker vult per dag de uren in en klikt op {b}.", m=go("/uren/mijn", "Afdelingen en projecten", "Mijn uren"), b=hl("Opslaan")) }}{% if has("/uren/maandstaat") %} {{ ht("Alle medewerkers: {m}.", m=go("/uren/maandstaat", "Afdelingen en projecten", "Maandstaat")) }}{% endif %}</li>
+  {% if has("/uren/verkooporders") %}<li>{{ ht("{m}: vink de uren aan en klik op {b}.", m=go("/uren/verkooporders", "Afdelingen en projecten", "Verkooporders uit uren"), b=hl("Verkooporders maken")) }}</li>{% endif %}
+  {% if has("/verkooporders") %}<li>{{ ht("Open de order via {m} en klik op {b}, zie {k}.", m=go("/verkooporders", "Orders", "Verkooporders"), b=hl("Verkoopfactuur"), k=see("k3", _("Van offerte naar order naar factuur"))) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+{% endif %}
+
+{% if sec6 %}
+<h3 id="beheer">{{ _("Beheer") }}</h3>
+
+{% if t16 %}
+<details class="task" id="k16"><summary>{{ _("Gegevens importeren") }}</summary>
+<p>{{ ht("Klanten, leveranciers, artikelen, rekeningen, memoriaalboekingen, verkoopfacturen, orders of betalingen leest u in één keer in uit een CSV- of Excel-bestand. U ziet eerst per rij wat er gebeurt; pas bij {b} wordt iets opgeslagen.", b=hl("Importeren")) }}</p>
+<ol>
+  {% if has("/beheer/exporteren") %}<li>{{ ht("Het juiste formaat: {m} geeft een bestand dat u kunt aanvullen.", m=go("/beheer/exporteren", "Beheer", "Exporteren")) }}</li>{% endif %}
+  <li>{{ ht("{m}: kies bij {w} de soort en het bestand, klik op {v}, controleer het {p} en klik op {b}.", m=go("/beheer/importeren", "Beheer", "Importeren"), w=hl("Wat wilt u importeren?"), v=hl("Verder"), p=hl("Voorbeeld"), b=hl("Importeren")) }}</li>
+</ol>
+</details>
+{% endif %}
+
+{% if t17 %}
+<details class="task" id="k17"><summary>{{ _("Werken met een vreemde valuta") }}</summary>
+<p>{{ ht("Voeg de valuta toe en houd koersen bij; een relatie in die valuta krijgt dan facturen in die valuta. Wordt een factuur tegen een andere koers betaald, dan boekt het programma het verschil op de {r}.", r=hl("Rekening koersverschillen")) }}</p>
+<ol>
+  <li>{{ ht("{m}: {b}.", m=go("/beheer/valuta", "Beheer", "Valuta"), b=hl("Valuta toevoegen")) }}</li>
+  {% if has("/beheer/koersen") %}<li>{{ ht("{m}: {b}.", m=go("/beheer/koersen", "Beheer", "Koersen"), b=hl("Koers invoeren")) }}</li>{% endif %}
+  {% if has("/beheer/instellingen") %}<li>{{ ht("{m}: kies de {r}.", m=go("/beheer/instellingen", "Beheer", "Instellingen"), r=hl("Rekening koersverschillen")) }}</li>{% endif %}
+  <li>{{ ht("Kies de valuta op de kaart van de klant of leverancier, en boek facturen en betalingen zoals gewoonlijk; vul zo nodig de {k} in.", k=hl("Koers")) }}</li>
+  {% if has("/memoriaal/nieuw?fx=1") %}<li>{{ ht("Aan het eind van het jaar een rekening in vreemde valuta herwaarderen: {m}.", m=go("/memoriaal/nieuw?fx=1", "Kas en bank", "Koersverschilboeking")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if show_system %}
+{% if t18 %}
+<details class="task" id="k18"><summary>{{ _("Een nieuwe administratie beginnen") }}</summary>
+<p>{{ ht("Een nieuwe administratie krijgt een standaardrekeningschema met btw-tarieven. Op het dashboard ziet de beheerder daarna de lijst {a} met wat er nog moet: bedrijfsgegevens, huisstijl, IBAN en beginbalans.", a=hl("Aan de slag")) }}</p>
+<ol>
+  <li>{{ ht("{m}: {n}, vul naam en land in, laat {t} aan staan en klik op {b}.", m=go("/systeem/administraties", "Systeem", "Administraties"), n=hl("Nieuwe administratie"), t=hl("Mij als beheerder van deze administratie toevoegen"), b=hl("Administratie aanmaken")) }}</li>
+  {% if has("/beheer/instellingen") %}<li>{{ ht("{m}: bedrijfsgegevens en {f}.", m=go("/beheer/instellingen", "Beheer", "Instellingen"), f=hl("Btw-aangifte per")) }}</li>{% endif %}
+  {% if has("/beheer/huisstijl") %}<li>{{ ht("{m}: logo en kleur voor uw facturen.", m=go("/beheer/huisstijl", "Beheer", "Huisstijl")) }}</li>{% endif %}
+  {% if has("/beheer/rekeningschema") %}<li>{{ ht("{m}: IBAN bij de bankrekening.", m=go("/beheer/rekeningschema", "Beheer", "Rekeningschema")) }}</li>{% endif %}
+  {% if has("/memoriaal/nieuw") %}<li>{{ ht("Beginbalans: {m}.", m=go("/memoriaal/nieuw", "Grootboek", "Memoriaal")) }}</li>{% endif %}
+  <li>{{ ht("Collega's toegang geven: {k}.", k=see("k19", _("Een gebruiker toegang geven"))) }}</li>
+</ol>
+</details>
+{% endif %}
+
+{% if t19 %}
+<details class="task" id="k19"><summary>{{ _("Een gebruiker toegang geven") }}</summary>
+<p>{{ _("Een nieuwe gebruiker kiest zelf een wachtwoord met een eenmalige code die u doorgeeft. Daarna geeft u per administratie een rol: Urenschrijver, Alleen lezen, Boekhouder of Beheerder.") }}</p>
+<ol>
+  <li>{{ ht("{m}: {n}, vul login en naam in en klik op {b}. Geef de code door.", m=go("/systeem/gebruikers", "Systeem", "Gebruikers"), n=hl("Nieuwe gebruiker"), b=hl("Aanmaken en code maken")) }}</li>
+  <li>{{ ht("Open de gebruiker en kies onder {t} de {r} en de {w}; klik op {b}.", t=hl("Toegang per administratie"), r=hl("Rol"), w=hl("Medewerker"), b=hl("Opslaan")) }}</li>
+</ol>
+</details>
+{% endif %}
+
+{% if t20 %}
+<details class="task" id="k20"><summary>{{ _("Een back-up maken en terugzetten") }}</summary>
+<p>{{ _("Een back-up is één bestand met alle gegevens en bijlagen van een administratie, plus zo nodig een zip met eigen sjablonen en logo. Terugzetten maakt altijd een nieuwe administratie; een bestaande wordt nooit overschreven.") }}</p>
+<ol>
+  <li>{{ ht("{m}: klik op {d} en, als die er is, op {s}. Bewaar beide buiten deze computer.", m=go("/systeem/back-up-maken", "Systeem", "Back-up maken"), d=hl("Database (.sql.gz)"), s=hl("Sjablonen en logo (.zip)")) }}</li>
+  {% if has("/systeem/back-up") %}<li>{{ ht("Terugzetten: {m}.", m=go("/systeem/back-up", "Systeem", "Back-up inlezen")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+
+{% if t21 %}
+<details class="task" id="k21"><summary>{{ _("Overstappen uit SQL-Ledger") }}</summary>
+<p>{{ _("U leest de back-up van SQL-Ledger in als nieuwe administratie; een oudere versie wordt meteen bijgewerkt. Daarna loopt u de overstaplijst af en legt u de cijfers naast die uit SQL-Ledger, tot alles klopt.") }}</p>
+<ol>
+  <li>{{ _("Maak in SQL-Ledger een back-up van de administratie.") }}</li>
+  {% if has("/systeem/back-up") %}<li>{{ ht("{m}: kies het bestand, klik op {u}, controleer de back-up en klik op {l}. Daarna {n}.", m=go("/systeem/back-up", "Systeem", "Back-up inlezen"), u=hl("Uploaden"), l=hl("Inlezen"), n=hl("Naar de administratie")) }}</li>{% endif %}
+  {% if has("/systeem/gebruikers") %}<li>{{ ht("{m}: geef uw collega's toegang (zie {k}).", m=go("/systeem/gebruikers", "Systeem", "Gebruikers"), k=see("k19", _("Een gebruiker toegang geven"))) }}</li>{% endif %}
+  {% if has("/beheer/ingebruikname") %}<li>{{ ht("{m}: loop de punten af. Open het {c}, vergelijk de cijfers met SQL-Ledger en klik op {b}.", m=go("/beheer/ingebruikname", "Beheer", "Ingebruikname"), c=hl("Controleblad"), b=hl("Cijfers kloppen – akkoord")) }}</li>{% endif %}
+  {% if has("/systeem/back-up-maken") %}<li>{{ ht("{m}: maak een eerste back-up en plan die dagelijks in.", m=go("/systeem/back-up-maken", "Systeem", "Back-up maken")) }}</li>{% endif %}
+</ol>
+</details>
+{% endif %}
+{% endif %}
+{% endif %}

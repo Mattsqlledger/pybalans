@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Rekeningschema") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Rekeningschema") }}</h2><span><a href="/beheer/rgs">{{ _("RGS-koppeling") }}</a> <a class="button" href="/beheer/rekeningschema/nieuw">{{ _("Rekening toevoegen") }}</a></span></div>
+{% include "help/am_accounts.html" %}
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("Rekening") }}</th><th>{{ _("GIFI") }}</th><th>{{ _("Omschrijving") }}</th><th>{{ _("Soort") }}</th>
+    {% if show_rgs %}<th>{{ _("RGS") }}</th>{% endif %}<th>{{ _("Koppelingen") }}</th><th>{{ _("Tegen") }}</th><th>{{ _("Gesloten") }}</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    {% if r.charttype == 'H' %}
+    <tr class="group"><th><a href="/beheer/rekeningschema/{{ r.id }}">{{ r.accno }}</a></th><th>{{ r.gifi_accno or "" }}</th>
+      <th>{{ r.description or "" }}</th><th>{{ _(categories.get(r.category, r.category or "")) }}</th>{% if show_rgs %}<th class="small">{{ r.rgs }}</th>{% endif %}<th colspan="3"></th></tr>
+    {% else %}
+    <tr><td><a href="/beheer/rekeningschema/{{ r.id }}">{{ r.accno }}</a></td><td>{{ r.gifi_accno or "" }}</td>
+      <td>{{ r.description or "" }}</td><td>{{ _(categories.get(r.category, r.category or "")) }}</td>
+      {% if show_rgs %}<td class="small">{{ r.rgs }}</td>{% endif %}<td class="small">{% for l in r.links %}{{ l }}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
+      <td>{{ "✓" if r.contra }}</td><td>{{ "✓" if r.closed }}</td></tr>
+    {% endif %}
+  {% endfor %}
+  </tbody>
+</table></div>
+{% endblock %}

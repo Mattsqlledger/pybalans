@@ -1,0 +1,19 @@
+{# Voorraadcorrectie, vanuit een artikel (HELP_ANALYSE golf 4, tekst A6) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De voorraad van een artikel aanpassen, bijvoorbeeld na een telling of bij breuk. Elke correctie wordt met reden bewaard.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Open het artikel en klik bij {o} op {c}.", o=hl("Op voorraad"), c=hl("Voorraadcorrectie")) }}</li>
+  <li>{{ ht("Kies {n} en vul het getelde aantal in, of kies {v} en vul in hoeveel erbij of eraf gaat (bijvoorbeeld -2).", n=hl("nieuw aantal (telling)"), v=hl("verschil (+/−)")) }}</li>
+  <li>{{ ht("Controleer de {d} en vul een {r} in (verplicht).", d=hl("Datum"), r=hl("Reden")) }}</li>
+  <li>{{ ht("Klik op {c}. De correctie staat daarna onder {e}.", c=hl("Corrigeren"), e=hl("Eerdere correcties")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Er wordt niets in het grootboek geboekt; alleen het aantal verandert. Wilt u ook de waarde van de voorraad in de boekhouding aanpassen, maak dan zelf een memoriaalboeking.") }}</li>
+  <li>{{ ht("De datum moet na de afsluitdatum liggen ({m}); een datum in een afgesloten periode wordt geweigerd.", m=hm("Beheer", "Afsluiten")) }}</li>
+  <li>{{ _("Een correctie kunt u niet weghalen. Maak een tegengestelde correctie als u zich vergist hebt.") }}</li>
+  <li>{{ _("Alleen artikelen met voorraad kunt u corrigeren, geen diensten. Bij een samengesteld artikel gebruikt u meestal Assembleren.") }}</li>
+</ul>
+</details>

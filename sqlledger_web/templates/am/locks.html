@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Locks") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Locks") }}</h2>
+{% include "help/am_locks.html" %}
+<p class="muted small">{{ _("Een boeking die iemand open heeft, is voor anderen alleen-lezen tot het lock verloopt. Blijft een lock hangen (scherm gesloten zonder opslaan), dan kunt u het hier vrijgeven.") }}</p>
+{% if confirm %}
+<form method="post" action="/beheer/locks" class="confirm" role="alert">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <p>{{ _("Alle locks vrijgeven? Wie nu een boeking open heeft, kan bij opslaan een conflict krijgen.") }}</p>
+  <p><button name="action" value="release_all_confirmed" class="danger">{{ _("Ja, alle vrijgeven") }}</button>
+    <a href="/beheer/locks">{{ _("Annuleren") }}</a></p>
+</form>
+{% endif %}
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("Boeking") }}</th><th>{{ _("Module") }}</th><th>{{ _("Gebruiker") }}</th><th>{{ _("Verloopt") }}</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr><td>{% if r.kind %}<a href="/boekingen/{{ r.id }}">{{ r.reference or r.id }}</a>{% else %}{{ r.id }}{% endif %}</td>
+    <td>{{ r.module or "" }}</td><td>{{ r.name or r.login }}</td>
+    <td>{{ r.expires_at.strftime("%Y-%m-%d %H:%M") if r.expires_at else "" }}{% if r.expired %} <span class="muted">{{ _("(verlopen)") }}</span>{% endif %}</td>
+    <td><form method="post" action="/beheer/locks" class="inline">
+      <input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="id" value="{{ r.id }}"><input type="hidden" name="login" value="{{ r.login }}">
+      <button name="action" value="release" class="secondary small">{{ _("Vrijgeven") }}</button></form></td></tr>
+  {% else %}
+  <tr><td colspan="5" class="muted">{{ _("Geen locks.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% if rows %}
+<form method="post" action="/beheer/locks"><input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <p class="glbuttons"><button name="action" value="release_all" class="danger secondary">{{ _("Alle locks vrijgeven") }}</button></p></form>
+{% endif %}
+{% endblock %}

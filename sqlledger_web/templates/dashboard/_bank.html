@@ -1,0 +1,14 @@
+<section class="card dash-bank">
+  <h3>{{ _("Bank en kas") }} <small>{{ v.amount(total) }}</small></h3>
+  {% for a in accounts %}
+  <div class="acc">
+    <div><a href="{{ links[a.accno] }}">{{ a.accno }} {{ a.description }}</a>
+      {% if a.statement_to %}<div class="meta">{{ _("afschrift t/m {date}").format(date=v.date(a.statement_to)) }}</div>{% endif %}
+      {% if a.open_lines %}<div class="todo">{{ _("{n} regels te verwerken").format(n=a.open_lines) if a.open_lines != 1 else _("1 regel te verwerken") }}</div>{% endif %}</div>
+    <div class="amt">{{ v.amount(a.balance) }}</div>
+  </div>
+  {% else %}<p class="muted">{{ _("Geen betaalrekeningen.") }}</p>
+  {% endfor %}
+  {% if hidden %}<p class="muted small">{{ _("+ {n} rekeningen zonder saldo en zonder recente mutaties").format(n=hidden) if hidden != 1 else _("+ 1 rekening zonder saldo en zonder recente mutaties") }}</p>{% endif %}
+  {% if v.bookkeeper %}<div class="acts"><a class="button" href="/bank/inlezen">{{ _("Afschrift inlezen") }}</a><a class="button secondary" href="/bank/regels">{{ _("Bankregels") }}</a></div>{% endif %}
+</section>

@@ -1,0 +1,20 @@
+{# Beheer > Ingebruikname (HELP_ANALYSE golf 3, tekst A2) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een lijst met alles wat moet kloppen voordat u na de overstap uit SQL-Ledger alleen nog met dit programma werkt. Dezelfde lijst staat bovenaan het dashboard, alleen voor de beheerder.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Loop de punten van boven naar beneden af. Klik op een punt om naar het scherm te gaan waar u het regelt.") }}</li>
+  <li>{{ _("Wat het programma zelf kan controleren, vinkt het vanzelf af zodra het klopt. Onder zo'n punt ziet u welke deelstappen nog open zijn, met een link.") }}</li>
+  <li>{{ ht("Bij {c} en {n} klikt u zelf op {g} als u klaar bent.", c=hl("Cijfers controleren met het controleblad"), n=hl("Nummering controleren"), g=hl("gedaan")) }}</li>
+  <li>{{ ht("Is een punt voor u niet van toepassing, klik dan op {b}.", b=hl("niet nodig")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("De lijst gaat vanzelf aan als u een back-up van SQL-Ledger inleest. Werkt u met een gekoppelde database, zet de lijst dan zelf aan met {b}.", b=hl("Overstaplijst aanzetten")) }}</li>
+  <li>{{ ht("{h} verbergt de lijst ook hier. Met {t} komt hij terug.", h=hl("Lijst van het dashboard halen"), t=hl("Lijst weer tonen")) }}</li>
+  <li>{{ _("Op het dashboard kunt u de lijst inklappen door op de titel te klikken; de browser onthoudt dat.") }}</li>
+  <li>{{ ht("Komt de administratie uit Run my Accounts of ledger123, dan staat er ook {p}: lees het controlerapport en vink af.", p=hl("Run my Accounts-rapport nalezen")) }}</li>
+  <li>{{ ht("{i} en {b} regelt de systeembeheerder, in het menu {m}.", i=hl("Iedereen een eigen login met tweestapsverificatie"), b=hl("Back-up instellen"), m=hm("Systeem")) }}</li>
+</ul>
+</details>

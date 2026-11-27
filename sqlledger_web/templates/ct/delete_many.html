@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ _(k.delete_title) }}{% endblock %}
+{% block content %}
+<h2>{{ _(k.delete_title) }}</h2>
+{% if names %}
+<form method="post" action="/{{ k.prefix }}/verwijderen" class="confirm">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="confirmed" value="1">
+  <input type="hidden" name="back" value="{{ back }}">
+  {% for i in ids %}<input type="hidden" name="ids" value="{{ i }}">{% endfor %}
+  <p><strong>{{ _("Weet u zeker dat u deze relaties wilt verwijderen?") }}</strong></p>
+  <ul>{% for n in names %}<li>{{ n }}</li>{% endfor %}</ul>
+  <button class="danger">{{ _("Ja, verwijderen") }}</button>
+  <a class="button secondary" href="{{ back }}">{{ _("Terug") }}</a>
+</form>
+{% else %}
+<p class="actions"><a class="button secondary" href="{{ back }}">{{ _("Terug naar de lijst") }}</a></p>
+{% endif %}
+{% endblock %}

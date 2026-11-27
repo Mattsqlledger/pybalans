@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ _("E-mail") }}{% endblock %}
+{% block content %}
+<h2>{{ _("E-mail") }}</h2>
+{% include "help/mail_settings.html" %}
+<p class="muted small">{{ _("Facturen en andere documenten worden vanuit deze administratie gemaild met deze server en dit afzenderadres. De PDF gaat als bijlage mee.") }}</p>
+<form method="post" action="/beheer/email" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="lang" value="{{ doc_lang }}">
+  <h3>{{ _("Verzenden") }}</h3>
+  <div class="grid">
+    <label>{{ _("Verzenden via") }}
+      <select name="mode">
+        <option value="off"{% if ms.mode == 'off' %} selected{% endif %}>{{ _("uit (niet mailen)") }}</option>
+        <option value="smtp"{% if ms.mode == 'smtp' %} selected{% endif %}>{{ _("SMTP-server") }}</option>
+        <option value="folder"{% if ms.mode == 'folder' %} selected{% endif %}>{{ _("map (testmodus, niets wordt verstuurd)") }}</option>
+      </select></label>
+    <label>{{ _("SMTP-server") }} <input name="host" value="{{ ms.host }}" autocomplete="off"></label>
+    <label>{{ _("Poort") }} <input name="port" value="{{ ms.port }}" inputmode="numeric" class="short"></label>
+    <label>{{ _("Beveiliging") }}
+      <select name="security">
+        <option value="starttls"{% if ms.security == 'starttls' %} selected{% endif %}>{{ _("STARTTLS (meestal poort 587)") }}</option>
+        <option value="ssl"{% if ms.security == 'ssl' %} selected{% endif %}>{{ _("SSL/TLS (meestal poort 465)") }}</option>
+        <option value="none"{% if ms.security == 'none' %} selected{% endif %}>{{ _("geen (alleen een server op deze computer)") }}</option>
+      </select></label>
+    <label>{{ _("Gebruikersnaam") }} <input name="username" value="{{ ms.username }}" autocomplete="off"></label>
+    <label>{{ _("Wachtwoord") }} <input type="password" name="password" autocomplete="new-password"
+      placeholder="{{ _('ongewijzigd') if ms.has_password else '' }}"></label>
+  </div>
+  {% if ms.has_password %}<label class="check"><input type="checkbox" name="clear_password" value="1"> {{ _("Opgeslagen wachtwoord wissen") }}</label>{% endif %}
+  <p class="muted small">{{ _("Het wachtwoord wordt versleuteld opgeslagen en nooit getoond. Laat het veld leeg om het te houden.") }}</p>
+  <h3>{{ _("Afzender") }}</h3>
+  <div class="grid">
+    <label>{{ _("Naam afzender") }} <input name="from_name" value="{{ ms.from_name }}"></label>
+    <label>{{ _("Adres afzender") }} <input type="email" name="from_address" value="{{ ms.from_address }}"></label>
+    <label>{{ _("Antwoordadres (optioneel)") }} <input type="email" name="reply_to" value="{{ ms.reply_to }}"></label>
+  </div>
+  <p class="muted small">{{ _("Zonder antwoordadres gaan antwoorden naar het e-mailadres van de gebruiker die mailt (Mijn instellingen), en anders naar de afzender.") }}</p>
+
+  <h3>{{ _("Standaardteksten") }}</h3>
+  <p class="small">{{ _("Taal van de documenten:") }}
+    {% for code, name in (("nl", _("Nederlands")), ("en", _("Engels")), ("de", _("Duits")), ("fr", _("Frans"))) %}
+      {% if code == doc_lang %}<strong>{{ name }}</strong>{% else %}<a href="/beheer/email?taal={{ code }}">{{ name }}</a>{% endif %}{% if not loop.last %} · {% endif %}
+    {% endfor %}</p>
+  <p class="muted small">{{ _("Plaatshouders:") }} {% for p in placeholders %}<code>{{ "{" ~ p ~ "}" }}</code>{% if not loop.last %} {% endif %}{% endfor %}.
+    {{ _("De handtekening komt uit Mijn instellingen van de gebruiker.") }}</p>
+  {% for formname in forms %}
+  {% set own = ((ms.texts.get(doc_lang) or {}).get(formname) or {}) %}
+  <details class="mailtext"{% if loop.first %} open{% endif %}>
+    <summary>{{ _(label(formname)) }}{% if own %} <span class="muted small">({{ _("eigen tekst") }})</span>{% endif %}</summary>
+    <label>{{ _("Onderwerp") }} <input name="subject_{{ formname }}" value="{{ own.subject or defaults[formname].subject }}" maxlength="500"></label>
+    <label>{{ _("Bericht") }} <textarea name="body_{{ formname }}" rows="7" cols="70">
+{{ own.body or defaults[formname].body }}</textarea></label>
+  </details>
+  {% endfor %}
+  <div><button name="action" value="save">{{ _("Opslaan") }}</button>
+    {% if ms.enabled %}<button name="action" value="test" class="secondary" formnovalidate>{{ _("Testmail naar mijzelf") }}</button>{% endif %}</div>
+</form>
+{% endblock %}

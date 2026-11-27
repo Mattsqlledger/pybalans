@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Documentinstellingen") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Documentinstellingen") }}</h2>
+{% include "help/am_docsettings.html" %}
+<p class="muted">{{ _("Wat er op facturen, orders, offertes, pakbonnen en picklijsten staat. Geldt voor alle gebruikers van deze administratie. Leeg of standaard = zoals de standaardsjablonen.") }}</p>
+<p class="small"><a href="/beheer/huisstijl">{{ _("Logo, kleur en lettertype: Huisstijl") }}</a></p>
+
+<form method="post" action="/beheer/documentinstellingen" class="stack wide docsettings">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="taal" value="{{ taal }}">
+
+  <h3>{{ _("Bedrijf") }}</h3>
+  <dl class="facts">
+    <dt>{{ _("Bedrijfsnaam") }}</dt><dd>{{ company.company or "—" }}</dd>
+    <dt>{{ _("Adres") }}</dt><dd>{{ (company.address or "—")|replace("\r", "")|replace("\n", " · ") }}</dd>
+    <dt>{{ _("KvK-nummer") }}</dt><dd>{{ company.businessnumber or "—" }}</dd>
+  </dl>
+  <p class="small"><a href="/beheer/instellingen">{{ _("Naam, adres, telefoon, e-mail en KvK wijzigen in Beheer > Instellingen") }}</a></p>
+  <div class="grid">
+    <label>{{ _("Btw-nummer") }} <input name="taxnumber" value="{{ s.taxnumber }}" maxlength="40"></label>
+  </div>
+
+  <h3>{{ _("Bank") }}</h3>
+  <fieldset><legend>{{ _("Bankrekening op het document") }}</legend>
+    <label class="check"><input type="radio" name="bank_mode" value="booking"{% if s.bank_mode != 'fixed' %} checked{% endif %}> {{ _("Rekening van de boeking (laatste betaling, anders de rekening op de factuur)") }}</label>
+    <label class="check"><input type="radio" name="bank_mode" value="fixed"{% if s.bank_mode == 'fixed' %} checked{% endif %}> {{ _("Altijd deze rekening:") }}</label>
+    <label>{{ _("Vaste rekening") }}
+      <select name="bank_accno"><option value="">—</option>
+        {% for b in banks %}<option value="{{ b.accno }}"{% if b.accno == s.bank_accno %} selected{% endif %}>{{ b.accno }} {{ b.description }}{% if b.iban %} · {{ b.iban }}{% endif %}</option>{% endfor %}
+      </select></label>
+  </fieldset>
+  {% if not banks %}<p class="muted small">{{ _("Er zijn nog geen rekeningen met bankgegevens (Beheer > Rekeningschema, rekening met IBAN).") }}</p>{% endif %}
+  <label class="check"><input type="checkbox" name="bank_name" value="1"{% if s.bank_name %} checked{% endif %}> {{ _("Naam van de bank tonen bij het IBAN") }}</label>
+  <label class="check"><input type="checkbox" name="payinfo" value="1"{% if s.payinfo %} checked{% endif %}> {{ _("Betaalzin onder facturen (\"Graag betalen vóór … op rekening …\")") }}</label>
+
+  <h3>{{ _("Teksten") }}</h3>
+  <p class="small">{{ _("Taal van de documenten:") }}
+    {% for code, name in languages.items() %}
+      {% if code == taal %}<strong>{{ _(name) }}</strong>{% else %}<a href="/beheer/documentinstellingen?taal={{ code }}">{{ _(name) }}</a>{% endif %}{% if not loop.last %} · {% endif %}
+    {% endfor %}</p>
+  <p class="muted small">{{ _("Teksten en eigen kolomnamen gelden voor documenten in deze taal; sla op voordat u van taal wisselt. Opmaak: **vet**, *cursief*, [tekst](https://…).") }}</p>
+  <label class="check"><input type="checkbox" name="return_line" value="1"{% if s.return_line %} checked{% endif %}> {{ _("Retouradresregel boven het adres (voor een vensterenvelop)") }}</label>
+  <div class="mailtext">
+    <label>{{ _("Eigen retouradresregel") }} <input name="text_return_line" value="{{ return_text }}" maxlength="2000" placeholder="{{ company.company }}"></label>
+    <label>{{ _("Voettekst") }} <textarea name="text_footer" rows="3" cols="70" maxlength="2000" placeholder="{{ _('Leeg = bedrijfsnaam, KvK, btw-nummer, IBAN, e-mail en website') }}">
+{{ footer }}</textarea></label>
+  </div>
+  {% for k in kinds %}
+  <details class="mailtext"{% if k.closing or k.note or k.intro %} open{% endif %}>
+    <summary>{{ _(k.label) }}{% if k.closing or k.note or k.intro %} <span class="muted small">({{ _("eigen tekst") }})</span>{% endif %}</summary>
+    {% if k.letter %}<label>{{ _("Inleidende tekst") }} <textarea name="intro_{{ k.key }}" rows="3" cols="70" maxlength="2000" placeholder="{{ k.intro_standard }}">
+{{ k.intro }}</textarea></label>{% endif %}
+    <label>{{ _("Slottekst") }} <input name="closing_{{ k.key }}" value="{{ k.closing }}" maxlength="2000" placeholder="{{ k.standard }}"></label>
+    <label>{{ _("Opmerking onder de totalen") }} <textarea name="note_{{ k.key }}" rows="2" cols="70" maxlength="2000">
+{{ k.note }}</textarea></label>
+  </details>
+  {% endfor %}
+
+  <h3>{{ _("Kolommen") }}</h3>
+  <p class="muted small">{{ _("Per veld: als kolom, als kolom alleen als een regel het veld heeft, als regel onder de omschrijving, of niet. Een eigen naam vervangt de kolomkop (en het voorvoegsel van de regel) in de gekozen taal.") }}</p>
+  {% for g in groups %}
+  <details class="mailtext"{% if loop.first %} open{% endif %}>
+    <summary>{{ _(g.label) }}</summary>
+    <div class="table-wrap"><table class="list doccols">
+      <thead><tr><th>{{ _("Veld") }}</th><th>{{ _("Weergave") }}</th><th>{{ _("Eigen naam") }} ({{ _(languages[taal]) }})</th></tr></thead>
+      <tbody>
+      {% for r in g.rows %}
+        <tr><td>{{ _(r.label) }}</td>
+          <td>{% if r.modes|length > 1 %}<select name="mode_{{ g.key }}_{{ r.name }}" aria-label="{{ _('Weergave') }} {{ _(r.label) }}">
+            {% for m in r.modes %}<option value="{{ m }}"{% if m == r.mode %} selected{% endif %}>{{ _(modes[m]) }}</option>{% endfor %}</select>
+            {% else %}{{ _(modes[r.mode]) }}{% endif %}</td>
+          <td><input name="label_{{ g.key }}_{{ r.name }}" value="{{ r.own }}" maxlength="60" placeholder="{{ r.standard }}" aria-label="{{ _('Eigen naam') }} {{ _(r.label) }}"></td></tr>
+      {% endfor %}
+      </tbody>
+    </table></div>
+    <label class="check"><input type="checkbox" name="weights_{{ g.key }}" value="1"{% if g.weights %} checked{% endif %}> {{ _("Gewichtsoverzicht onder de totalen (gewicht en nettogewicht per regel, totaal)") }}</label>
+  </details>
+  {% endfor %}
+
+  <div><button>{{ _("Opslaan") }}</button></div>
+</form>
+
+<h3>{{ _("Voorbeeld") }}</h3>
+<p class="muted small">{{ _("Met het laatste document van die soort, in de gekozen taal; er wordt niets gemarkeerd als geprint. Sla eerst op.") }}</p>
+<ul class="doclinks">
+  {% for k in kinds %}<li><a href="/beheer/sjablonen/voorbeeld?naam={{ k.key }}&amp;variant={{ taal }}" target="_blank" rel="noopener">{{ _(k.label) }}</a></li>{% endfor %}
+</ul>
+{% endblock %}

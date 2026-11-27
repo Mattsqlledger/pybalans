@@ -1,0 +1,31 @@
+{# Verkoop > Klant toevoegen, Inkoop > Leverancier toevoegen, ook wijzigen (HELP_ANALYSE golf 1, tekst 11) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De gegevens van een klant of leverancier. Bij een nieuwe boeking worden die vanzelf ingevuld: adres, betalingstermijn, valuta, rekeningen en btw.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies {a} of {b}.", a=hl("Bedrijf"), b=hl("Persoon")) }}</li>
+  <li>{{ ht("Vul de {n} in en wat u nodig hebt: adres, contactpersoon, bank.", n=hl("Naam")) }}</li>
+  <li>{{ ht("Laat het nummer leeg; het volgende nummer wordt bij opslaan gegeven. {n} laat het vooraf zien.", n=hl("Nieuw nummer")) }}</li>
+  <li>{{ ht("Controleer bij {v} de betalingstermijn en de vinkjes bij {b}.", v=hl("Voorwaarden en rekeningen"), b=hl("Btw")) }}</li>
+  <li>{{ ht("Klik op {s}. Daarna verschijnen knoppen voor een nieuwe boeking, creditnota en ontvangst of betaling voor deze relatie.", s=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: met landcode, bijvoorbeeld DE123456789.", f=hl("Btw-nummer")) }}</li>
+  <li>{{ ht("{f}: hiermee wordt de vervaldatum van een factuur berekend.", f=hl("Betalingstermijn (dagen)")) }}</li>
+  <li>{{ ht("{f}: vink de btw-tarieven aan die voor deze relatie gelden. Een tarief dat hier niet aanstaat, komt niet op de boeking.", f=hl("Btw")) }}</li>
+  <li>{{ ht("{f}: alleen om het beschikbare krediet te tonen; het programma blokkeert niets.", f=hl("Kredietlimiet")) }}</li>
+  <li>{{ ht("{f}: komt als korting op elke nieuwe artikelregel van een factuur, order of offerte voor deze relatie. Per regel kunt u hem aanpassen.", f=hl("Korting %")) }}</li>
+  <li>{{ ht("{f} (leverancier): staat er minder open dan dit bedrag, dan verschijnt de leverancier niet bij {m}.", f=hl("Drempelbedrag"), m=hm("Kas en bank", "Betalingen (meerdere leveranciers)")) }}</li>
+  <li>{{ ht("{f} (leverancier): wordt voorgesteld bij {m}.", f=hl("Vaste kostenrekening"), m=hm("Inkoop", "Inkoopfactuur uploaden")) }}</li>
+  <li>{{ ht("{a} en {b} (klant): bepalen waar omzet zonder btw terechtkomt in de btw-aangifte en de ICP-opgaaf, bijvoorbeeld 3B voor een klant in een ander EU-land.", a=hl("Btw-rubriek omzet zonder btw"), b=hl("ICP-soort")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een klant in rubriek 3B, of een leverancier met btw op 4B, kunt u alleen opslaan met een geldig btw-nummer uit een ander EU-land. Voor Griekenland gebruikt u EL.") }}</li>
+  <li>{{ ht("Een relatie die al in boekingen voorkomt, kunt u niet verwijderen. Gebruik dan {i}.", i=hl("Inactief maken")) }}</li>
+  <li>{{ ht("Na het opslaan kunt u onder {b} een PDF of foto bij deze relatie bewaren, bijvoorbeeld een contract. Met {v} ziet alleen u het bestand; het hoort bij uw medewerker in deze administratie.", b=hl("Bijlagen"), v=hl("Vertrouwelijk")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: een EU-btw-nummer wordt gecontroleerd. SQL-Ledger nam elk nummer aan.") }}</li>
+</ul>
+</details>

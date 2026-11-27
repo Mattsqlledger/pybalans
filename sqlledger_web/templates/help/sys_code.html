@@ -1,0 +1,16 @@
+{# Systeem > Gebruikers > Eenmalige code (HELP_ANALYSE golf 3, tekst C3) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De code waarmee de gebruiker zelf een (nieuw) wachtwoord kiest.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Geef de code en het adres op het scherm door, persoonlijk of via een ander kanaal dan de login.") }}</li>
+  <li>{{ ht("Of klik op de knop om de code te mailen. Die staat er alleen als de gebruiker een e-mailadres heeft en een administratie e-mail heeft ingesteld ({m}). Zijn er meer, kies dan bij {f}.", m=hm("Beheer", "E-mail"), f=hl("Versturen met de e-mail van")) }}</li>
+  <li>{{ _("De gebruiker opent het adres, vult de code in en kiest een wachtwoord van minstens 12 tekens.") }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("De code is 24 uur geldig, werkt één keer en wordt niet opnieuw getoond. Kwijt? Maak een nieuwe bij de gebruiker met {b}; de oude vervalt dan.", b=hl("Nieuwe eenmalige code")) }}</li>
+  <li>{{ _("Een nieuwe code voor iemand die al een wachtwoord heeft, is de manier om een vergeten wachtwoord te herstellen.") }}</li>
+</ul>
+</details>

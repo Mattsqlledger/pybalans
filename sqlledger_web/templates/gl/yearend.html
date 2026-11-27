@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Jaarafsluiting") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Jaarafsluiting") }}</h2>
+{% include "help/gl_yearend.html" %}
+<p class="muted">{{ _("Boekt alle opbrengst- en kostenrekeningen per de gekozen datum naar nul, met het resultaat op de rekening voor eigen vermogen. Eerst ziet u een voorbeeld; pas na bevestigen wordt er geboekt.") }}
+{% if closedto %}{{ _("Afsluitdatum nu: {date}.").format(date=closedto) }}{% endif %}</p>
+<form method="post" action="/beheer/jaarafsluiting" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="grid">
+    <label>{{ _("Datum") }} * <input type="date" name="todate" value="{{ v.todate }}" required></label>
+    <label>{{ _("Nummer") }} <input name="reference" value="{{ v.reference }}" placeholder="{{ _('automatisch') }}"></label>
+    <label>{{ _("Resultaatrekening") }}
+      <select name="accno">{% for a in accounts %}<option value="{{ a.accno }}"{% if a.accno == v.accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}</select></label>
+    <fieldset><legend>{{ _("Stelsel") }}</legend>
+      <label class="check"><input type="radio" name="method" value="accrual"{% if v.method != 'cash' %} checked{% endif %}> {{ _("Factuurstelsel") }}</label>
+      <label class="check"><input type="radio" name="method" value="cash"{% if v.method == 'cash' %} checked{% endif %}> {{ _("Kasstelsel") }}</label>
+    </fieldset>
+  </div>
+  <label>{{ _("Omschrijving") }} <textarea name="description" rows="2">{{ v.description }}</textarea></label>
+  {% if preview %}
+  <h3>{{ _("Voorbeeld per {date}").format(date=fmtdate(preview.todate)) }}</h3>
+  {% if closed %}<p class="error">{{ _("Deze datum valt in de afgesloten periode (t/m {date}); boeken kan niet. Kies een latere datum of zet eerst de afsluitdatum terug (Beheer > Afsluiten).").format(date=closedto) }}</p>{% endif %}
+  {% if later %}{% set dl = namespace(s="") %}{% for d in later %}{% set dl.s = dl.s ~ fmtdate(d) ~ (", " if not loop.last else "") %}{% endfor %}
+  <p class="error">{{ _("Let op: de bestaande jaarafsluiting(en) per {dates} worden eerst verwijderd.").format(dates=dl.s) }}</p>{% endif %}
+  {% if preview.lines %}
+  <div class="table-wrap"><table class="list report">
+    <thead><tr><th>{{ _("Rekening") }}</th><th>{{ _("Omschrijving") }}</th><th class="num">{{ _("Debet") }}</th><th class="num">{{ _("Credit") }}</th></tr></thead>
+    <tbody>
+    {% set ns = namespace(d=0, c=0) %}
+    {% for ln in preview.lines %}
+      {% set ns.d = ns.d + ln.debit %}{% set ns.c = ns.c + ln.credit %}
+      <tr{% if loop.last %} class="subtotal"{% endif %}><td>{{ ln.accno }}</td><td>{{ names.get(ln.accno, "") }}</td>
+        <td class="num">{{ ln.debit | amount(nf, precision) }}</td><td class="num">{{ ln.credit | amount(nf, precision) }}</td></tr>
+    {% endfor %}
+    <tr class="total"><th colspan="2">{{ _("Totaal") }}</th><th class="num">{{ ns.d | amount(nf, precision) }}</th><th class="num">{{ ns.c | amount(nf, precision) }}</th></tr>
+    </tbody>
+  </table></div>
+  <p>{{ _("Resultaat") }}: <strong>{{ preview.earnings | amount(nf, precision, "0") }}</strong>
+    ({{ _("winst") if preview.earnings > 0 else _("verlies") }})</p>
+  <p class="actions">
+    {% if not closed %}<button name="action" value="post">{{ _("Jaarafsluiting boeken") }}</button>{% endif %}
+    <button name="action" value="preview" class="secondary">{{ _("Opnieuw berekenen") }}</button>
+  </p>
+  {% else %}
+  <p>{{ _("Er is niets af te sluiten: geen opbrengsten of kosten tot deze datum.") }}</p>
+  {% endif %}
+  {% else %}
+  <p class="actions"><button name="action" value="preview">{{ _("Voorbeeld berekenen") }}</button></p>
+  {% endif %}
+</form>
+{% endblock %}

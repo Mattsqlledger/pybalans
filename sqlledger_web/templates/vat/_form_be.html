@@ -1,0 +1,18 @@
+{#- Periodieke btw-aangifte België (kader II–VI) in de opmaak van het formulier, voor het scherm en de PDF. form: zie
+    routes_vat.be_form_data. De roostertekst staat in de officiële taal (nl of fr, BL10), de vertaling eronder. -#}
+<div class="vatform be" lang="{{ form.lang }}">
+  {% if form.draft %}<div class="watermark">{{ _("Proefafdruk") }}</div>{% endif %}
+  <div class="bar">{{ form.bar }}</div>
+  <p class="intro">{{ form.title }}<br>{{ form.company }}{% if form.vatno %} · {{ form.vatno }}{% endif %}<br>{{ form.period_text }} · {{ form.unit }}</p>
+  {% for sec in form.sections %}
+  <div class="sec"><h4><span class="n">{{ sec.code }}</span> {{ sec.title }}</h4></div>
+  {% for r in sec.rows %}
+  <div class="row{% if r.total %} total{% endif %}">
+    <span class="nr">{{ r.code }}</span>
+    <span>{{ r.text }}{% if lang() != form.lang %}<br><span class="note">{{ r.label }}</span>{% endif %}{% if r.manual %}<br><span class="note">{{ form.manual_note }}</span>{% endif %}</span>
+    <span class="cell" data-label="€">{% if r.link %}<a href="{{ r.link }}" class="field">{{ r.value }}</a>{% else %}<span class="field">{{ r.value }}</span>{% endif %}</span>
+  </div>
+  {% endfor %}
+  {% endfor %}
+  <p class="status">{{ form.status }}</p>
+</div>

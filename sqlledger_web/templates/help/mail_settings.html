@@ -1,0 +1,26 @@
+{# Beheer > E-mail (HELP_ANALYSE golf 3, tekst B8) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Hoe facturen en andere documenten van deze administratie gemaild worden: via welke mailserver, met welk afzenderadres, en met welke standaardtekst. De PDF gaat altijd als bijlage mee.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies bij {v} de optie {o} en vul de gegevens van uw mailprovider in: {s}, {p}, {b}, {g} en {w}.", v=hl("Verzenden via"), o=hl("SMTP-server"), s=hl("SMTP-server"), p=hl("Poort"), b=hl("Beveiliging"), g=hl("Gebruikersnaam"), w=hl("Wachtwoord")) }}</li>
+  <li>{{ ht("Vul {n} en {a} in.", n=hl("Naam afzender"), a=hl("Adres afzender")) }}</li>
+  <li>{{ ht("Pas zo nodig de {s} aan, per documentsoort en per taal.", s=hl("Standaardteksten")) }}</li>
+  <li>{{ ht("Klik op {o} en daarna op {t}.", o=hl("Opslaan"), t=hl("Testmail naar mijzelf")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: met {m} komen de mails als bestand in de datamap. Handig om te proberen zonder dat een klant iets krijgt.", f=hl("Verzenden via"), m=hl("map (testmodus, niets wordt verstuurd)")) }}</li>
+  <li>{{ ht("{f}: wordt versleuteld bewaard en nooit getoond. Laat het leeg om het opgeslagen wachtwoord te houden.", f=hl("Wachtwoord")) }}</li>
+  <li>{{ ht("{f}: zonder antwoordadres gaan antwoorden naar het e-mailadres van de gebruiker die mailt, en heeft die er geen, naar de afzender.", f=hl("Antwoordadres (optioneel)")) }}</li>
+  <li>{{ _("Plaatshouders zoals {nummer}, {bedrag} en {vervaldatum}: worden bij het mailen ingevuld met de gegevens van het document.") }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{t} gaat naar het e-mailadres in uw {s}. Ziet u de knop niet, sla dan eerst op met een afzenderadres.", t=hl("Testmail naar mijzelf"), s=hl("Mijn instellingen")) }}</li>
+  <li>{{ ht("Een standaardtekst geldt voor de taal die vet staat bij {t}. Sla op voordat u van taal wisselt.", t=hl("Taal van de documenten:")) }}</li>
+  <li>{{ ht("De handtekening onder elke mail komt uit {s} van de gebruiker die mailt.", s=hl("Mijn instellingen")) }}</li>
+  <li>{{ _("Deze instellingen worden ook gebruikt om aanmaningen te mailen, en door de systeembeheerder om een inlogcode te mailen.") }}</li>
+</ul>
+</details>

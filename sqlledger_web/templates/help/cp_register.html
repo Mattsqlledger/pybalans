@@ -1,0 +1,28 @@
+{# Kas en bank > Ontvangsten corrigeren en Kas en bank > Betalingen corrigeren (HELP_ANALYSE golf 2, tekst 15) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een geboekte ontvangst of betaling terugdraaien (storneren) of een ander kenmerk of een andere datum geven.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {r} en vul eventueel de {k} of {l}, het kenmerk of de datum in.", r=hl("Betaalrekening"), k=hl("Klant"), l=hl("Leverancier")) }}</li>
+  <li>{{ ht("Klik op {b}. U ziet één regel per betaling.", b=hl("Zoeken")) }}</li>
+  <li>{{ _("Vink de betaling(en) aan.") }}</li>
+  <li>{{ ht("Storneren: klik op {s}, kies de {d} en klik op {j}.", s=hl("Storneren"), d=hl("Stornodatum"), j=hl("Ja, storneren")) }}</li>
+  <li>{{ ht("Ander kenmerk of andere datum: klik op {o}, vul {k} en zo nodig {d} in en klik op {j}.", o=hl("Opnieuw uitgeven"), k=hl("Nieuw kenmerk"), d=hl("Nieuwe datum (leeg = zelfde datum)"), j=hl("Ja, opnieuw uitgeven")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: standaard {z}. Kies {a} om terug te zien wat u storneerde.", f=hl("Weergave"), z=hl("Zonder gestorneerde"), a=hl("Alleen gestorneerde")) }}</li>
+  <li>{{ ht("{f}: op hoeveel facturen de betaling is verdeeld.", f=hl("Posten")) }}</li>
+  <li>{{ ht("{f}: klik erop om de betaling in het overzicht te zien.", f=hl("Kenmerk")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Storneren boekt de hele betaling terug op de stornodatum. De facturen staan daarna weer open.") }}</li>
+  <li>{{ _("De stornodatum en bij opnieuw uitgeven de oude én nieuwe datum mogen niet in een afgesloten periode vallen.") }}</li>
+  <li>{{ ht("Een betaling {z} en een stornering kunt u hier niet aanvinken.", z=hl("zonder kenmerk")) }}</li>
+  <li>{{ _("Bij meer betalingen tegelijk loopt het nieuwe kenmerk per betaling met één op.") }}</li>
+  <li>{{ ht("Met {v}, {p} en {m} onderaan maakt u de betalingsspecificatie van de aangevinkte betalingen.", v=hl("Voorbeeld"), p=hl("PDF"), m=hl("Mailen")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: storneren draait de hele betaling terug (ook korting en koersverschil), op een datum die u kiest.") }}</li>
+</ul>
+</details>

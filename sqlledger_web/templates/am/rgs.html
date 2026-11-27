@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ _("RGS-koppeling") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("RGS-koppeling") }}</h2><a href="/beheer/rekeningschema">{{ _("Rekeningschema") }}</a></div>
+{% include "help/am_rgs.html" %}
+{% if not lst %}
+<p>{{ _("Er is nog geen RGS-lijst ingelezen. De systeembeheerder leest het officiële bestand in bij Systeem > RGS-lijst.") }}{% if ctx.user.is_sysadmin %} <a href="/systeem/rgs">{{ _("RGS-lijst inlezen") }}</a>{% endif %}</p>
+{% else %}
+<p>{{ _("Koppel elke rekening aan een code van RGS {version}. U krijgt tot drie voorstellen; er wordt niets vanzelf gekoppeld. Een lege keuze laat de rekening zoals hij is.").format(version=lst.version) }}</p>
+<p class="muted small">{{ _("{mapped} van {total} rekeningen hebben een code.").format(mapped=mapped, total=total) }}</p>
+<form method="get" action="/beheer/rgs" class="filters">
+  <label>{{ _("Tonen") }} <select name="toon" onchange="this.form.submit()">
+    {% for k, label in shows.items() %}<option value="{{ k }}"{% if k == show %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}
+  </select></label>
+  <label>{{ _("Code zoeken") }} <input type="search" name="zoek" value="{{ q }}" placeholder="{{ _('code of woorden') }}"></label>
+  <button>{{ _("Zoeken") }}</button>
+</form>
+{% if q %}
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("RGS-code") }}</th><th>{{ _("Omschrijving") }}</th><th>{{ _("D/C") }}</th><th>{{ _("Niveau") }}</th></tr></thead>
+  <tbody>
+  {% for c in found %}<tr><td><code>{{ c.code }}</code></td><td>{{ c.long or c.short }}</td><td>{{ c.dc }}</td><td>{{ c.level }}</td></tr>
+  {% else %}<tr><td colspan="4" class="muted">{{ _("Niets gevonden.") }}</td></tr>{% endfor %}
+  </tbody>
+</table></div>
+{% endif %}
+<form method="post" action="/beheer/rgs">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="toon" value="{{ show }}">
+  <div class="table-wrap"><table class="list rgs">
+    <thead><tr><th>{{ _("Rekening") }}</th><th>{{ _("Omschrijving") }}</th><th class="cat">{{ _("Soort") }}</th><th>{{ _("RGS-code") }}</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr{% if r.charttype == 'H' %} class="group"{% endif %}>
+      <td><input type="hidden" name="acc" value="{{ r.id }}">{{ r.accno }}</td>
+      <td>{{ r.description or "" }}{% if r.closed %} <span class="muted small">({{ _("gesloten") }})</span>{% endif %}</td>
+      <td class="cat">{{ _(categories.get(r.category, r.category or "")) }}</td>
+      <td class="small codes">
+        {% if r.current %}<label class="check"><input type="radio" name="c_{{ r.id }}" value="{{ r.current.code }}" checked> <code>{{ r.current.code }}</code> {{ r.current.long or r.current.short }} <span class="muted">({{ _("huidig") }})</span></label>
+        {% elif r.current_code %}<span class="error">{{ r.current_code }}</span>{% endif %}
+        {% for s in r.suggestions if not r.current or s.code != r.current.code %}
+        <label class="check"><input type="radio" name="c_{{ r.id }}" value="{{ s.code }}"> <code>{{ s.code }}</code> {{ s.long or s.short }}{% if r.previous and loop.first %} <span class="muted">({{ _("uit RGS {version}").format(version=r.previous[0]) }})</span>{% endif %}</label>
+        {% endfor %}
+        <label class="check"><input type="radio" name="c_{{ r.id }}" value="other"> {{ _("Andere code") }} <input name="o_{{ r.id }}" size="14" aria-label="{{ _('Andere code') }}"></label>
+        {% if r.current_code %}<label class="check"><input type="radio" name="c_{{ r.id }}" value="none"> {{ _("Geen code") }}</label>{% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4" class="muted">{{ _("Alle rekeningen hebben een code.") }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% if rows %}<p class="actions"><button>{{ _("Opslaan") }}</button></p>{% endif %}
+</form>
+{% endif %}
+{% endblock %}

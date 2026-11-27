@@ -1,0 +1,22 @@
+{# Verkoop > Openstaand en Inkoop > Openstaand (HELP_ANALYSE golf 2, tekst 2) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De facturen die nog niet (helemaal) betaald zijn: wat klanten u nog moeten betalen, of wat u leveranciers nog moet betalen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {p}. Het openstaande bedrag wordt berekend op de datum bij {t}.", p=hl("Periode"), t=hl("Tot en met")) }}</li>
+  <li>{{ ht("Vul zo nodig een deel van de naam bij {k} of {l} in.", k=hl("Klant"), l=hl("Leverancier")) }}</li>
+  <li>{{ ht("Klik op {b}. Klik op een factuurnummer om de factuur te openen.", b=hl("Toon")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: betalingen na deze datum tellen niet mee. Zo ziet u bijvoorbeeld wat er op 31 december openstond.", f=hl("Tot en met")) }}</li>
+  <li>{{ ht("{f}: alleen facturen met een factuurdatum vanaf deze datum. Standaard is het leeg: dan ziet u alle openstaande facturen, ook die van eerdere jaren.", f=hl("Van")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Bedragen zijn in uw standaardvaluta. Met {f} (onder {m}) ziet u ook het bedrag in de vreemde valuta.", f=hl("Bedragen per valuta"), m=hl("Meer opties")) }}</li>
+  <li>{{ ht("Wilt u zien hoe lang facturen al openstaan? Gebruik dan {v} of {i}.", v=hm("Verkoop", "Ouderdomsanalyse"), i=hm("Inkoop", "Ouderdomsanalyse")) }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

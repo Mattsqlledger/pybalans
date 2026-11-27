@@ -1,0 +1,22 @@
+{# Systeem > Gebruikers > Nieuwe gebruiker (HELP_ANALYSE golf 3, tekst C2) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een account aanmaken. De gebruiker kiest zelf een wachtwoord met een eenmalige code die u na het aanmaken krijgt.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul {l}, {n} en zo mogelijk {e} in.", l=hl("Login"), n=hl("Naam"), e=hl("E-mail")) }}</li>
+  <li>{{ ht("Klik op {b}. U ziet meteen de eenmalige code.", b=hl("Aanmaken en code maken")) }}</li>
+  <li>{{ ht("Ga daarna naar de gebruiker en geef toegang tot een of meer administraties (zie {s}). Zonder toegang kan de gebruiker wel inloggen, maar geen administratie openen.", s=hl("Toegang per administratie")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: alleen kleine letters, cijfers en . _ @ -. Hoofdletters worden kleine letters.", f=hl("Login")) }}</li>
+  <li>{{ ht("{f}: staat rechtsboven in de kopregel en kan op documenten komen. Met de naam vindt de app ook de medewerker in een ingelezen administratie.", f=hl("Naam")) }}</li>
+  <li>{{ ht("{f}: nodig om de code te mailen. Bij e-mail die de gebruiker vanuit de app verstuurt, gaan antwoorden naar dit adres als de administratie geen eigen antwoordadres heeft.", f=hl("E-mail")) }}</li>
+  <li>{{ ht("{f}: geeft het menu {m}, dus ook back-ups van alle administraties. Tweestapsverificatie is dan verplicht.", f=hl("Systeembeheerder (gebruikers en administraties beheren)"), m=hm("Systeem")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een login kan later niet meer worden gewijzigd.") }}</li>
+</ul>
+</details>

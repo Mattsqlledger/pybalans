@@ -1,0 +1,43 @@
+# Leerer Kontenplan Schweiz (Nummern nach dem Kontenrahmen KMU): nur die Konten, die das Programm braucht.
+# id: leeg-ch
+# land: CH
+# talen: de fr en nl
+# valuta: CHF
+# naam.nl: Leeg schema
+# naam.en: Empty chart
+# naam.de: Leerer Kontenplan
+# naam.fr: Plan vide
+# bron: sqlledger-py, eigen werk
+# licentie: GPL-2.0-or-later
+# voorraad: 1200
+# omzet: 3200
+# kosten: 4200
+# koersverschil: 6940
+# btw-afdracht: 2209
+# btw-afronding: 6990
+rekening;soort;categorie;koppeling;contra;tarief;rubriek;rgs;de;fr;en;nl
+1;H;A;;;;;;Aktiven;Actifs;Assets;Activa
+1000;A;A;AR_paid:AP_paid;;;;;Kasse;Caisse;Cash;Kas
+1020;A;A;AR_paid:AP_paid;;;;;Bank;Banque;Bank;Bank
+1100;A;A;AR;;;;;Forderungen aus Lieferungen und Leistungen;Créances résultant de ventes et prestations de services;Trade debtors;Debiteuren
+1170;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.081;400;;Vorsteuer MWST 8,1 %;Impôt préalable TVA 8,1 %;Input VAT 8.1%;Voorbelasting 8,1 %
+1171;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.026;400;;Vorsteuer MWST 2,6 %;Impôt préalable TVA 2,6 %;Input VAT 2.6%;Voorbelasting 2,6 %
+1172;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.038;400;;Vorsteuer MWST 3,8 %;Impôt préalable TVA 3,8 %;Input VAT 3.8%;Voorbelasting 3,8 %
+1200;A;A;IC;;;;;Handelswaren;Marchandises commerciales;Goods for resale;Handelsgoederen
+2;H;L;;;;;;Passiven;Passifs;Liabilities;Passiva
+2000;A;L;AP;;;;;Verbindlichkeiten aus Lieferungen und Leistungen;Dettes résultant d'achats et de prestations de services;Trade creditors;Crediteuren
+2200;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.081;303;;Geschuldete MWST 8,1 %;TVA due 8,1 %;VAT payable 8.1%;Te betalen btw 8,1 %
+2201;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.026;313;;Geschuldete MWST 2,6 %;TVA due 2,6 %;VAT payable 2.6%;Te betalen btw 2,6 %
+2202;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.038;343;;Geschuldete MWST 3,8 %;TVA due 3,8 %;VAT payable 3.8%;Te betalen btw 3,8 %
+2209;A;L;;;;;;Abrechnungskonto MWST;Compte de décompte TVA;VAT settlement;Af te dragen btw
+28;H;Q;;;;;;Eigenkapital;Fonds propres;Equity;Eigen vermogen
+2800;A;Q;;;;;;Grundkapital;Capital social;Share capital;Kapitaal
+2970;A;Q;;;;;;Gewinnvortrag;Bénéfice reporté;Retained earnings;Onverdeelde winst
+3;H;I;;;;;;Betrieblicher Ertrag;Produits d'exploitation;Operating income;Bedrijfsopbrengsten
+3200;A;I;AR_amount:IC_sale:IC_income;;;;;Handelserlöse;Ventes de marchandises;Sales;Omzet
+4;H;E;;;;;;Aufwand für Material und Waren;Charges de matériel et de marchandises;Cost of goods;Kostprijs van de omzet
+4200;A;E;AP_amount:IC_cogs;;;;;Handelswarenaufwand;Charges de marchandises;Cost of goods sold;Inkoopwaarde van de omzet
+6;H;E;;;;;;Übriger betrieblicher Aufwand;Autres charges d'exploitation;Other operating expenses;Overige bedrijfskosten
+6500;A;E;AP_amount:IC_expense;;;;;Verwaltungsaufwand;Charges d'administration;Administrative expenses;Algemene kosten
+6940;A;E;;;;;;Kursdifferenzen;Différences de change;Exchange differences;Koersverschillen
+6990;A;E;;;;;;Rundungsdifferenzen;Différences d'arrondi;Rounding differences;Afrondingsverschillen

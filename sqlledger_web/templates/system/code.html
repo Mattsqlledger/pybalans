@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Eenmalige code") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Eenmalige code voor {login}").format(login=target.login) }}</h2>
+{% include "help/sys_code.html" %}
+<p class="code">{{ code }}</p>
+<p>{{ _("Geef deze code persoonlijk of via een ander kanaal door. Hij is {hours} uur geldig, werkt één keer en wordt niet opnieuw getoond.").format(hours=hours) }}</p>
+{% set url_html %}<code>{{ url }}</code>{% endset %}
+<p>{{ (_("De gebruiker gaat naar {url} en kiest daar een wachtwoord.") | e).format(url=url_html) }}</p>
+{% if mail_companies %}
+<form method="post" action="/systeem/gebruikers/{{ target.id }}/code-mailen" class="actions">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="code" value="{{ code }}">
+  {% if mail_companies | length > 1 %}
+  <label>{{ _("Versturen met de e-mail van") }} <select name="company_id">
+    {% for c in mail_companies %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+  </select></label>
+  {% else %}<input type="hidden" name="company_id" value="{{ mail_companies[0].id }}">{% endif %}
+  <button class="secondary">{{ _("Code mailen naar {adres}").format(adres=target.email) }}</button>
+</form>
+{% elif not target.email %}
+<p class="muted small">{{ _("Mailen kan als de gebruiker een e-mailadres heeft.") }}</p>
+{% else %}
+<p class="muted small">{{ _("Mailen kan zodra e-mail is ingesteld bij Beheer > E-mail van een administratie.") }}</p>
+{% endif %}
+<p><a href="/systeem/gebruikers/{{ target.id }}">{{ _("Naar de gebruiker") }}</a></p>
+{% endblock %}

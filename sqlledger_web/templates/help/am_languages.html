@@ -1,0 +1,21 @@
+{# Beheer > Talen (HELP_ANALYSE golf 3, tekst B1) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De talen waarin u documenten naar klanten en leveranciers stuurt. Een taal kiest u daarna bij de relatie en op de boeking.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Klik op {b}.", b=hl("Taal toevoegen")) }}</li>
+  <li>{{ ht("Vul een {c} (hoogstens 6 tekens) en een {o} in en klik op {b}.", c=hl("Code"), o=hl("Omschrijving"), b=hl("Opslaan")) }}</li>
+  <li>{{ ht("Kies de taal bij de klant of leverancier in het veld {t}. Een nieuwe boeking voor die relatie neemt de taal over; op de boeking staat ze in het veld {s}.", t=hl("Taal documenten"), s=hl("Sjabloonvariant")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: begint de code met nl, en, de of fr (ook bijvoorbeeld benl, ch, at, uk, us of befr), dan staan de vaste teksten op het document en in de e-mail in die taal. Bij een andere code geldt de {d} uit {m}.", f=hl("Code"), d=hl("Documenttaal"), m=hm("Beheer", "Instellingen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Met dezelfde code kunt u in {m} een variant maken: een eigen set sjablonen voor documenten in die taal.", m=hm("Beheer", "Sjablonen")) }}</li>
+  <li>{{ ht("Een code die al gebruikt wordt (bij een relatie of boeking), kunt u niet meer wijzigen of verwijderen. De kolom {k} toont dat; in het bewerkscherm staat waar.", k=hl("In gebruik")) }}</li>
+  <li>{{ ht("Het veld {t} verschijnt bij de klant pas als hier minstens één taal staat.", t=hl("Taal documenten")) }}</li>
+</ul>
+</details>

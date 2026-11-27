@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ title }}</h2>
+  <p class="actions noprint">
+    {% if back %}<a href="{{ back.url }}">{{ back.label }}</a>{% endif %}
+    <a href="/artikelen-assembleren">{{ _("Assembleren") }}</a>
+    <a href="/artikelen-stuklijsten">{{ _("Stuklijsten") }}</a>
+    <a href="/artikelen-productie">{{ _("Productiehistorie") }}</a>
+  </p>
+</div>
+{% include "help/ic_asmlist.html" %}
+{% if intro %}<p class="muted">{{ intro }}</p>{% endif %}
+{% if facts %}<dl class="facts">{% for k, v in facts %}<dt>{{ k }}</dt><dd>{{ v }}</dd>{% endfor %}</dl>{% endif %}
+{% if filters %}
+<form method="get" action="{{ url }}" class="report-form noprint">
+  <input type="hidden" name="run" value="1">
+  <div class="filters">
+    {% for fl in filters %}
+    {% if fl.type == "check" %}
+    <label class="check"><input type="checkbox" name="{{ fl.name }}" value="1"{% if fl.value %} checked{% endif %}> {{ _(fl.label) }}</label>
+    {% else %}
+    <label>{{ _(fl.label) }} <input{% if fl.type == "date" %} type="date"{% endif %} name="{{ fl.name }}" value="{{ fl.value }}"{% if fl.cls %} class="{{ fl.cls }}"{% endif %}></label>
+    {% endif %}
+    {% endfor %}
+  </div>
+  <div class="actions"><button>{{ _("Tonen") }}</button></div>
+</form>
+{% endif %}
+<div class="report-head">
+  <div class="muted">{{ _("Regels: {count}").format(count=count) }}</div>
+  <div class="actions noprint">
+    <a class="button secondary" href="{{ url }}?{{ export_query }}&amp;export=csv">CSV</a>
+    <a class="button secondary" href="{{ url }}?{{ export_query }}&amp;export=xlsx">Excel</a>
+    <a class="button secondary" href="{{ url }}?{{ export_query }}&amp;export=pdf" target="_blank" rel="noopener">PDF</a>
+  </div>
+</div>
+<div class="table-wrap">
+<table class="list report bomlist">
+  <thead><tr>{% for c in table.columns %}<th{% if c.kind == 'amount' %} class="num"{% endif %}>{{ _(c.label) }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for r in table.rows %}
+  <tr class="{{ r.kind }}">{% for c in table.columns %}{% set txt = cell(c, r) %}{% set url = r.links.get(c.key) %}
+    <td class="{{ 'num' if c.kind == 'amount' }}{{ ' nowrap' if c.kind == 'date' }}"{% if c.key == "partnumber" and r.cells.indent %} style="padding-left: {{ 0.4 + r.cells.indent * 1.1 }}rem"{% endif %}>{% if url %}<a href="{{ url }}">{{ txt or "—" }}</a>{% else %}{{ txt }}{% endif %}</td>
+  {% endfor %}</tr>
+  {% else %}
+  <tr><td colspan="{{ table.columns|length }}" class="muted">{{ _("Niets gevonden.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

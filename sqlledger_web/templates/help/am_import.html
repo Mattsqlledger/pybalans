@@ -1,0 +1,30 @@
+{# Beheer > Importeren, met kolommen koppelen en resultaat (HELP_ANALYSE golf 3, tekst B4) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Klanten, leveranciers, artikelen, diensten, artikelgroepen, rekeningen, GIFI-codes, memoriaalboekingen, verkoopfacturen, verkooporders, inkooporders of betalingen in één keer inlezen uit een CSV- of Excel-bestand. U ziet eerst precies wat er gebeurt; pas na {b} wordt iets opgeslagen.", b=hl("Importeren")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies bij {w} de soort, kies het bestand en klik op {b}.", w=hl("Wat wilt u importeren?"), b=hl("Verder")) }}</li>
+  <li>{{ ht("Controleer onder {k} per kolom het {v}. Kolomnamen uit SQL-Ledger en uit onze eigen export worden vanzelf herkend. Een kolom die u niet wilt, zet u op {n}. Klik op {b}.", k=hl("Kolommen"), v=hl("Veld"), n=hl("— niet importeren —"), b=hl("Voorbeeld bijwerken")) }}</li>
+  <li>{{ ht("Bekijk het {v}: per rij {n}, {b} (met welke velden), {o} of {f} (met de reden).", v=hl("Voorbeeld"), n=hl("nieuw"), b=hl("bijwerken"), o=hl("ongewijzigd"), f=hl("fout")) }}</li>
+  <li>{{ ht("Vink de rijen aan die u wilt inlezen en klik op {b}. U ziet daarna wat er nieuw is en wat is bijgewerkt.", b=hl("Importeren")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: bij een volgend bestand met dezelfde kolomnamen staat de koppeling dan meteen goed.", f=hl("Koppeling van de kolommen onthouden voor de volgende keer")) }}</li>
+  <li>{{ ht("{f} achter een kolom: een veld uit SQL-Ledger dat PyBalans (nog) niet inleest.", f=hl("niet ondersteund")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Importeren gaat in één keer: geeft één aangevinkte rij toch een fout, dan wordt niets ingelezen en ziet u welke rij het was.") }}</li>
+  <li>{{ _("Een bestaand nummer wordt bijgewerkt, een nieuw nummer toegevoegd. Een lege cel laat het veld ongewijzigd.") }}</li>
+  <li>{{ _("Memoriaal: regels met dezelfde referentie vormen één boeking, die in balans moet zijn. Bestaat de referentie al, dan staat de rij standaard uit.") }}</li>
+  <li>{{ ht("Verkoopfacturen worden meteen geboekt, orders meteen opgeslagen, precies zoals op het scherm: btw, prijs, korting, vervaldatum en rekeningen komen van de klant of leverancier en het artikel, tenzij het bestand ze geeft. Het {v} toont per document netto, btw en totaal; controleer die voordat u importeert.", v=hl("Voorbeeld")) }}</li>
+  <li>{{ _("Een factuur- of ordernummer dat al bestaat, een onbekende relatie of een onbekend artikel geeft een fout voor dat document. Er wordt niets vervangen en niets aangemaakt.") }}</li>
+  <li>{{ ht("Betalingen worden gekoppeld op factuurnummer (met klant- of leveranciersnummer als dat nummer vaker voorkomt), anders op betalingskenmerk; nooit alleen op het bedrag. De factuur moet openstaan en het bedrag mag niet hoger zijn dan wat openstaat. Voor een bankbestand gebruikt u {b}.", b=hl("Bankafschrift inlezen")) }}</li>
+  <li>{{ _("Hoogstens 5.000 rijen per bestand. Het bestand blijft een dag bewaard; daarna begint u opnieuw.") }}</li>
+  <li>{{ ht("Meer over de vorm van het bestand staat op het scherm onder {h}.", h=hl("Hoe moet het bestand eruitzien?")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: een lege cel maakt een veld niet leeg.") }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: een bestaande openstaande factuur wordt niet vervangen, en een betaling wordt niet gekoppeld aan de eerste open post met hetzelfde bedrag.") }}</li>
+</ul>
+</details>

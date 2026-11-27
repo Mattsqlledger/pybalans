@@ -1,0 +1,3 @@
+{# zoeklijst relatie (static/combo.js, PB17): nummer en naam apart, zodat de lijst "nummer – naam" toont #}
+{% for r in rows %}<option value="{{ label(r) }}" data-n="{{ r.number or '' }}" data-name="{{ r.name or '' }}"></option>
+{% endfor %}{% if more %}<option data-more="{{ more }}" value="" disabled></option>{% endif %}

@@ -1,0 +1,20 @@
+{# Beheer > Rekeningschema (HELP_ANALYSE golf 3, tekst A4) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Alle rekeningen en kopregels van uw grootboek, met hun soort en koppelingen. Hier voegt u een rekening toe of past u er een aan.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Klik op een rekeningnummer om de rekening te wijzigen.") }}</li>
+  <li>{{ ht("Klik op {b} voor een nieuwe rekening of kopregel.", b=hl("Rekening toevoegen")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: in welke keuzelijsten de rekening staat, bijvoorbeeld als betaalrekening bij verkoop.", f=hl("Koppelingen")) }}</li>
+  <li>{{ ht("{f}: een tegenrekening, zoals afschrijvingen bij de activa.", f=hl("Tegen")) }}</li>
+  <li>{{ ht("{f}: de RGS-code. Deze kolom ziet u zodra er rekeningen gekoppeld zijn; koppelen doet u bij {k}.", f=hl("RGS"), k=hl("RGS-koppeling")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Vetgedrukte regels zijn kopregels. Daarop kunt u niet boeken; ze ordenen de rapporten.") }}</li>
+</ul>
+</details>

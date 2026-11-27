@@ -1,0 +1,5 @@
+{#- Offerteaanvraag aan een leverancier: zonder prijzen (die vragen we juist). -#}
+{% set doc_title = 'Offerteaanvraag' %}{% set date_label = 'Aanvraagdatum' %}{% set number_label = 'Aanvraagnummer' %}
+{% set req_label = 'Gewenste leverdatum' %}{% set show_prices = false %}{% set show_shipto = true %}
+{% set closing_text = 'Graag ontvangen wij uw offerte.' %}
+{% extends "_order.html" %}

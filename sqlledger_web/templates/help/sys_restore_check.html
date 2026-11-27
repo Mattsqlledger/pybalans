@@ -1,0 +1,29 @@
+{# Systeem > Back-up inlezen > Back-up controleren (HELP_ANALYSE golf 3, tekst C10) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Kijken of het de goede back-up is en de nieuwe administratie een naam geven, voordat er iets wordt ingelezen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kijk naar {s}, {b}, {d} en {l}. Is het de verkeerde, klik dan op {a}.", s=hl("Soort"), b=hl("Bedrijfsnaam"), d=hl("Datum van de back-up"), l=hl("Laatste boeking"), a=hl("Annuleren")) }}</li>
+  <li>{{ ht("Pas zo nodig {n}, {c} en {d} aan. Ze zijn ingevuld uit de back-up.", n=hl("Naam"), c=hl("Code"), d=hl("Databasenaam")) }}</li>
+  <li>{{ ht("Kies bij {f} welke medewerker u bent.", f=hl("U bent in deze administratie:")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Inlezen")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: moet anders zijn dan die van een bestaande administratie. Vervangt u een administratie, kies dan tijdelijk een andere naam en zet de oude daarna uit.", f=hl("Naam")) }}</li>
+  <li>{{ ht("{f}: naam op de databaseserver, niet zichtbaar in de app; mag nog niet bestaan.", f=hl("Databasenaam")) }}</li>
+  <li>{{ ht("{f}: taal van facturen, orders en andere documenten. Uit een back-up van deze app komt de taal van de oude administratie; anders staat uw eigen taal klaar. Later te wijzigen bij {m}.", f=hl("Documenttaal"), m=hm("Beheer", "Instellingen")) }}</li>
+  <li>{{ ht("{f}: u krijgt meteen toegang als {r}.", f=hl("Mij als beheerder van deze administratie toevoegen"), r=hl("Beheerder")) }}</li>
+  <li>{{ ht("{f}: de medewerker met uw naam is voorgekozen. Kies {g} als u er niet in hoort. Nodig voor {m} en om te zien wie iets heeft geboekt.", f=hl("U bent in deze administratie:"), g=hl("geen (niet als medewerker)"), m=hm("Mijn uren")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Is deze back-up of een back-up uit dezelfde dataset al ingelezen, of bestaat de naam of databasenaam al, dan staat er bovenaan een waarschuwing met de bestaande administratie. Naast elkaar inlezen mag (bijvoorbeeld om te vergelijken), met een andere naam en databasenaam.") }}</li>
+  <li>{{ ht("Staat bij {s} een back-up van Run my Accounts / ledger123, dan ziet u na het inlezen een controlerapport; het staat daarna ook bij {m}.", s=hl("Soort"), m=hm("Beheer", "Run my Accounts-gegevens")) }}</li>
+  <li>{{ _("Inlezen loopt op de server door, ook als u het venster sluit.") }}</li>
+  <li>{{ _("Er kan maar één back-up tegelijk worden ingelezen.") }}</li>
+  <li>{{ _("Alle modules staan na het inlezen aan; zet er zo nodig een paar uit bij de administratie.") }}</li>
+  <li>{{ ht("Zijn de btw-aangifte en de ICP-opgaaf in de back-up ingesteld, dan staan {b} en {i} meteen in het menu.", b=hm("Btw", "Btw-aangifte"), i=hm("Btw", "ICP-opgaaf")) }}</li>
+</ul>
+</details>

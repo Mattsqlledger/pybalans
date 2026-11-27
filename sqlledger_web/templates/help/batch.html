@@ -1,0 +1,26 @@
+{# Verkoop > Documenten in batch, ook onder Inkoop, Orders en Offertes (HELP_ANALYSE golf 2, tekst 19) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Veel documenten van één soort in één keer printen of mailen, bijvoorbeeld alle facturen van deze maand die nog niet verstuurd zijn. De soort staat al goed voor het menu waaruit u komt.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Controleer de {s} en de filters en klik op {b}.", s=hl("Soort"), b=hl("Toon")) }}</li>
+  <li>{{ _("Vink de documenten aan, of alles met het vakje bovenaan de kolom.") }}</li>
+  <li>{{ ht("Klik op {v} om ze te bekijken.", v=hl("Voorbeeld")) }}</li>
+  <li>{{ ht("Klik op {p} voor één PDF om te printen, of op {m}.", p=hl("PDF"), m=hl("Mailen")) }}</li>
+  <li>{{ ht("Bij {m} ziet u eerst wie een mail krijgt en wie afvalt. Vul eventueel een eigen onderwerp en bericht in en klik op {s}.", m=hl("Mailen"), s=hl("Verzenden")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{s}: {f} en {i} zijn facturen met artikelen. Voor wat u via {m} maakte, kiest u {z} of {y}.", s=hl("Soort"), f=hl("Factuur"), i=hl("Inkoopfactuur"), m=hm("Boeking toevoegen"), z=hl("Factuur zonder artikelen"), y=hl("Inkoopboeking zonder artikelen")) }}</li>
+  <li>{{ ht("{g} en {e}: staan eerst op {n}, met de periode vanaf de eerste dag van de vorige maand. Zo ziet u wat nog niet verstuurd is.", g=hl("Geprint"), e=hl("Gemaild"), n=hl("nee")) }}</li>
+  <li>{{ ht("{f}: {o} of {g}; een factuur is gesloten als hij helemaal betaald is.", f=hl("Status"), o=hl("open"), g=hl("gesloten")) }}</li>
+  <li>{{ ht("{f}: bij mailen. Leeg laten geeft de tekst uit {m}.", f=hl("Eigen tekst voor alle documenten (optioneel)"), m=hm("Beheer", "E-mail")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{v} legt niets vast. {p} zet bij elk document {g} op ja; {m} zet {e} op ja, alleen als de mail echt is verstuurd.", v=hl("Voorbeeld"), p=hl("PDF"), g=hl("Geprint"), m=hl("Mailen"), e=hl("Gemaild")) }}</li>
+  <li>{{ _("Hoogstens 200 documenten per keer printen of mailen. De lijst toont er hoogstens 1.000; verfijn anders de filters.") }}</li>
+  <li>{{ _("Lukt één mail niet, dan gaan de andere gewoon door. Bovenaan staat per document wat er gebeurde.") }}</li>
+</ul>
+</details>

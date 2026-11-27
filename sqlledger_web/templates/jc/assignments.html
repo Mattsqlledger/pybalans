@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Toewijzingen") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Toewijzingen") }}</h2><a class="button" href="/uren/toewijzingen?nieuw=1">{{ _("Toewijzing toevoegen") }}</a></div>
+{% include "help/jc_assignments.html" %}
+<p class="muted small">{{ _("Welke medewerker op welk project met welke dienst uren schrijft; dat staat dan in zijn maandstaat. Een toewijzing beëindigt u met een einddatum.") }}</p>
+{% if f %}
+<form method="post" action="/uren/toewijzingen" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="id" value="{{ f.id }}">
+  <div class="grid">
+    <label>{{ _("Medewerker") }} * <select name="employee_id" required><option value=""></option>{% for e in links.employees %}<option value="{{ e.id }}"{% if e.id|string == f.employee_id %} selected{% endif %}>{{ e.name }}</option>{% endfor %}</select></label>
+    <label>{{ _("Project") }} * <select name="project_id" required><option value=""></option>{% for p in links.projects %}<option value="{{ p.id }}"{% if p.id|string == f.project_id %} selected{% endif %}>{{ p.projectnumber }} – {{ p.description }}{% if p.kind == "internal" %} ({{ _("intern") }}){% endif %}</option>{% endfor %}</select></label>
+    <label>{{ _("Dienst") }} * <select name="parts_id" required><option value=""></option>{% for s in links.services %}<option value="{{ s.id }}"{% if s.id|string == f.parts_id %} selected{% endif %}>{{ s.partnumber }} – {{ s.description }}</option>{% endfor %}</select></label>
+    <label>{{ _("Van") }} * <input type="date" name="validfrom" value="{{ f.validfrom }}" required></label>
+    <label>{{ _("Tot en met") }} <input type="date" name="validto" value="{{ f.validto }}"></label>
+    <label>{{ _("Prijs") }} <input name="sellprice" value="{{ f.sellprice }}" class="num" inputmode="decimal" placeholder="{{ _('prijs van de dienst') }}"></label>
+    <label>{{ _("Intern tarief") }} <input name="internalrate" value="{{ f.internalrate }}" class="num" inputmode="decimal" placeholder="{{ _('tarief van de medewerker') }}"></label>
+    <label>{{ _("Projectleider") }} <select name="projectleader_id"><option value=""></option>{% for e in links.employees %}<option value="{{ e.id }}"{% if e.id|string == f.projectleader_id %} selected{% endif %}>{{ e.name }}</option>{% endfor %}</select></label>
+    <label class="full">{{ _("Notities") }} <input name="notes" value="{{ f.notes }}"></label>
+  </div>
+  <p class="actions"><button>{{ _("Opslaan") }}</button> <a href="/uren/toewijzingen">{{ _("Annuleren") }}</a></p>
+</form>
+{% endif %}
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("Medewerker") }}</th><th>{{ _("Project") }}</th><th>{{ _("Dienst") }}</th><th>{{ _("Van") }}</th><th>{{ _("Tot en met") }}</th><th class="num">{{ _("Prijs") }}</th><th class="num">{{ _("Intern tarief") }}</th><th>{{ _("Projectleider") }}</th></tr></thead>
+  <tbody>{% for a in rows %}<tr><td><a href="/uren/toewijzingen?id={{ a.id }}">{{ a.employee }}</a></td><td>{{ a.projectnumber }}</td><td>{{ a.partnumber }}</td><td>{{ a.validfrom | userdate(ctx.user.dateformat) }}</td><td>{{ a.validto | userdate(ctx.user.dateformat) }}</td><td class="num">{{ a.sellprice | amount(ctx.user.numberformat, 2) if a.sellprice is not none else "" }}</td><td class="num">{{ a.internalrate | amount(ctx.user.numberformat, 2) if a.internalrate is not none else "" }}</td><td>{{ a.projectleader }}</td></tr>
+  {% else %}<tr><td colspan="8" class="muted">{{ _("Nog geen toewijzingen.") }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{{ _(kind.title) }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _(kind.title) }}</h2>
+  {% if f is none %}<a class="button" href="/beheer/{{ kind.slug }}/nieuw">{{ _(kind.add_text) }}</a>{% endif %}</div>
+{% set helpfiles = {"talen": "am_languages", "branches": "am_business", "betaalmethoden": "am_paymentmethods",
+                    "afdelingen": "am_departments", "projecten": "am_projects"} %}{% if kind.slug in helpfiles %}{% include "help/" ~ helpfiles[kind.slug] ~ ".html" %}{% endif %}
+
+{% if f is not none %}
+<form method="post" action="/beheer/{{ kind.slug }}" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="key" value="{{ f.key }}">
+  <h3>{{ _(kind.edit_text) if f.key else _(kind.add_text) }}</h3>
+  <div class="grid">
+  {% for fl in kind.fields %}
+    {% if fl.kind == "radio" %}
+    <fieldset><legend>{{ _(fl.label) }}</legend>
+      {% for v, label in fl.options %}<label class="check"><input type="radio" name="{{ fl.name }}" value="{{ v }}"{% if f[fl.name] == v %} checked{% endif %}> {{ _(label) }}</label>{% endfor %}
+    </fieldset>
+    {% elif fl.kind == "select" %}
+    <label>{{ _(fl.label) }} <select name="{{ fl.name }}"><option value="">—</option>
+      {% for c in customers %}<option value="{{ c.id }}"{% if c.id|string == f[fl.name] %} selected{% endif %}>{{ c.name }}{% if c.customernumber %} ({{ c.customernumber }}){% endif %}</option>{% endfor %}
+    </select></label>
+    {% else %}
+    <label>{{ _(fl.label) }}{% if fl.required %} *{% endif %}
+      <input name="{{ fl.name }}" value="{{ f[fl.name] }}"{% if fl.kind == "date" %} type="date"{% elif fl.kind == "number" %} class="num" inputmode="decimal"{% endif %}{% if fl.required %} required{% endif %}
+        {% if fl.name == "projectnumber" %} placeholder="{{ _('automatisch') }}"{% endif %}{% if fl.name == "code" %} maxlength="6"{% endif %}></label>
+    {% endif %}
+  {% endfor %}
+  </div>
+  {% if kind.extra %}{% include "am/_project_kind.html" %}{% endif %}
+  {% if current and current.used %}<p class="muted small">{{ _("In gebruik:") }} {% for t, n in current.used.items() %}{{ t }} ({{ n }}){{ ", " if not loop.last }}{% endfor %}.{% if kind.key == "code" %} {{ _("De code kan daarom niet gewijzigd worden.") }}{% endif %}</p>{% endif %}
+  {% if confirm == "delete" %}
+  <div class="confirm" role="alert">
+    <p>{{ _(kind.delete_text) }}</p>
+    <p><button name="action" value="delete_confirmed" class="danger" formnovalidate>{{ _("Ja, verwijderen") }}</button>
+      <a href="/beheer/{{ kind.slug }}/{{ f.key | urlencode }}">{{ _("Annuleren") }}</a></p>
+  </div>
+  {% else %}
+  <p class="actions"><button name="action" value="save">{{ _("Opslaan") }}</button>
+    {% if f.key and current and not current.used %}<button name="action" value="delete" class="danger secondary" formnovalidate>{{ _("Verwijderen") }}</button>{% endif %}
+    <a href="/beheer/{{ kind.slug }}">{{ _("Annuleren") }}</a></p>
+  {% endif %}
+</form>
+{% endif %}
+
+{% if kind.slug == "projecten" %}
+<form method="get" action="/beheer/projecten" class="filters">
+  <label>{{ _("Status") }} <select name="status">
+    {% for v, label in [("", N_("alle")), ("active", N_("actief")), ("inactive", N_("afgelopen")), ("orphaned", N_("ongebruikt"))] %}
+    <option value="{{ v }}"{% if v == status_filter %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}</select></label>
+  <button class="secondary">{{ _("Tonen") }}</button>
+</form>
+{% endif %}
+<div class="table-wrap"><table class="list">
+  <thead><tr>{% for col, label in kind.columns %}<th>{{ _(label) }}</th>{% endfor %}<th>{{ _("In gebruik") }}</th>{% if kind.movable %}<th>{{ _("Volgorde") }}</th>{% endif %}</tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr>
+    {% for col, label in kind.columns %}
+    <td>{% if loop.first %}<a href="/beheer/{{ kind.slug }}/{{ r[kind.key] | string | urlencode }}">{{ r[col] or "—" }}</a>
+        {% else %}{{ fmt(r[col]) }}{% endif %}</td>
+    {% endfor %}
+    <td>{{ "✓" if r.used }}</td>
+    {% if kind.movable %}<td><form method="post" action="/beheer/{{ kind.slug }}" class="inline">
+      <input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="key" value="{{ r[kind.key] }}">
+      {% if not loop.first %}<button name="action" value="up" class="secondary small" aria-label="{{ _('Omhoog') }}">↑</button>{% endif %}
+      {% if not loop.last %}<button name="action" value="down" class="secondary small" aria-label="{{ _('Omlaag') }}">↓</button>{% endif %}
+    </form></td>{% endif %}
+  </tr>
+  {% else %}
+  <tr><td colspan="{{ kind.columns|length + 2 }}" class="muted">{{ _("Nog niets ingevoerd.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% if kind.extra and rows | selectattr("kind", "equalto", "none") | list %}<p class="muted small">{{ _('"Niet ingedeeld": een project uit SQL-Ledger of van vóór deze versie zonder klant. Het werkt zoals voorheen; open het project en kies Klantproject of Intern project om het in te delen.') }}</p>{% endif %}
+{% endblock %}

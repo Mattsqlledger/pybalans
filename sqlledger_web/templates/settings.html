@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Mijn instellingen") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Mijn instellingen") }}</h2>
+{% include "help/settings.html" %}
+<section>
+<h3>{{ _("Gegevens en notatie") }}</h3>
+<form method="post" class="grid">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Naam") }} <input name="name" value="{{ ctx.user.name }}"></label>
+  <label>{{ _("E-mail") }} <input type="email" name="email" value="{{ ctx.user.email }}"></label>
+  <label>{{ _("Getalnotatie") }} <select name="numberformat">{% for f in numberformats %}<option{% if f == ctx.user.numberformat %} selected{% endif %}>{{ f }}</option>{% endfor %}</select></label>
+  <label>{{ _("Datumnotatie") }} <select name="dateformat">{% for f in dateformats %}<option{% if f == ctx.user.dateformat %} selected{% endif %}>{{ f }}</option>{% endfor %}</select></label>
+  <label>{{ _("Taal") }} <select name="language">{% for k, v in languages.items() %}<option value="{{ k }}"{% if k == ctx.user.language %} selected{% endif %}>{{ v }}</option>{% endfor %}</select></label>
+  <label>{{ _("Handtekening onder e-mails") }} <textarea name="mail_signature" rows="4" cols="50" maxlength="2000">
+{{ ctx.user.mail_signature or "" }}</textarea></label>
+  <div><button name="action" value="profile">{{ _("Opslaan") }}</button></div>
+</form>
+</section>
+<section>
+<h3>{{ _("Wachtwoord wijzigen") }}</h3>
+<form method="post" class="grid">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Huidig wachtwoord") }} <input type="password" name="current" autocomplete="current-password" required></label>
+  <label>{{ _("Nieuw wachtwoord") }} <input type="password" name="password" autocomplete="new-password" minlength="{{ ctx.settings.password_min_length }}" required></label>
+  <label>{{ _("Herhaal") }} <input type="password" name="repeat" autocomplete="new-password" required></label>
+  <div><button name="action" value="password">{{ _("Wijzigen") }}</button></div>
+</form>
+</section>
+<section>
+<h3>{{ _("Tweestapsverificatie") }}</h3>
+{% if ctx.user.totp_secret %}
+<p>{{ _("Staat aan.") }}{% if totp_required %} {{ _("Verplicht voor beheerders.") }}{% endif %}</p>
+<p><a href="/2fa/instellen">{{ _("Nieuwe telefoon/app koppelen") }}</a></p>
+{% if not totp_required %}
+<form method="post"><input type="hidden" name="csrf" value="{{ ctx.csrf }}"><button name="action" value="totp_off" class="secondary">{{ _("Uitzetten") }}</button></form>
+{% endif %}
+{% else %}
+<p>{{ _("Staat uit.") }} <a href="/2fa/instellen">{{ _("Aanzetten") }}</a></p>
+{% endif %}
+</section>
+<section>
+<h3>{{ _("Sessies") }}</h3>
+<p>{{ _("Andere actieve sessies:") }} {{ other_sessions }}</p>
+{% if other_sessions %}
+<form method="post"><input type="hidden" name="csrf" value="{{ ctx.csrf }}"><button name="action" value="sessions" class="secondary">{{ _("Andere sessies beëindigen") }}</button></form>
+{% endif %}
+</section>
+{% endblock %}

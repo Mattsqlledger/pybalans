@@ -1,0 +1,37 @@
+{#- Adresblok (vensterenvelop) en afleveradres. Zet vooraf: show_shipto (afleveradres rechts tonen) of
+    ship_main (afleveradres als hoofdadres, pakbon). -#}
+<div class="parties">
+<div class="addr">
+  {% if doc.return_line %}<div class="return">{% if doc.return_text %}{{ doc.return_text }}{% else %}{{ company }}{% for l in address|lines %} · {{ l }}{% endfor %}{% endif %}</div>{% endif %}
+  {% if ship_main and shiptoname %}
+  {{ shiptoname }}<br>
+  {% if shiptocontact and shiptocontact.strip() and shiptocontact != shiptoname %}{{ t('t.a.v.') }} {{ shiptocontact }}<br>{% endif %}
+  {{ shiptoaddress1|nl2br }}<br>
+  {% if shiptoaddress2 %}{{ shiptoaddress2 }}<br>{% endif %}
+  {{ shiptozipcode }} {{ shiptocity }}{% if shiptostate %} {{ shiptostate }}{% endif %}<br>
+  {% if shiptocountry %}{{ shiptocountry }}{% endif %}
+  {% else %}
+  {{ name }}<br>
+  {% if contact and contact.strip() %}{{ t('t.a.v.') }} {{ contact }}<br>{% endif %}
+  {{ address1 }}<br>
+  {% if address2 %}{{ address2 }}<br>{% endif %}
+  {{ zipcode }} {{ city }}{% if state %} {{ state }}{% endif %}<br>
+  {% if country %}{{ country }}{% endif %}
+  {% endif %}
+</div>
+{% if ship_main and shiptoname and (shiptoname != name or shiptoaddress1 != address1) %}
+<div class="shipto">
+  <h4>{{ t('Klant') if vc == 'customer' else t('Leverancier') }}</h4>
+  {{ name }}<br>{{ address1 }}<br>
+  {% if address2 %}{{ address2 }}<br>{% endif %}
+  {{ zipcode }} {{ city }}{% if country %}<br>{{ country }}{% endif %}
+</div>
+{% elif show_shipto and shiptoname and (shiptoname != name or shiptoaddress1 != address1) %}
+<div class="shipto">
+  <h4>{{ t('Afleveradres') }}</h4>
+  {{ shiptoname }}<br>{{ shiptoaddress1|nl2br }}<br>
+  {% if shiptoaddress2 %}{{ shiptoaddress2 }}<br>{% endif %}
+  {{ shiptozipcode }} {{ shiptocity }}{% if shiptocountry %}<br>{{ shiptocountry }}{% endif %}
+</div>
+{% endif %}
+</div>

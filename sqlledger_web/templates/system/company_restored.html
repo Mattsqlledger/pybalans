@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Back-up ingelezen") }}{% endblock %}
+{% block content %}
+{% if wizard %}{% include "start/_steps.html" %}{% endif %}
+<h2>{{ _("Back-up ingelezen") }}</h2>
+{% include "help/sys_restore_result.html" %}
+<div class="notice" role="status">
+  <p>{% if res.info.dataset %}{{ _("De back-up van {dataset} is ingelezen als administratie {name} (database {dbname}).").format(dataset=res.info.dataset, name=values.name, dbname=values.dbname) }}{% else %}{{ _("De back-up is ingelezen als administratie {name} (database {dbname}).").format(name=values.name, dbname=values.dbname) }}{% endif %}</p>
+  {% if res.templates %}<p>{{ _("Sjablonen en logo: {n} bestanden overgenomen.").format(n=res.templates[0]|length) }}{% if res.templates[1] %} {{ _("{n} bestanden overgeslagen (vorige versies of onbekend).").format(n=res.templates[1]|length) }}{% endif %}</p>{% endif %}
+  {% if res.upgrade and res.upgrade.applied %}<p>{{ _("Bijgewerkt van versie {old} naar {new} ({n} stappen).").format(old=res.upgrade.from_version, new=res.upgrade.to_version, n=res.upgrade.applied|length) }}</p>{% endif %}
+</div>
+{% if res.upgrade and res.upgrade.errors %}
+<div class="warning" role="alert"><p>{{ _("Bij het bijwerken zijn {n} opdrachten overgeslagen (SQL-Ledger slaat die ook over); controleer de administratie:").format(n=res.upgrade.errors|length) }}</p>
+  <ul>{% for f, l, m in res.upgrade.errors[:20] %}<li>{{ f }}:{{ l }} – {{ m }}</li>{% endfor %}</ul></div>
+{% endif %}
+{% if rma %}{% include "system/_rma_report.html" %}
+<p class="muted small">{{ ht("Dit rapport staat later ook in de administratie bij {m}.", m=hm("Beheer", "Run my Accounts-gegevens")) }}</p>{% endif %}
+<p class="actions">{% if wizard %}<a class="button" href="/welkom/gebruikers?administratie={{ cid }}">{{ _("Verder") }}</a>{% else %}<a class="button" href="/systeem/administraties/{{ cid }}">{{ _("Naar de administratie") }}</a>{% endif %}</p>
+{% endblock %}

@@ -1,0 +1,6 @@
+{#- Stappen van de eerste start (EERSTE_START_ANALYSE.md); ``step`` = huidige stap (1–5). -#}
+<ol class="wizsteps" aria-label="{{ _('Stappen') }}">
+  {% for s in WIZARD_STEPS %}
+  <li class="{{ 'done' if loop.index < step else ('current' if loop.index == step else '') }}"{% if loop.index == step %} aria-current="step"{% endif %}><span>{{ loop.index }}</span> {{ _(s) }}</li>
+  {% endfor %}
+</ol>

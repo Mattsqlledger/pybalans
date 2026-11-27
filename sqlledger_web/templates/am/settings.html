@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Instellingen administratie") }}{% endblock %}
+{% macro text(name, label, cls="") %}<label{% if cls %} class="{{ cls }}"{% endif %}>{{ _(label) }} <input name="{{ name }}" value="{{ f[name] }}"><input type="hidden" name="shown_{{ name }}" value="{{ f['shown_' ~ name] }}"></label>{% endmacro %}
+{% macro flag(name, label) %}<label class="check"><input type="checkbox" name="{{ name }}" value="1"{% if f[name] not in ('', '0') %} checked{% endif %}> {{ _(label) }}</label><input type="hidden" name="shown_{{ name }}" value="{{ f['shown_' ~ name] }}">{% endmacro %}
+{% block content %}
+<h2>{{ _("Instellingen administratie") }}</h2>
+{% include "help/am_settings.html" %}
+<p class="muted small">{{ _("Alleen wat u hier wijzigt wordt opgeslagen; andere instellingen (afsluitdatum, nummers die intussen zijn opgehoogd) blijven ongemoeid.") }}</p>
+<form method="post" action="/beheer/instellingen" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <h3 id="bedrijf">{{ _("Bedrijf") }}</h3>
+  <div class="grid">
+    {{ text("company", N_("Bedrijfsnaam")) }}
+    {{ text("tel", N_("Telefoon")) }}
+    {{ text("fax", N_("Fax")) }}
+    {{ text("companyemail", N_("E-mail")) }}
+    {{ text("companywebsite", N_("Website")) }}
+    {{ text("businessnumber", N_("KvK-nummer")) }}
+    <label>{{ _("Adres") }}
+      <textarea name="address" rows="4" cols="40">
+{{ f.address }}</textarea>
+      <input type="hidden" name="shown_address" value="{{ f.shown_address }}"></label>
+  </div>
+
+  <h3>{{ _("Documenten") }}</h3>
+  <div class="grid">
+  <label>{{ _("Documenttaal") }}
+    <select name="doc_language">
+      {% for code, name in doc_languages %}<option value="{{ code }}"{% if code == doc_language %} selected{% endif %}>{{ name }}</option>{% endfor %}
+    </select>
+    <span class="muted small">{{ _("Taal van facturen, orders en andere documenten als de relatie of het document geen eigen taal of variant heeft.") }}
+      {% set mysettings %}<a href="/instellingen">{{ _("Mijn instellingen") }}</a>{% endset %}
+      {{ ht("De taal van de schermen kiest elke gebruiker zelf bij {m}.", m=mysettings) }}</span></label>
+  </div>
+
+  <h3>{{ _("Boekhouding") }}</h3>
+  <div class="grid">
+    <label>{{ _("Precisie (decimalen)") }} <input name="precision" value="{{ f.precision }}" inputmode="numeric" class="short" required>
+      <input type="hidden" name="shown_precision" value="{{ f.shown_precision }}"></label>
+    <label id="boekjaar">{{ _("Boekjaar eindigt in") }}
+      <select name="yearend">{% for m in months %}<option value="{{ loop.index }}"{% if loop.index|string == f.yearend %} selected{% endif %}>{{ _(m) }}</option>{% endfor %}</select>
+      <input type="hidden" name="shown_yearend" value="{{ f.shown_yearend }}">
+      <span class="muted small">{{ _("Bepaalt de periode \"Boekjaar\" in rapporten, het resultaat op het dashboard en het voorstel bij de jaarafsluiting. Btw-aangifte en ICP blijven per kalendertijdvak.") }}
+      {% if last_yearend %}{{ _("Let op: de laatste jaarafsluiting is op {date}. Die blijft staan. Wijzigt u de maand, dan loopt het eerste boekjaar daarna van de dag na die afsluiting tot het nieuwe einde (een verkort of verlengd overgangsjaar); sluit dat af met de datum van uw keuze.").format(date=last_yearend) }}{% endif %}</span></label>
+    <label>{{ _("Rekening koersverschillen") }}
+      <select name="fxgainloss_accno_id"><option value="">—</option>
+        {% for a in accounts.fxgainloss_accno_id %}<option value="{{ a.id }}"{% if a.id|string == f.fxgainloss_accno_id %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+      </select><input type="hidden" name="shown_fxgainloss_accno_id" value="{{ f.shown_fxgainloss_accno_id }}"></label>
+    <label>{{ _("Maximale uploadgrootte (MB)") }}
+      <input name="max_upload_size" value="{{ f.max_upload_size }}" type="number" min="1" max="25" step="1"
+             inputmode="numeric" class="short" placeholder="10">
+      <input type="hidden" name="shown_max_upload_size" value="{{ f.shown_max_upload_size }}">
+      <span class="muted small">{{ _("Leeg = {mb} MB. Geldt voor bijlagen (PDF, JPG, PNG), hoogstens {max} MB.").format(mb=10, max=25) }}</span></label>
+    <label id="btw-tijdvak">{{ _("Btw-aangifte per") }}
+      <select name="vat_period">{% for code, label in vat_periods %}<option value="{{ code }}"{% if code == vat_period %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}</select>
+      <span class="muted small">{{ _("Voor de herinnering op het dashboard: aangifte vóór het einde van de maand na het tijdvak. Met \"geen herinnering\" verdwijnt ook het menu-item Btw-aangifte.") }}</span></label>
+    {% if ctx.company.icp %}
+    <label>{{ _("ICP-opgaaf per") }}
+      <select name="icp_period">{% for code, label in icp_periods %}<option value="{{ code }}"{% if code == icp_period %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}</select>
+      <span class="muted small">{{ _("Meestal per kwartaal; per maand als de leveringen van goederen boven de grens van de Belastingdienst komen.") }}</span></label>
+    {% endif %}
+  </div>
+  <fieldset class="fgrid"><legend>{{ _("Opties") }}</legend>
+    <label class="check"><input type="checkbox" name="method" value="cash"{% if f.method == 'cash' %} checked{% endif %}> {{ _("Rapporten standaard op kasbasis") }}</label>
+    <input type="hidden" name="shown_method" value="{{ f.shown_method }}">
+    {{ flag("cdt", N_("Contante korting met btw-correctie")) }}
+    {{ flag("namesbynumber", N_("Relaties sorteren op nummer")) }}
+    <span>{{ _("Soort relatie:") }}
+      <label class="inline"><input type="radio" name="typeofcontact" value=""{% if f.typeofcontact != 'person' %} checked{% endif %}> {{ _("bedrijf") }}</label>
+      <label class="inline"><input type="radio" name="typeofcontact" value="person"{% if f.typeofcontact == 'person' %} checked{% endif %}> {{ _("persoon") }}</label>
+      <input type="hidden" name="shown_typeofcontact" value="{{ f.shown_typeofcontact }}"></span>
+    {% if show_production is defined %}
+    <label class="check"><input type="checkbox" name="show_production" value="1"{% if show_production or has_assemblies %} checked{% endif %}{% if has_assemblies %} disabled{% endif %}>
+      {{ _("Productie (samengestelde artikelen) tonen") }}</label>
+    {% if not has_assemblies %}<input type="hidden" name="shown_show_production" value="{{ '1' if show_production else '0' }}">{% endif %}
+    <p class="muted small">{{ _("Samengesteld artikel toevoegen, Assembleren, Stuklijsten en Productiehistorie in het menu Artikelen.") }}
+      {% if has_assemblies %}{{ _("Staat aan, want deze administratie heeft samengestelde artikelen.") }}
+      {% else %}{{ _("Zet dit aan om een samengesteld artikel te maken; zodra er een is, staat het vanzelf aan.") }}{% endif %}</p>
+    {% endif %}
+  </fieldset>
+
+  <h3>{{ _("Laatst gebruikte nummers") }}</h3>
+  <p class="muted small">{{ _("Het volgende nummer is dit nummer plus één. Met 'vast' kan het nummer van een opgeslagen boeking, klant of leverancier niet meer gewijzigd worden.") }}</p>
+  <div class="table-wrap"><table class="list">
+    <thead><tr><th>{{ _("Soort") }}</th><th>{{ _("Laatste nummer") }}</th><th>{{ _("Vast") }}</th></tr></thead>
+    <tbody>
+    {% for key, label, lock in [("glnumber", N_("Memoriaal"), "lock_glnumber"), ("sinumber", N_("Verkoop"), "lock_sinumber"),
+                                ("vinumber", N_("Inkoop"), None), ("customernumber", N_("Klanten"), "lock_customernumber"),
+                                ("vendornumber", N_("Leveranciers"), "lock_vendornumber")] %}
+      <tr><td>{{ _(label) }}</td>
+        <td><input name="{{ key }}" value="{{ f[key] }}" aria-label="{{ _(label) }}"><input type="hidden" name="shown_{{ key }}" value="{{ f['shown_' ~ key] }}"></td>
+        <td>{% if lock %}<input type="checkbox" name="{{ lock }}" value="1"{% if f[lock] not in ('', '0') %} checked{% endif %} aria-label="{{ _('Vast') }} {{ _(label) }}"><input type="hidden" name="shown_{{ lock }}" value="{{ f['shown_' ~ lock] }}">{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+
+  <h3>{{ _("Standaardrekeningen artikelen") }}</h3>
+  <dl class="facts">
+    <dt>{{ _("Voorraad") }}</dt><dd>{{ ic.inventory_accno_id or "—" }}</dd>
+    <dt>{{ _("Omzet") }}</dt><dd>{{ ic.income_accno_id or "—" }}</dd>
+    <dt>{{ _("Kosten") }}</dt><dd>{{ ic.expense_accno_id or "—" }}</dd>
+  </dl>
+  <div><button>{{ _("Opslaan") }}</button></div>
+</form>
+{% endblock %}

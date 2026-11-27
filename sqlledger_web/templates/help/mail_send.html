@@ -1,0 +1,18 @@
+{# Knop E-mail op een factuur, order of offerte (HELP_ANALYSE golf 3, tekst B9) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een document als PDF mailen naar de klant of leverancier.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Controleer {a}. Het adres komt van de relatie; {c} en {b} ook, als die zijn ingevuld.", a=hl("Aan"), c=hl("Cc"), b=hl("Bcc")) }}</li>
+  <li>{{ ht("Pas zo nodig {o} en {m} aan. Klik op de bestandsnaam bij {j} om de PDF eerst te bekijken.", o=hl("Onderwerp"), m=hl("Bericht"), j=hl("Bijlage:")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Verzenden")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Meerdere adressen scheidt u met een komma.") }}</li>
+  <li>{{ _("Na verzenden ziet de boeking gemaild en komt er een notitie met datum, adressen en onderwerp bij de interne notities.") }}</li>
+  <li>{{ ht("Is e-mail nog niet ingesteld, dan kunt u niet verzenden. Een beheerder stelt het in bij {m}.", m=hm("Beheer", "E-mail")) }}</li>
+  <li>{{ _("Staat e-mail op testmodus, dan wordt de mail niet verstuurd maar in een map gezet. Het scherm meldt dat.") }}</li>
+</ul>
+</details>

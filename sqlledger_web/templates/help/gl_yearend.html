@@ -1,0 +1,29 @@
+{# Beheer > Jaarafsluiting (HELP_ANALYSE golf 2, tekst 13) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Aan het eind van het boekjaar boekt u alle opbrengst- en kostenrekeningen naar nul. Het resultaat (winst of verlies) komt op een rekening van het eigen vermogen. Alleen een beheerder kan dit.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Controleer de {f}. Standaard is dat het einde van het laatst afgelopen boekjaar.", f=hl("Datum")) }}</li>
+  <li>{{ ht("Kies de {f}.", f=hl("Resultaatrekening")) }}</li>
+  <li>{{ ht("Klik op {b}. U ziet per rekening wat er geboekt wordt en het {r}.", b=hl("Voorbeeld berekenen"), r=hl("Resultaat")) }}</li>
+  <li>{{ ht("Klopt het? Klik op {b}. Het programma opent de boeking als memoriaal.", b=hl("Jaarafsluiting boeken")) }}</li>
+  <li>{{ ht("Sluit daarna eventueel de periode af bij {m}.", m=hm("Beheer", "Afsluiten")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: alleen rekeningen van het eigen vermogen. Het programma stelt de rekening van de vorige jaarafsluiting voor, of anders de eerste uit het rekeningschema; controleer of dat de goede is, bijvoorbeeld de rekening voor het resultaat of de winstreserve.", f=hl("Resultaatrekening")) }}</li>
+  <li>{{ ht("{f}: leeg laten geeft het volgende memoriaalnummer.", f=hl("Nummer")) }}</li>
+  <li>{{ ht("{f}: laat dit op {v}, tenzij u een kasstelsel voert.", f=hl("Stelsel"), v=hl("Factuurstelsel")) }}</li>
+  <li>{{ ht("{b}: na het wijzigen van datum, rekening of stelsel.", b=hl("Opnieuw berekenen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Het programma sluit alles af wat tot de datum nog niet is afgesloten. Is een eerder jaar niet afgesloten, dan zit dat resultaat er ook in. Sluit de jaren dus op volgorde af.") }}</li>
+  <li>{{ _("Opnieuw doen kan: boek de jaarafsluiting nog eens met dezelfde datum. Een bestaande jaarafsluiting op of na die datum wordt dan eerst verwijderd; het voorbeeld meldt dat.") }}</li>
+  <li>{{ ht("Ongedaan maken: open de boeking (bijvoorbeeld via {m}) en klik op {b}.", m=hm("Grootboek", "Boekingen zoeken"), b=hl("Verwijderen")) }}</li>
+  <li>{{ ht("Valt de datum in de afgesloten periode, dan kan het niet. Zet dan eerst bij {m} de datum terug.", m=hm("Beheer", "Afsluiten")) }}</li>
+  <li>{{ ht("In welke maand het boekjaar eindigt, stelt u in bij {m}.", m=hm("Beheer", "Instellingen")) }}</li>
+  <li>{{ _("Er wordt niets afgesloten als er tot de datum geen opbrengsten of kosten zijn.") }}</li>
+</ul>
+</details>

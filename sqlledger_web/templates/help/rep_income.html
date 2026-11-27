@@ -1,0 +1,32 @@
+{# Rapporten > Winst en verlies (HELP_ANALYSE golf 2, tekst 10) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Opbrengsten, kosten en het resultaat over een periode, als tabel, als grafiek of allebei.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {p}, bijvoorbeeld {j}.", p=hl("Periode"), j=hl("Jaar")) }}</li>
+  <li>{{ ht("Kies bij {k} {g}, {q} of {m}.", k=hl("Kolommen"), g=hl("Geheel"), q=hl("Per kwartaal"), m=hl("Per maand")) }}</li>
+  <li>{{ ht("Wilt u vergelijken? Zet {v} aan.", v=hl("Vorig jaar ernaast")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Toon")) }}</li>
+  <li>{{ ht("Kies boven het resultaat {t}, {g} of {b}. Het programma onthoudt uw keuze.", t=hl("Tabel"), g=hl("Grafiek"), b=hl("Beide")) }}</li>
+  <li>{{ _("Klik op een rekening om de mutaties te zien.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{k}: {m} of {q} verdeelt de periode in maanden (hoogstens 12) of kwartalen (hoogstens 4), van oud naar nieuw, met het totaal als laatste kolom.", k=hl("Kolommen"), m=hl("Per maand"), q=hl("Per kwartaal")) }}</li>
+  <li>{{ ht("{v}: naast elke kolom dezelfde periode een jaar eerder.", v=hl("Vorig jaar ernaast")) }}</li>
+  <li>{{ ht("{f}: standaard opbrengsten en kosten met het resultaat als lijn. Kies hier één groep of rekening. In de weergave {b} kan dat ook met het grafiekteken in de tabel.", f=hl("Toon in grafiek"), b=hl("Beide")) }}</li>
+  <li>{{ ht("{s} (onder {m}): {f} telt facturen, {k} alleen wat betaald is.", s=hl("Stelsel"), m=hl("Meer opties"), f=hl("Factuurstelsel"), k=hl("Kasstelsel")) }}</li>
+  <li>{{ ht("{s} begint op {k} als bij {m} het vinkje {f} aanstaat.", s=hl("Stelsel"), k=hl("Kasstelsel"), m=hm("Beheer", "Instellingen"), f=hl("Rapporten standaard op kasbasis")) }}</li>
+  <li>{{ ht("{a} en {p} (onder {m}): alleen de bedragen van één afdeling of project.", a=hl("Afdeling"), p=hl("Project"), m=hl("Meer opties")) }}</li>
+  <li>{{ ht("{o} (onder {m}): zet de kolommen in omgekeerde volgorde.", o=hl("Omgekeerde weergave"), m=hl("Meer opties")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een jaarafsluiting telt hier niet mee. Ook na de afsluiting ziet u dus het resultaat van dat jaar.") }}</li>
+  <li>{{ ht("De PDF toont wat u op het scherm ziet: met {g} alleen de grafiek, met {b} grafiek en tabel. Is de tabel te breed, dan komt hij in blokken op opeenvolgende pagina's, met rekening en omschrijving steeds links.", g=hl("Grafiek"), b=hl("Beide")) }}</li>
+  <li>{{ _("CSV en Excel bevatten alleen de tabel.") }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: de kolommen lopen van oud naar nieuw en het totaal staat achteraan.") }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

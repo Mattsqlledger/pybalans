@@ -1,0 +1,20 @@
+{# Systeem > Back-up inlezen (HELP_ANALYSE golf 3, tekst C9) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een back-up inlezen als nieuwe administratie: het bestand dat SQL-Ledger maakt (.sql of .sql.gz), een pg_dump in platte SQL, of een back-up van deze app. Een oudere SQL-Ledger-versie wordt meteen bijgewerkt.") }}</p>
+<p>{{ _("Ook een back-up van Run my Accounts of ledger123 (een pg_dump, ook als .sql.gz of .sql.bz2) kan worden ingelezen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies bij {f} het bestand.", f=hl("Back-upbestand")) }}</li>
+  <li>{{ _("Hebt u bij het maken ook een zip met sjablonen en logo gekregen? Kies die bij \"{field}\".").format(field=_("Sjablonen en logo (.zip, optioneel)")) }}</li>
+  <li>{{ ht("Klik op {b}. U ziet de voortgang, en daarna wat er in de back-up staat (zie {s}).", b=hl("Uploaden"), s=hl("Back-up controleren")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Inlezen maakt altijd een nieuwe administratie en overschrijft nooit een bestaande.") }}</li>
+  <li>{{ _("Het bestand mag hoogstens 512 MB zijn.") }}</li>
+  <li>{{ _("Run my Accounts / ledger123: wat SQL-Ledger niet kent, wordt ongewijzigd apart bewaard (schema rma); daarna wordt de administratie bijgewerkt en gecontroleerd. Klopt de proefbalans of het openstaande bedrag daarna niet, dan wordt er niets aangemaakt. Voorraad per magazijn wordt nog niet omgezet.") }}</li>
+  <li>{{ ht("Loopt er een inlezen, of is er een afgebroken, dan staat dat bovenaan met de link {l}.", l=hl("Bekijken")) }}</li>
+  <li>{{ ht("Gebruikers en wachtwoorden zitten niet in de back-up. Leest u in op dezelfde installatie, dan zijn ze er al; geef ze toegang bij {m}. Bij een nieuwe installatie zet de beheerder van de server eerst de app-database terug; zie de installatiehandleiding.", m=hm("Systeem", "Gebruikers")) }}</li>
+</ul>
+</details>

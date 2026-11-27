@@ -1,0 +1,9 @@
+{# vaste laatste regel onder "Let op" bij elk rapport (HELP_ANALYSE golf 2, V1); zonder formulier alleen de knoppen #}
+{% if rep is defined and rep.fields|selectattr("type", "in", ["period", "asof"])|list %}
+<li>{{ ht("{j} is altijd 1 januari tot en met 31 december. Eindigt uw boekjaar in een andere maand ({m}), dan kunt u bij {s} ook {b} kiezen, bijvoorbeeld 2025/2026.", j=hl("Jaar"), m=hm("Beheer", "Instellingen"), s=hl("Soort"), b=hl("Boekjaar")) }}</li>
+{% endif %}
+{% if rep is defined and not rep.fields %}
+<li>{{ ht("Met CSV, Excel, PDF of {a} neemt u het resultaat mee.", a=hl("Afdrukken")) }}</li>
+{% else %}
+<li>{{ ht("Kies de opties en klik op {t}. Meer keuzes staan onder {m}. Het scherm onthoudt uw laatste keuzes. Met CSV, Excel, PDF of {a} neemt u het resultaat mee.", t=hl("Toon"), m=hl("Meer opties"), a=hl("Afdrukken")) }}</li>
+{% endif %}

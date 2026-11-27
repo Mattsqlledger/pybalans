@@ -1,0 +1,21 @@
+{# Beheer > Betaalmethoden (HELP_ANALYSE golf 3, tekst B3) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Hoe er betaald wordt, bijvoorbeeld Overschrijving, Pin of Contant. U kunt het vastleggen bij een relatie, op een boeking en bij elke betaling.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Klik op {t}, vul de {o} in en klik op {b}.", t=hl("Betaalmethode toevoegen"), o=hl("Omschrijving"), b=hl("Opslaan")) }}</li>
+  <li>{{ _("Zet met ↑ en ↓ de meest gebruikte bovenaan; in deze volgorde staan ze in de keuzelijsten.") }}</li>
+  <li>{{ ht("Kies bij de klant of leverancier een standaard in het veld {f}. Een nieuwe boeking voor die relatie neemt die over.", f=hl("Betaalmethode")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: rondt het te betalen bedrag af (bijvoorbeeld op 0,05 bij contant). Alleen zichtbaar als een eigen sjabloon het afgeronde bedrag toont; de standaardsjablonen doen dat niet.", f=hl("Afronding")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("De keuzelijsten voor betaalmethode verschijnen pas als hier minstens één betaalmethode staat.") }}</li>
+  <li>{{ _("Een betaalmethode die bij een relatie, boeking of betaling gebruikt wordt, kunt u niet verwijderen.") }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: er is geen veld voor kosten. Dat deed in SQL-Ledger ook niets.") }}</li>
+</ul>
+</details>

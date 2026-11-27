@@ -1,0 +1,26 @@
+{# Btw > Btw-rubrieken (HELP_ANALYSE golf 3, tekst A8) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Per btw-rekening de rubriek van de Nederlandse btw-aangifte kiezen, en de rekeningen voor de btw-boeking. Daarna maakt het programma de aangifte voor u bij {m}.", m=hm("Btw", "Btw-aangifte")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies bij elke btw-rekening een {r}. De eerste keer staat er een {v} op basis van naam en tarief; controleer dat.", r=hl("Rubriek"), v=hl("voorstel")) }}</li>
+  <li>{{ ht("Kies {n} voor een btw-rekening die niet in de aangifte hoort.", n=hl("niet in de aangifte")) }}</li>
+  <li>{{ ht("Kies onder {b} de {a} en de {r}.", b=hl("Btw-boeking"), a=hl("Afdrachtrekening"), r=hl("Rekening afrondingsverschillen")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: hierop komt het totaal van de aangifte (5G). Boekingen op deze rekening tellen niet mee in de aangifte. Het mag geen btw-rekening zijn.", f=hl("Afdrachtrekening")) }}</li>
+  <li>{{ ht("{f}: hierop komen de centen die overblijven doordat de aangifte op hele euro's wordt afgerond.", f=hl("Rekening afrondingsverschillen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Het menu-item {m} verschijnt zodra minstens één btw-rekening een rubriek heeft, en zolang bij {i} {f} niet op {g} staat.", m=hm("Btw", "Btw-aangifte"), i=hm("Beheer", "Instellingen"), f=hl("Btw-aangifte per"), g=hl("geen herinnering")) }}</li>
+  <li>{{ ht("Omzet zonder btw komt in rubriek 1E. Hoort die bij een klant in 3A of 3B, kies dat dan bij de klant onder {f}.", f=hl("Btw-rubriek omzet zonder btw")) }}</li>
+  <li>{{ ht("Staat een btw-rekening of klant op rubriek 3B, dan verschijnt ook {m}.", m=hm("Btw", "ICP-opgaaf")) }}</li>
+  <li>{{ ht("Een Britse administratie: kies bij {a} het Verenigd Koninkrijk. Dan kiest u per btw-rekening een box van de VAT Return en het einde van uw kwartalen.", a=hl("Aangifte volgens")) }}</li>
+  <li>{{ ht("Een Belgische administratie: kies bij {a} België. Dan kiest u per btw-rekening een rooster en per kosten- of activarekening of de inkoop in 81, 82 of 83 komt.", a=hl("Aangifte volgens")) }}</li>
+  <li>{{ _("Voor andere landen (bijvoorbeeld Zwitserland of Duitsland) heeft PyBalans nog geen btw-aangifte. Dan doet de app geen voorstel en staat het punt in de overstaplijst op niet nodig.") }}</li>
+</ul>
+</details>

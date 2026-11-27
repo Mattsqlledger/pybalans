@@ -1,0 +1,18 @@
+{% from "dashboard/_chart.html" import chart as draw %}
+<section class="card dash-{{ block }}">
+  <h3>{{ _("Te ontvangen") if arap == "ar" else _("Te betalen") }} <small><a href="{{ href }}">{{ v.amount(oi.total) }}</a></small></h3>
+  {% if oi.count %}
+  {{ draw(chart, _("Openstaand per ouderdom")) }}
+  <p class="muted small center">{{ _("Dagen na de vervaldatum") }}</p>
+  {% else %}<p class="muted">{{ _("Niets openstaand.") }}</p>{% endif %}
+  <div class="acts">
+  {% if arap == "ar" %}
+    {% if v.bookkeeper %}<a class="button" href="/verkoopfactuur/nieuw">{{ _("Verkoopfactuur") }}</a>{% endif %}
+    <a class="button secondary" href="/aanmaningen">{{ _("Aanmaningen") }}</a>
+  {% else %}
+    {% if v.bookkeeper %}<a class="button" href="/inkoop/uploaden">{{ _("Inkoopfactuur uploaden") }}</a>
+    <a class="button secondary" href="/betalingen">{{ _("Betalingen") }}</a>{% endif %}
+  {% endif %}
+    <a class="button secondary" href="{{ href }}">{{ _("Ouderdomsanalyse") }}</a>
+  </div>
+</section>

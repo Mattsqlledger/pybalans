@@ -1,0 +1,824 @@
+[ 1] OK                eenvoudige boeking + lezen
+[ 2] OK                meerdere regels, afdeling, project, bron/memo, notities, eigen referentie
+[ 3] OK                automatische nummering glnumber
+[ 4] OK                nummersjablonen <%YYYY%>, <%DD%>, <%CURR%>
+[ 5] OK                nummerveld bestaat nog niet
+[ 6] OK                vreemde valuta USD met koers
+[ 7] OK                bestaande boeking wijzigen (cleared blijft)
+[ 8] OK                verwijderen
+     (1x verklaard: bank als tegenrekening bij factuur i.p.v. betaling, gelijke bedragen (hash-volgorde))
+[ 9] VERWACHT VERSCHIL validaties
+     tabel gl: kolommen ['id', 'reference', 'description', 'transdate', 'employee_id', 'notes', 'department_id', 'approved', 'curr', 'exchangerate']
+         alleen Perl  : ('10205', 'GL-0100', None, '2026-03-02', '500', None, '0', '1', 'EUR', '1')
+     -> verklaring: idem: Perl schrijft de boeking met 0.004/0.001
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10205', '10042', '-0.004', '2026-03-02', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10205', '10044', '0.001', '2026-03-02', None, '1', '0', None, None, None, None, None)
+     -> verklaring: idem
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Perl  : ('glnumber', 'GL-0100')
+         alleen Python: ('glnumber', 'GL-0099')
+     -> verklaring: idem: Perl hoogt het boekingsnummer op
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('10205', 'gl', 'GL-0100', 'transaction', 'posted', '500')
+     -> verklaring: idem
+     op 7 (post):
+         error: Perl=None Python=True
+         id: Perl='10205' Python=None
+         fout Perl=None Python='ValidationError: Amount has more than 2 decimals'
+     -> verklaring: README 40: bedragen met meer decimalen dan de precisie (0.004/0.001) weigert Python; Perl slaat ze op en de boeking is een fractie uit balans.
+     op 1: fout Perl='Error: Out of balance transaction!' | Python='OutOfBalanceError: Out of balance transaction!'
+     op 2: fout Perl='Error: Cannot post transaction with a debit and credit entry for the same account!' | Python='ValidationError: Cannot post transaction with a debit and credit entry for the same account!'
+     op 3: fout Perl='Error: Cannot post transaction for a closed period!' | Python='ClosedPeriodError: Cannot post transaction for a closed period!'
+     op 4: fout Perl='Error: Transaction Date missing!' | Python='ValidationError: Transaction Date missing!'
+     op 5: fout Perl='Error: locked' | Python='LockedTransactionError: Cannot change a transaction in a closed period!'
+     op 6: fout Perl='Error: locked' | Python='ClosedPeriodError: Cannot delete a transaction in a closed period!'
+     op 7: fout Perl=None | Python='ValidationError: Amount has more than 2 decimals'
+[10] OK                revtrans: boekingen niet meer wijzigbaar
+     op 3: fout Perl='Error: locked' | Python='LockedTransactionError: Transaction is locked (revtrans)'
+     op 4: fout Perl='Error: locked' | Python='LockedTransactionError: Transaction is locked (revtrans)'
+[11] OK                pending (niet goedgekeurd)
+     (1x verklaard: bank als tegenrekening bij factuur i.p.v. betaling, gelijke bedragen (hash-volgorde))
+[12] VERWACHT VERSCHIL batch/voucher
+     tabel br: kolommen ['id', 'batchnumber', 'description', 'batch', 'transdate', 'apprdate', 'amount', 'managerid', 'employee_id']
+         alleen Perl  : ('800', 'B1', 'Memoriaal batch', 'general_ledger', '2026-02-01', None, '22.5', None, None)
+         alleen Python: ('800', 'B1', 'Memoriaal batch', 'general_ledger', '2026-02-01', None, '60', None, None)
+     -> verklaring: Perl werkt het batchtotaal niet bij bij verwijderen (typefout $mount).
+[13] OK                herhaalschema
+[14] OK                referentiedocumenten
+[15] OK                zoekfilters overzicht
+     (1x verklaard: tegenrekening op eerste regel via $form->{GL}[undef] (GL.pm))
+     (4x verklaard: bank als tegenrekening bij factuur i.p.v. betaling, gelijke bedragen (hash-volgorde))
+[16] OK                rekeningmutaties scherm (ca.pl)
+[17] VERWACHT VERSCHIL memoriaalscherm (gl.pl) als browser
+     tabel recurring: kolommen ['id', 'reference', 'startdate', 'nextdate', 'enddate', 'repeat', 'unit', 'howmany', 'payment', 'description']
+         alleen Perl  : ('5001', 'MEM-BANK', '2026-06-30', '2026-11-30', '2026-11-30', '1', 'months', '6', '0', None)
+         alleen Python: ('5001', 'MEM-BANK', '2026-06-30', '2026-07-31', '2026-11-30', '1', 'months', '6', '0', None)
+     -> verklaring: README 43: Perl geeft bij opnieuw opslaan de volgende herhaaldatum niet mee en rekent die opnieuw uit vanaf vandaag (2026-07-31 -> later): achterstallige herhalingen worden overgeslagen. Python behoudt de volgende datum.
+     op 9: fout Perl='Error: Out of balance transaction!' | Python='OutOfBalanceError: Out of balance transaction!'
+     op 10: fout Perl='Error: Cannot post transaction for a closed period!' | Python='ClosedPeriodError: Cannot post transaction for a closed period!'
+     op 11: fout Perl='Error: Cannot post transaction with a debit and credit entry for the same account!' | Python='ValidationError: Cannot post transaction with a debit and credit entry for the same account!'
+[18] VERWACHT VERSCHIL koersverschilboeking via het scherm (gl.pl fxadj)
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10205', '10173', '5', '2026-07-04', None, '1', '0', None, None, None, '2026-07-04', None)
+         alleen Python: ('10205', '10173', '5', '2026-07-04', None, '1', '0', None, None, None, None, None)
+     -> verklaring: README 10: Perl's $cleared lekt van de FX-regel naar de volgende regels (8520 krijgt ook een afletterdatum); Python per regel.
+[19] OK                journaaloverzicht scherm (gl.pl)
+     (2x verklaard: journaal: regels met gelijke sorteersleutel in andere volgorde (tussensaldo anders, blokken en totalen gelijk))
+[20] VERWACHT VERSCHIL journaaloverzicht scherm splitledger + subtotaal (gl.pl)
+     op 1 (gl_screen):
+         screen: alleen Perl []
+         screen: alleen Python [['subtotal', ['3.000,00']], ['subtotal', ['333,33']], ['subtotal', ['80,60']], ['subtotal', ['120,40']]]
+     -> verklaring: Perl-bug (README 39): bij splitledger loopt het subtotaal per sorteerwaarde door over rekeningen heen; Python sluit de groep af bij een nieuwe rekening.
+[21] VERWACHT VERSCHIL rekeningmutaties (CA)
+     op 9 (account_tx):
+         balance: Perl=None Python='0'
+         error: Perl=True Python=None
+         order: Perl=None Python=[]
+         rows: Perl=None Python=[]
+         fout Perl='Error:  ORDER BY transdate ASC,reference,description\nERROR:  syntax error at or near "ORDER"\nLINE 1:  ORDER BY transdate ASC,reference,description\n         ^' Python=None
+     -> verklaring: Onbekende rekening: Perl crasht op een lege SQL-query; Python geeft een lege lijst.
+     op 10 (account_tx):
+         balance: Perl='0' Python='-121'
+     -> verklaring: Perl telt met afdeling alleen het gl-deel van het beginsaldo (de lus over ar/ap/gl overschrijft de query); Python telt alle drie.
+     op 9: fout Perl='Error:  ORDER BY transdate ASC,reference,description\nERROR:  syntax error at or near "ORDER"\nLINE 1:  ORDER BY transdate ASC,reference,description\n         ^' | Python=None
+[22] OK                vertaling (countrycode en)
+     (1x verklaard: tegenrekening op eerste regel via $form->{GL}[undef] (GL.pm))
+[23] VERWACHT VERSCHIL numberformat 1.000,00
+     op 3 (amounts):
+         round: alleen Perl []
+         round: alleen Python ['1']
+     -> verklaring: 1.00499 -> Perl 1.01, Python 1.00 (bewust: correcte afronding).
+[24] OK                numberformat 1'000.00 en 1000,00
+[25] VERWACHT VERSCHIL boeken op kop- of onbekende rekening
+     tabel gl: kolommen ['id', 'reference', 'description', 'transdate', 'employee_id', 'notes', 'department_id', 'approved', 'curr', 'exchangerate']
+         alleen Perl  : ('10205', 'GL-0100', None, '2026-03-02', '500', None, '0', '1', 'EUR', '1')
+         alleen Perl  : ('10206', 'GL-0101', None, '2026-03-02', '500', None, '0', '1', 'EUR', '1')
+     -> verklaring: Perl boekt op kop-rekeningen en maakt bij een onbekende rekening een regel zonder rekening (chart_id NULL); Python weigert.
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10205', '10041', '-5', '2026-03-02', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10205', '10044', '5', '2026-03-02', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10206', '10044', '5', '2026-03-02', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10206', None, '-5', '2026-03-02', None, '1', '0', None, None, None, None, None)
+     -> verklaring: Perl boekt op kop-rekeningen en maakt bij een onbekende rekening een regel zonder rekening (chart_id NULL); Python weigert.
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Perl  : ('glnumber', 'GL-0101')
+         alleen Python: ('glnumber', 'GL-0099')
+     -> verklaring: Perl boekt op kop-rekeningen en maakt bij een onbekende rekening een regel zonder rekening (chart_id NULL); Python weigert.
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('10205', 'gl', 'GL-0100', 'transaction', 'posted', '500')
+         alleen Perl  : ('10206', 'gl', 'GL-0101', 'transaction', 'posted', '500')
+     -> verklaring: Perl boekt op kop-rekeningen en maakt bij een onbekende rekening een regel zonder rekening (chart_id NULL); Python weigert.
+     op 1 (post):
+         error: Perl=None Python=True
+         id: Perl='10205' Python=None
+         fout Perl=None Python='ValidationError: Account(s) not postable (heading or closed): 1000'
+     -> verklaring: Perl boekt op kop-rekeningen en maakt bij een onbekende rekening een regel zonder rekening (chart_id NULL); Python weigert.
+     op 2 (post):
+         error: Perl=None Python=True
+         id: Perl='10206' Python=None
+         fout Perl=None Python='ValidationError: Unknown account(s): 9998'
+     -> verklaring: Perl boekt op kop-rekeningen en maakt bij een onbekende rekening een regel zonder rekening (chart_id NULL); Python weigert.
+     op 1: fout Perl=None | Python='ValidationError: Account(s) not postable (heading or closed): 1000'
+     op 2: fout Perl=None | Python='ValidationError: Unknown account(s): 9998'
+[26] OK                debiteuren/crediteuren tegenrekeningen
+     (1x verklaard: bank als tegenrekening bij factuur i.p.v. betaling, gelijke bedragen (hash-volgorde))
+[27] OK                proefbalans
+[28] OK                winst- en verliesrekening
+[29] OK                balans
+     (20 verouderde Perl-subtotaalregel(s) gefilterd, zie drop_stale_subtotals)
+[30] VERWACHT VERSCHIL rapporten in andere getalnotatie en taal
+     op 1 (trial_balance):
+         rows {'id': None, 'accno': '1100', 'transdate': None, 'amount': '-46.1'}: description Perl='Interbank' Python='Bank (EN)'
+         rows {'id': None, 'accno': '8520', 'transdate': None, 'amount': '15452.75'}: description Perl='Opbrengst Verkopen A' Python='Revenue A'
+         screen: alleen Perl [['1100', 'Interbank', '', '346,10', '300,00', '46,10'], ['8520', 'Opbrengst Verkopen A', '', '', '15.452,75', '15.452,75']]
+         screen: alleen Python [['1100', 'Bank (EN)', '', '346,10', '300,00', '46,10'], ['8520', 'Revenue A', '', '', '15.452,75', '15.452,75']]
+     -> verklaring: Perl-proefbalans vertaalt koppen en beginsaldi via language_code, maar de rekeningen in de periode via $form->{countrycode} (leeg); Python vertaalt alles met dezelfde taal.
+     (2 verouderde Perl-subtotaalregel(s) gefilterd, zie drop_stale_subtotals)
+[31] VERWACHT VERSCHIL ouderdomsanalyse met twee contactpersonen bij één klant
+     op 1 (aging):
+         rows: zelfde inhoud, andere volgorde
+         screen: alleen Perl [['row', ['65.40', '130.80']], ['row', ['96.80', '227.60']], ['row', ['96.80', '324.40']], ['row', ['222.50', '546.90']]]
+         screen: alleen Python [['row', ['96.80', '162.20']], ['row', ['222.50', '384.70']], ['subtotal', ['222.50', '96.80', '65.40']], ['total', ['131.00', '222.50', '96.80', '263.00', '65.40', '778.70']]]
+     -> verklaring: Perl joint op contact: een klant met twee contactpersonen krijgt elke openstaande factuur twee keer (ouderdomsanalyse en aanmaningen tellen dubbel). Het scenario hieronder (zelfde data, één contactpersoon) is wél exact gelijk.
+     op 2 (reminder):
+         rows: zelfde inhoud, andere volgorde
+         screen: zelfde inhoud, andere volgorde
+     -> verklaring: Perl joint op contact: een klant met twee contactpersonen krijgt elke openstaande factuur twee keer (ouderdomsanalyse en aanmaningen tellen dubbel). Het scenario hieronder (zelfde data, één contactpersoon) is wél exact gelijk.
+[32] OK                ouderdomsanalyse
+[33] OK                aanmaningen
+[34] OK                btw-rapport
+[35] OK                betalingen
+[36] OK                jaarafsluiting
+     (2 verouderde Perl-subtotaalregel(s) gefilterd, zie drop_stale_subtotals)
+[37] VERWACHT VERSCHIL jaarafsluiting in afgesloten periode
+     tabel gl: kolommen ['id', 'reference', 'description', 'transdate', 'employee_id', 'notes', 'department_id', 'approved', 'curr', 'exchangerate']
+         alleen Perl  : ('10206', 'GL-0101', None, '2025-12-31', '500', None, '0', '1', 'EUR', '1')
+         alleen Python: ('10205', 'GL-0100', 'Afsluiting H1', '2026-06-30', '500', None, '0', '1', 'EUR', '1')
+         alleen Python: ('20008', 'JAARAFSLUITING-2025', 'JAARAFSLUITING-2025', '2025-12-31', None, None, '0', '1', 'EUR', '1')
+     -> verklaring: idem
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10206', '10030', '16245.44', '2025-12-31', 'GL-0101', '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10206', '10097', '8000', '2025-12-31', 'GL-0101', '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10206', '10099', '1600.33', '2025-12-31', 'GL-0101', '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10206', '10107', '1200', '2025-12-31', 'GL-0101', '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10206', '10173', '-24000.05', '2025-12-31', 'GL-0101', '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10206', '10174', '-3000.05', '2025-12-31', 'GL-0101', '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10030', '14278.67', '2026-06-30', 'GL-0100', '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10097', '3000', '2026-06-30', 'GL-0100', '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10098', '333.33', '2026-06-30', 'GL-0100', '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10103', '80.6', '2026-06-30', 'GL-0100', '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10104', '120.4', '2026-06-30', 'GL-0100', '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10107', '600', '2026-06-30', 'GL-0100', '1', '0', None, None, None, None, None)
+     -> verklaring: idem
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Perl  : ('glnumber', 'GL-0101')
+         alleen Python: ('glnumber', 'GL-0100')
+     -> verklaring: idem: nummer opgehoogd in Perl
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('10206', 'gl', 'GL-0101', 'yearend', 'posted', '500')
+     -> verklaring: idem
+     tabel yearend: kolommen ['trans_id', 'transdate']
+         alleen Perl  : ('10206', '2025-12-31')
+         alleen Python: ('10205', '2026-06-30')
+         alleen Python: ('20008', '2025-12-31')
+     -> verklaring: idem
+     op 2 (yearend):
+         error: Perl=None Python=True
+         ok: Perl=True Python=None
+         fout Perl=None Python='ClosedPeriodError: Cannot post transaction for a closed period!'
+     -> verklaring: README 41: per 2025-12-31 valt in de afgesloten periode (closedto 20251231); Python weigert, Perl boekt en verwijdert daarbij ook de latere afsluiting en die van 2025.
+     op 2: fout Perl=None | Python='ClosedPeriodError: Cannot post transaction for a closed period!'
+[38] VERWACHT VERSCHIL verkoop- en inkoopboekingen
+     tabel ap: kolommen ['id', 'invnumber', 'transdate', 'vendor_id', 'taxincluded', 'amount', 'netamount', 'paid', 'datepaid', 'duedate', 'invoice', 'ordnumber', 'curr', 'notes', 'employee_id', 'till', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'shippingpoint', 'terms', 'approved', 'cashdiscount', 'discountterms', 'waybill', 'warehouse_id', 'description', 'onhold', 'exchangerate', 'dcn', 'bank_id', 'paymentmethod_id']
+         alleen Perl  : ('10211', '1', '2026-07-03', '905', '0', '972.2', '800', '300', '2026-07-20', '2026-08-02', '0', None, 'EUR', None, '500', None, None, None, '0', None, None, None, None, '30', '1', '0', '0', None, None, None, '0', '1', None, None, '0')
+         alleen Python: ('10211', '1', '2026-07-03', '905', '0', '992.19', '819.99', '300', '2026-07-20', '2026-08-02', '0', None, 'EUR', None, '500', None, None, None, '0', None, None, None, None, '30', '1', '0', '0', None, None, None, '0', '1', None, None, '0')
+     -> verklaring: p1 heeft een regel op 4220 (niet als AP_amount gekoppeld): Perl laat die bij openen en opnieuw opslaan vallen (factuur 992,19 -> 972,20); Python behoudt hem (README 25b)
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10211', '10065', '972.2', '2026-07-03', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('10211', '10065', '992.19', '2026-07-03', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('10211', '10104', '-19.99', '2026-07-03', None, '1', '0', None, None, '2', None, None)
+     -> verklaring: idem: regel op 4220 blijft bij Python bestaan
+     op 15 (arap_get):
+         trans: Perl={'invnumber': '1', 'transdate': '2026-07-03', 'duedate': '2026-08-02', 'terms': '30', 'taxincluded': '0', 'type': 'transaction', 'currency': 'EUR', 'exchangerate': '1', 'arap': '1600', 'lines': [['8010', '800', 'meel', None]], 'taxes': {'1800': '172.2'}, 'payments': [['1100', '300', '2026-07-20', 'UIT-1', None, '1']], 'discount': None, 'calctax': [], 'oldinvtotal': '992.19'} Python={'invnumber': '1', 'transdate': '2026-07-03', 'duedate': '2026-08-02', 'terms': '30', 'taxincluded': '0', 'type': 'transaction', 'currency': 'EUR', 'exchangerate': '1', 'arap': '1600', 'lines': [['8010', '800', 'meel', None], ['4220', '19.99', None, None]], 'taxes': {'1800': '172.2'}, 'payments': [['1100', '300', '2026-07-20', 'UIT-1', None, '1']], 'discount': None, 'calctax': ['1800'], 'oldinvtotal': '992.19'}
+     -> verklaring: idem: Perl laadt de regel op 4220 niet
+[39] OK                verkoopboekingen foutgevallen
+     op 1: fout Perl='Error: Cannot post transaction for a closed period!' | Python='ClosedPeriodError: Cannot post transaction for a closed period!'
+     op 2: fout Perl='Error: Cannot post payment for a closed period!' | Python='ClosedPeriodError: Cannot post payment for a closed period!'
+     op 3: fout Perl='Error: Exchange rate missing!' | Python='LedgerError: Exchange rate missing!'
+     op 4: fout Perl='Error: Date for cash discount past due!' | Python='ValidationError: Date for cash discount past due!'
+[40] OK                verkoop-/inkoopscherm (aa.pl) als browser
+[41] VERWACHT VERSCHIL aa.pl-scherm: vervaldatum en geblokkeerd bij wijzigen
+     tabel ar: kolommen ['id', 'invnumber', 'transdate', 'customer_id', 'taxincluded', 'amount', 'netamount', 'paid', 'datepaid', 'duedate', 'invoice', 'shippingpoint', 'terms', 'notes', 'curr', 'ordnumber', 'employee_id', 'till', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'approved', 'cashdiscount', 'discountterms', 'waybill', 'warehouse_id', 'description', 'onhold', 'exchangerate', 'dcn', 'bank_id', 'paymentmethod_id']
+         alleen Perl  : ('10207', 'VD-1', '2026-07-01', '902', '0', '130', '100', '0', None, '2026-07-31', '0', None, '30', None, 'EUR', None, '500', None, None, None, '0', None, None, None, '1', '0', '0', None, None, 'na wijziging', '0', '1', None, '10044', '0')
+         alleen Python: ('10207', 'VD-1', '2026-07-01', '902', '0', '130', '100', '0', None, '2026-09-01', '0', None, '30', None, 'EUR', None, '500', None, None, None, '0', None, None, None, '1', '0', '0', None, None, 'na wijziging', '0', '1', None, '10044', '0')
+     -> verklaring: README 45: Perl rekent bij openen en opslaan de vervaldatum opnieuw uit (oldterms niet geladen); Python behoudt de opgeslagen vervaldatum
+[42] OK                betalingen: ontvangsten op meerdere facturen
+     (1x verklaard: zelfde regels binnen subtotaalblok, andere volgorde bij gelijke sorteerwaarde)
+[43] OK                betalingen: leverancier met vooruitbetaling
+[44] VERWACHT VERSCHIL betalingen: vooruitbetaling zonder posten en zonder kenmerk
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10205', '10044', '75', '2026-07-02', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10206', '10044', '25', '2026-07-03', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10044', '75', '2026-07-02', '2001', '1', '0', None, None, None, None, None)
+         alleen Python: ('10206', '10044', '25', '2026-07-03', 'X-7', '1', '0', None, None, None, None, None)
+     -> verklaring: cp.pl laat het kenmerk weg als er geen post is aangevinkt, ook een ingevuld kenmerk; de webapp boekt het ingevulde of voorgestelde kenmerk (README)
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Perl  : ('check_1100', '2003')
+         alleen Python: ('check_1100', 'X-8')
+     -> verklaring: gevolg: het volgende kenmerk is opgehoogd
+[45] VERWACHT VERSCHIL betalingen: scherm meerdere relaties
+     tabel ar: kolommen ['id', 'invnumber', 'transdate', 'customer_id', 'taxincluded', 'amount', 'netamount', 'paid', 'datepaid', 'duedate', 'invoice', 'shippingpoint', 'terms', 'notes', 'curr', 'ordnumber', 'employee_id', 'till', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'approved', 'cashdiscount', 'discountterms', 'waybill', 'warehouse_id', 'description', 'onhold', 'exchangerate', 'dcn', 'bank_id', 'paymentmethod_id']
+         alleen Perl  : ('3002', 'F-3002', '2026-06-10', '902', None, '272.5', '250', '50', '2026-07-01', '2026-06-24', '1', None, '0', None, 'EUR', 'O-2', None, None, None, None, '0', None, None, None, '1', None, None, None, None, 'Boeken', '0', '1', None, '10044', '0')
+         alleen Python: ('3002', 'F-3002', '2026-06-10', '902', None, '272.5', '250', '50', '2026-06-20', '2026-06-24', '1', None, '0', None, 'EUR', 'O-2', None, None, None, None, '0', None, None, None, '1', None, None, None, None, 'Boeken', '0', '1', None, None, None)
+     -> verklaring: Perl zet bij een deelbetaling ook datepaid/bank_id op de post die niets krijgt (README)
+     tabel payment: kolommen ['id', 'trans_id', 'exchangerate', 'paymentmethod_id']
+         alleen Perl  : ('1', '3002', '1', '0')
+     -> verklaring: Perl schrijft een betaling van 0 op de post die niets krijgt (README)
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('3002', '10044', '0', '2026-07-01', 'M-1', '1', '0', None, 'deel', '1', None, None)
+         alleen Perl  : ('3002', '10057', '0', '2026-07-01', None, '1', '0', None, None, None, None, None)
+     -> verklaring: Perl boekt nulregels (bank en debiteuren) op de post die niets krijgt (README)
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('3002', 'ar', 'M-1', 'receipt', 'posted', '500')
+     -> verklaring: gevolg: Perl logt die nulbetaling
+[46] VERWACHT VERSCHIL betalingen: scherm meerdere relaties met contante korting
+     tabel ar: kolommen ['id', 'invnumber', 'transdate', 'customer_id', 'taxincluded', 'amount', 'netamount', 'paid', 'datepaid', 'duedate', 'invoice', 'shippingpoint', 'terms', 'notes', 'curr', 'ordnumber', 'employee_id', 'till', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'approved', 'cashdiscount', 'discountterms', 'waybill', 'warehouse_id', 'description', 'onhold', 'exchangerate', 'dcn', 'bank_id', 'paymentmethod_id']
+         alleen Perl  : ('10207', 'KM-1', '2026-07-01', '904', '0', '650', '500', '595', '2026-07-05', '2026-07-01', '0', None, '0', None, 'EUR', None, '500', None, None, None, '0', None, None, None, '1', '0.02', '10', None, None, None, '0', '1', None, '10044', '0')
+         alleen Perl  : ('10208', '1', '2026-07-05', '902', None, '0', '0', '10', '2026-07-05', '2026-07-05', '0', None, '0', None, 'EUR', None, '500', None, None, None, '0', None, None, None, '1', None, None, None, None, None, '0', None, None, '10044', None)
+         alleen Python: ('10207', 'KM-1', '2026-07-01', '904', '0', '650', '500', '605', '2026-07-05', '2026-07-01', '0', None, '0', None, 'EUR', None, '500', None, None, None, '0', None, None, None, '1', '0.02', '10', None, None, None, '0', '1', None, '10044', '0')
+     -> verklaring: gevolg van op 3
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10207', '10044', '-595', '2026-07-05', None, '1', '0', None, None, '1', None, None)
+         alleen Perl  : ('10207', '10057', '595', '2026-07-05', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10208', '10044', '-10', '2026-07-05', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10208', None, '10', '2026-07-05', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('10207', '10044', '-605', '2026-07-05', None, '1', '0', None, None, '1', None, None)
+         alleen Python: ('10207', '10057', '605', '2026-07-05', None, '1', '0', None, None, None, None, None)
+     -> verklaring: gevolg van op 3
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Perl  : ('sinumber', '1')
+     -> verklaring: gevolg van op 3
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('10208', 'ar', '1', 'deposit', 'posted', '500')
+     -> verklaring: gevolg van op 3
+     op 2 (cp_payments):
+         screen: alleen Perl [{'vc_id': '904', 'due': '650', 'paid': '650', 'source': None}]
+         screen: alleen Python [{'vc_id': '904', 'due': '650', 'paid': '640', 'source': None}]
+     -> verklaring: Perl stelt het openstaande bedrag zonder korting voor; de webapp het bedrag min de korting (P5)
+     op 4 (aging):
+         rows: alleen Perl [{'vc_id': '902', 'invnumber': '1', 'transdate': '2026-07-05', 'duedate': '2026-07-05', 'curr': 'EUR', 'module': 'ar', 'id': '10208', 'c0': '0', 'c15': '-10', 'c30': '0', 'c45': '0', 'c60': '0', 'c75': '0', 'c90': '0'}, {'vc_id': '904', 'invnumber': 'KM-1', 'transdate': '2026-07-01', 'duedate': '2026-07-01', 'curr': 'EUR', 'module': 'ar', 'id': '10207', 'c0': '0', 'c15': '55', 'c30': '0', 'c45': '0', 'c60': '0', 'c75': '0', 'c90': '0'}]
+         rows: alleen Python [{'vc_id': '904', 'invnumber': 'KM-1', 'transdate': '2026-07-01', 'duedate': '2026-07-01', 'curr': 'EUR', 'module': 'ar', 'id': '10207', 'c0': '0', 'c15': '45', 'c30': '0', 'c45': '0', 'c60': '0', 'c75': '0', 'c90': '0'}]
+         screen: alleen Perl [['row', ['-10.00', '374.70']], ['subtotal', ['-10.00', '222.50', '96.80', '65.40']], ['row', ['55.00', '55.00']], ['subtotal', ['55.00']]]
+         screen: alleen Python [['subtotal', ['222.50', '96.80', '65.40']], ['row', ['45.00', '45.00']], ['subtotal', ['45.00']]]
+     -> verklaring: gevolg van op 3
+[47] OK                betalingen: contante korting zonder en met btw-correctie
+[48] VERWACHT VERSCHIL betalingen: vreemde valuta
+     tabel semaphore: kolommen ['id', 'login', 'module']
+         alleen Perl  : ('10207', 'admin', 'ar')
+         alleen Perl  : ('3003', 'admin', 'ar')
+     -> verklaring: Perl laat na een mislukte betaling de locks op de getoonde posten staan; de webapp lockt pas bij het boeken (P8, README)
+     op 5: fout Perl='Error: Exchange rate missing!' | Python='ValidationError: Exchange rate missing!'
+[49] OK                betalingen foutgevallen
+     op 1: fout Perl='Error: Cannot post payment for a closed period!' | Python='ClosedPeriodError: Cannot post payment for a closed period!'
+     op 2: fout Perl='Error: Exchange rate missing!' | Python='ValidationError: Exchange rate missing!'
+[50] VERWACHT VERSCHIL betalingen: bedrag lager dan toegewezen
+     tabel ar: kolommen ['id', 'invnumber', 'transdate', 'customer_id', 'taxincluded', 'amount', 'netamount', 'paid', 'datepaid', 'duedate', 'invoice', 'shippingpoint', 'terms', 'notes', 'curr', 'ordnumber', 'employee_id', 'till', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'approved', 'cashdiscount', 'discountterms', 'waybill', 'warehouse_id', 'description', 'onhold', 'exchangerate', 'dcn', 'bank_id', 'paymentmethod_id']
+         alleen Perl  : ('10205', '1', '2026-07-01', '900', None, '0', '0', '-21', '2026-07-01', '2026-07-01', '0', None, '0', None, 'EUR', None, '500', None, None, None, '0', None, None, None, '1', None, None, None, None, None, '0', None, None, '10044', None)
+         alleen Perl  : ('3001', 'F-3001', '2026-06-25', '900', None, '121', '100', '121', '2026-07-01', '2026-07-09', '1', None, '0', None, 'EUR', 'O-1', None, None, None, None, '0', None, None, 'PO-1', '1', None, None, None, None, 'Koek juni', '0', '1', 'DCN1', '10044', '0')
+         alleen Python: ('3001', 'F-3001', '2026-06-25', '900', None, '121', '100', '0', None, '2026-07-09', '1', None, '0', None, 'EUR', 'O-1', None, None, None, None, '0', None, None, 'PO-1', '1', None, None, None, None, 'Koek juni', '0', '1', 'DCN1', '1', None)
+     -> verklaring: gevolg van de geweigerde betaling
+     tabel payment: kolommen ['id', 'trans_id', 'exchangerate', 'paymentmethod_id']
+         alleen Perl  : ('1', '3001', '1', '0')
+     -> verklaring: gevolg van de geweigerde betaling
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10205', '10044', '21', '2026-07-01', 'R-1', '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10205', None, '-21', '2026-07-01', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('3001', '10044', '-121', '2026-07-01', 'R-1', '1', '0', None, None, '1', None, None)
+         alleen Perl  : ('3001', '10057', '121', '2026-07-01', None, '1', '0', None, None, None, None, None)
+     -> verklaring: gevolg van de geweigerde betaling
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Perl  : ('receipt_1100', 'R-2')
+         alleen Perl  : ('sinumber', '1')
+     -> verklaring: gevolg van de geweigerde betaling
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('10205', 'ar', '1', 'deposit', 'posted', '500')
+         alleen Perl  : ('3001', 'ar', 'R-1', 'receipt', 'posted', '500')
+     -> verklaring: gevolg van de geweigerde betaling
+     op 1 (cp_post):
+         error: Perl=None Python=True
+         screen: Perl=[{'id': '3001', 'invnumber': 'F-3001', 'due': '121', 'paid': '121', 'discount': None, 'checked': '1'}, {'id': '3006', 'invnumber': 'F-3006', 'due': '263', 'paid': None, 'discount': None, 'checked': None}, {'id': '3009', 'invnumber': 'F-3009', 'due': '10', 'paid': None, 'discount': None, 'checked': None}] Python=None
+         fout Perl=None Python='ValidationError: Amount is less than the total of the allocated payments!'
+     -> verklaring: Python weigert; Perl boekt een negatieve vooruitbetaling (README)
+     op 1: fout Perl=None | Python='ValidationError: Amount is less than the total of the allocated payments!'
+[51] VERWACHT VERSCHIL betalingen: korting met btw-correctie bij tariefwijziging
+     tabel ar: kolommen ['id', 'invnumber', 'transdate', 'customer_id', 'taxincluded', 'amount', 'netamount', 'paid', 'datepaid', 'duedate', 'invoice', 'shippingpoint', 'terms', 'notes', 'curr', 'ordnumber', 'employee_id', 'till', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'approved', 'cashdiscount', 'discountterms', 'waybill', 'warehouse_id', 'description', 'onhold', 'exchangerate', 'dcn', 'bank_id', 'paymentmethod_id']
+         alleen Perl  : ('10207', 'KD-6', '2026-06-25', '902', '0', '1239', '1000', '1250', '2026-07-01', '2026-07-25', '0', None, '30', None, 'EUR', None, '500', None, None, None, '0', None, None, None, '1', '0.02', '10', None, None, None, '0', '1', None, '10044', '0')
+         alleen Python: ('10207', 'KD-6', '2026-06-25', '902', '0', '1245', '1000', '1250', '2026-07-01', '2026-07-25', '0', None, '30', None, 'EUR', None, '500', None, None, None, '0', None, None, None, '1', '0.02', '10', None, None, None, '0', '1', None, '10044', '0')
+     -> verklaring: Perl telt voor de btw-correctie 19% + 21% op (alle tarieven die op of na de factuurdatum aflopen); factuurbedrag daalt te veel (README)
+     op 3 (aging):
+         rows {'id': '10207', 'accno': None, 'transdate': '2026-06-25', 'amount': None}: c30 Perl='-11' Python='-5'
+         screen: alleen Perl [['row', ['-11.00', '373.70']], ['subtotal', ['-11.00', '222.50', '96.80', '65.40']], ['total', ['110.00', '232.50', '96.80', '328.40', '767.70']]]
+         screen: alleen Python [['row', ['-5.00', '379.70']], ['subtotal', ['-5.00', '222.50', '96.80', '65.40']], ['total', ['116.00', '232.50', '96.80', '328.40', '773.70']]]
+     -> verklaring: gevolg: ander openstaand bedrag in de ouderdomsanalyse
+[52] VERWACHT VERSCHIL betalingen: vooruitbetaling zonder gekozen crediteurenrekening
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10205', None, '-75', '2026-07-02', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10065', '-75', '2026-07-02', None, '1', '0', None, None, None, None, None)
+     -> verklaring: Perl boekt de crediteurenregel met chart_id NULL (relatie zonder standaard crediteurenrekening); Python neemt de eerste AP-rekening (README)
+[53] VERWACHT VERSCHIL betalingen: storneren en opnieuw uitgeven
+     tabel ar: kolommen ['id', 'invnumber', 'transdate', 'customer_id', 'taxincluded', 'amount', 'netamount', 'paid', 'datepaid', 'duedate', 'invoice', 'shippingpoint', 'terms', 'notes', 'curr', 'ordnumber', 'employee_id', 'till', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'approved', 'cashdiscount', 'discountterms', 'waybill', 'warehouse_id', 'description', 'onhold', 'exchangerate', 'dcn', 'bank_id', 'paymentmethod_id']
+         alleen Perl  : ('3001', 'F-3001', '2026-06-25', '900', None, '121', '100', '242', '2026-07-01', '2026-07-09', '1', None, '0', None, 'EUR', 'O-1', None, None, None, None, '0', None, None, 'PO-1', '1', None, None, None, None, 'Koek juni', '0', '1', 'DCN1', '10044', '0')
+         alleen Perl  : ('3006', 'F-3006', '2026-04-01', '900', None, '363', '300', '200', '2026-07-01', '2026-04-15', '0', None, '0', None, 'EUR', None, None, None, None, None, '0', None, None, None, '1', None, None, None, None, 'Catering', '0', '1', None, '10044', '0')
+         alleen Python: ('3001', 'F-3001', '2026-06-25', '900', None, '121', '100', '0', None, '2026-07-09', '1', None, '0', None, 'EUR', 'O-1', None, None, None, None, '0', None, None, 'PO-1', '1', None, None, None, None, 'Koek juni', '0', '1', 'DCN1', '10044', '0')
+         alleen Python: ('3006', 'F-3006', '2026-04-01', '900', None, '363', '300', '100', '2026-04-20', '2026-04-15', '0', None, '0', None, 'EUR', None, None, None, None, None, '0', None, None, None, '1', None, None, None, None, 'Catering', '0', '1', None, '10044', '0')
+     -> verklaring: storno: Perl verhoogt bij klanten het betaalde bedrag; heruitgave: Python werkt datepaid bij op dezelfde manier, maar paid/amount verschillen door de storno (README 33)
+     tabel ap: kolommen ['id', 'invnumber', 'transdate', 'vendor_id', 'taxincluded', 'amount', 'netamount', 'paid', 'datepaid', 'duedate', 'invoice', 'ordnumber', 'curr', 'notes', 'employee_id', 'till', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'shippingpoint', 'terms', 'approved', 'cashdiscount', 'discountterms', 'waybill', 'warehouse_id', 'description', 'onhold', 'exchangerate', 'dcn', 'bank_id', 'paymentmethod_id']
+         alleen Perl  : ('4002', 'I-4002', '2026-04-10', '905', '0', '605', '500', '300', '2026-07-01', '2026-05-10', '0', None, 'EUR', None, None, None, None, None, '0', None, None, None, None, '0', '1', None, None, None, None, 'Suiker', '0', '1', None, '10044', '0')
+         alleen Python: ('4002', 'I-4002', '2026-04-10', '905', '0', '605', '500', '300', '2026-05-15', '2026-05-10', '0', None, 'EUR', None, None, None, None, None, '0', None, None, None, None, '0', '1', None, None, None, None, 'Suiker', '0', '1', None, '10044', '0')
+     -> verklaring: storno: Perl laat datepaid staan; Python zet de laatste overgebleven betaaldatum
+     tabel payment: kolommen ['id', 'trans_id', 'exchangerate', 'paymentmethod_id']
+         alleen Python: ('2', '3001', '1', '0')
+         alleen Python: ('2', '3006', '1', '0')
+         alleen Python: ('2', '4002', '1', '0')
+     -> verklaring: Python legt bij de stornoregel de koers van de betaling vast
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('4001', '10065', '-1210', '2026-07-02', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('3001', '10057', '-121', '2026-10-10', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('3006', '10057', '-50', '2026-10-10', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('4001', '10065', '-1210', '2026-10-10', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('4002', '10065', '305', '2026-10-10', None, '1', '0', None, None, None, None, None)
+     -> verklaring: storno: Perl draait alleen de bankregel terug (boeking uit balans), Python de hele betaling; heruitgave: Perl verplaatst alleen de bankregel (README 33-34)
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Python: ('3001', 'ar', 'R-1', 'receipt', 'voided', '500')
+         alleen Python: ('3006', 'ar', 'R-1', 'receipt', 'voided', '500')
+         alleen Python: ('4001', 'ap', '5003', 'check', 'reissued', '500')
+         alleen Python: ('4002', 'ap', '5001', 'check', 'voided', '500')
+     -> verklaring: Python schrijft 'voided'/'reissued' in de audittrail
+     op 6 (aging):
+         rows: alleen Perl [{'vc_id': '900', 'invnumber': 'F-3001', 'transdate': '2026-06-25', 'duedate': '2026-07-09', 'curr': 'EUR', 'module': 'is', 'id': '3001', 'c0': '0', 'c15': '0', 'c30': '-121', 'c45': '0', 'c60': '0', 'c75': '0', 'c90': '0'}, {'vc_id': '900', 'invnumber': 'F-3006', 'transdate': '2026-04-01', 'duedate': '2026-04-15', 'curr': 'EUR', 'module': 'ar', 'id': '3006', 'c0': '0', 'c15': '0', 'c30': '0', 'c45': '0', 'c60': '0', 'c75': '0', 'c90': '163'}]
+         rows: alleen Python [{'vc_id': '900', 'invnumber': 'F-3006', 'transdate': '2026-04-01', 'duedate': '2026-04-15', 'curr': 'EUR', 'module': 'ar', 'id': '3006', 'c0': '0', 'c15': '0', 'c30': '0', 'c45': '0', 'c60': '0', 'c75': '0', 'c90': '213'}]
+         screen: alleen Perl [['row', ['163.00', '163.00']], ['row', ['10.00', '173.00']], ['row', ['-121.00', '52.00']], ['subtotal', ['-121.00', '10.00', '163.00']]]
+         screen: alleen Python [['row', ['213.00', '213.00']], ['row', ['10.00', '223.00']], ['subtotal', ['10.00', '213.00']], ['total', ['232.50', '96.80', '278.40', '607.70']]]
+     -> verklaring: ander openstaand bedrag na de storno
+[54] VERWACHT VERSCHIL overzicht verkoop- en inkoopboekingen
+     op 22 (arap_list):
+         order: alleen Perl []
+         order: alleen Python [[None, '2026-04-01', 'F-3006', 'Klant A']]
+         rows: alleen Perl []
+         rows: alleen Python [{'id': '3006', 'invnumber': 'F-3006', 'transdate': '2026-04-01', 'duedate': '2026-04-15', 'amount': '363', 'paid': '100', 'tax': '63', 'netamount': '300', 'curr': 'EUR', 'name': 'Klant A', 'vc_id': '900', 'datepaid': '2026-04-20', 'accno': None, 'source': None, 'memo': None, 'debit': None, 'credit': None}]
+         screen: alleen Perl [['total', []]]
+         screen: alleen Python [['row', ['300.00', '63.00', '363.00', '100.00', '263.00']], ['total', ['300.00', '63.00', '363.00', '100.00', '263.00']]]
+     -> verklaring: Perl: zoeken op memo in de samenvatting geeft altijd een lege lijst ('a.id = 0'); Python vindt de boeking (README 36)
+     op 24 (arap_list):
+         screen: alleen Perl [['total', ['5,290.00', '725.10', '6,015.10', '1,718.00', '4,297.10', '1,965.90', '1,965.90']]]
+         screen: alleen Python [['total', ['1,460.00', '162.30', '1,622.30', '343.60', '1,278.70', '1,965.90', '1,965.90']]]
+     -> verklaring: Perl telt in de detailweergave factuurbedrag/betaald per journaalregel op; Python één keer per boeking (README 36)
+[55] OK                relaties zoeken en keuzelijst
+[56] OK                terugkerend: memoriaal, schema als browser + 3 termijnen verwerken
+[57] OK                terugkerend: verkoop met betaling, inkoop zonder, valuta met koers
+[58] VERWACHT VERSCHIL terugkerend: maandeinde (31-01, 28-02, 31-03)
+     op 4 (recurring_ui):
+         screen: alleen Perl [{'id': '20101', 'checked': '0', 'nextdate': '2027-03-28'}]
+         screen: alleen Python [{'id': '20101', 'checked': '0', 'nextdate': '2027-03-31'}]
+     -> verklaring: README 86: Perl telt een maand op bij de vorige datum (31-01 → 28-02 → 28-03); Python rekent vanaf de start (31-03). Scherm: volgende datum 28-03 vs 31-03.
+[59] OK                terugkerend: aangepaste volgende datum in de lijst
+[60] OK                terugkerend: kenmerk en omschrijving van het schema
+[61] OK                terugkerend: inkoop vervaldatum en betaling meenemen
+[62] VERWACHT VERSCHIL terugkerend: valuta zonder koers op de nieuwe datum
+     tabel ar: kolommen ['id', 'invnumber', 'transdate', 'customer_id', 'taxincluded', 'amount', 'netamount', 'paid', 'datepaid', 'duedate', 'invoice', 'shippingpoint', 'terms', 'notes', 'curr', 'ordnumber', 'employee_id', 'till', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'approved', 'cashdiscount', 'discountterms', 'waybill', 'warehouse_id', 'description', 'onhold', 'exchangerate', 'dcn', 'bank_id', 'paymentmethod_id']
+         alleen Perl  : ('10205', '1', '2027-01-20', '903', '0', '500', '500', '0', None, '2027-02-03', '0', None, '0', None, 'USD', None, '500', None, None, None, '0', None, None, None, '1', '0', '0', None, None, None, '0', '1', None, None, '0')
+     -> verklaring: README 90: zonder koers op 2027-01-20 boekt Perl stil met de oude koers; Python slaat het schema over (geen boeking)
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10205', '10057', '-500', '2027-01-20', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10205', '10175', '500', '2027-01-20', None, '1', '0', None, None, '1', None, None)
+     -> verklaring: idem (README 90)
+     tabel exchangerate: kolommen ['curr', 'transdate', 'exchangerate']
+         alleen Perl  : ('USD', '2027-01-20', '1')
+     -> verklaring: idem: Perl schrijft de oude koers op de nieuwe datum (README 90)
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Perl  : ('sinumber', '1')
+     -> verklaring: idem: geen factuurnummer uitgegeven (README 90)
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('10205', 'ar', '1', 'transaction', 'posted', '500')
+     -> verklaring: idem (README 90)
+     tabel recurring: kolommen ['id', 'reference', 'startdate', 'nextdate', 'enddate', 'repeat', 'unit', 'howmany', 'payment', 'description']
+         alleen Perl  : ('3003', None, '2027-01-20', '2027-02-20', '2027-02-20', '1', 'months', '2', '0', None)
+         alleen Python: ('3003', None, '2027-01-20', '2027-01-20', '2027-02-20', '1', 'months', '2', '0', None)
+     -> verklaring: idem: volgende datum blijft staan (README 90)
+     tabel semaphore: kolommen ['id', 'login', 'module']
+         alleen Python: ('3003', 'admin', 'ar')
+     -> verklaring: idem: Perl's boeking ruimt de lock van het openen (schemascherm) op; Python boekt niet, de lock blijft tot de gebruiker de boeking sluit
+[63] VERWACHT VERSCHIL terugkerend: betaling van het vorige schema in dezelfde run
+     tabel payment: kolommen ['id', 'trans_id', 'exchangerate', 'paymentmethod_id']
+         alleen Perl  : ('1', '10206', '1', '0')
+     -> verklaring: idem (README 91)
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10206', '10057', '100', '2027-01-20', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10206', '10195', '-30', '2027-01-20', None, '1', '1', None, None, None, None, None)
+         alleen Perl  : ('10206', None, '-100', '2027-01-20', None, '1', '0', None, None, '1', None, None)
+         alleen Perl  : ('10206', None, '30', '2027-01-20', None, '1', '1', None, None, None, None, None)
+     -> verklaring: README 91: am.pl process_transactions wist \$form tussen twee schema's, maar de betaalregels van de vorige kopie blijven hangen: de kopie van 3003 (zonder betaling) krijgt de betaling van 3006 (100) op een rekening NULL
+[64] VERWACHT VERSCHIL terugkerend: memoriaal met notatie 1.000,00 (bedrag x100)
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10205', '10045', '-51005', '2027-02-28', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10205', '10173', '410025', '2027-02-28', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10205', '10175', '100025', '2027-02-28', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10045', '-5100.5', '2027-02-28', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10173', '4100.25', '2027-02-28', None, '1', '0', None, None, None, None, None)
+         alleen Python: ('10205', '10175', '1000.25', '2027-02-28', None, '1', '0', None, None, None, None, None)
+     -> verklaring: README 89: am.pl geeft de bedragen van de memoriaalkopie ongeformatteerd door (5100.5) en GL::post_transaction leest ze in notatie 1.000,00: Perl boekt 51005 i.p.v. 5.100,50. Python boekt het juiste bedrag.
+[65] OK                afletteren: scherm en rondes (rc.pl als browser)
+[66] VERWACHT VERSCHIL afletteren: Klaar zonder Bijwerken
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('3006', '10044', '-100', '2026-04-20', 'BANK-306', '1', '0', None, 'eerste termijn', None, None, None)
+         alleen Python: ('3006', '10044', '-100', '2026-04-20', 'BANK-306', '1', '0', None, 'eerste termijn', None, '2026-06-30', None)
+     -> verklaring: Perl slaat bij Klaar zonder Bijwerken niets op (datecleared = oldcleared); de webapp slaat de vinkjes op (README 96)
+     op 1 (rc_ui):
+         screen: Perl={'begin': '0.00', 'rows': [['2026-03-10', '', 'Klant A', '', '121.00', '', '121.00'], ['2026-04-20', 'BANK-306', 'Klant A', '', '100.00', '', '221.00'], ['2026-05-01', 'BANK-305', 'Klant A', '', '48.40', '', '269.40'], ['2026-05-15', 'BANK-402', 'Graanhandel De Molen', '', '', '300.00', '-30.60'], ['2026-06-20', 'BANK-302', 'Bakkerij Cees', '', '50.00', '', '19.40'], ['2026-06-29', 'KASSA', 'Kassaklant', '', '24.20', '', '43.60'], ['2026-06-30', 'RENTE', 'Rente', '', '2.50', '', '46.10']], 'total': ['346.10', '300.00'], 'statementbalance': '0.00', 'difference': '0.00'} Python={'begin': '0.00', 'rows': [['2026-03-10', '', 'Klant A', '', '121.00', '', '121.00'], ['2026-04-20', 'BANK-306', 'Klant A', '1', '100.00', '', '221.00'], ['2026-05-01', 'BANK-305', 'Klant A', '', '48.40', '', '269.40'], ['2026-05-15', 'BANK-402', 'Graanhandel De Molen', '', '', '300.00', '-30.60'], ['2026-06-20', 'BANK-302', 'Bakkerij Cees', '', '50.00', '', '19.40'], ['2026-06-29', 'KASSA', 'Kassaklant', '', '24.20', '', '43.60'], ['2026-06-30', 'RENTE', 'Rente', '', '2.50', '', '46.10']], 'total': ['346.10', '300.00'], 'statementbalance': '100.00', 'difference': '0.00'}
+     -> verklaring: Perl toont het scherm zonder de vinkjes (er is niet bijgewerkt); de webapp rekent altijd met de vinkjes (L2)
+[67] VERWACHT VERSCHIL afletteren: verschil 0,40 met notatie 1.000,00
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('3005', '10044', '-48.4', '2026-05-01', 'BANK-305', '1', '0', None, None, None, '2026-06-30', None)
+         alleen Python: ('3005', '10044', '-48.4', '2026-05-01', 'BANK-305', '1', '0', None, None, None, None, None)
+     -> verklaring: gevolg van op 1: Perl lettert af ondanks verschil
+     op 1 (rc_ui):
+         save_error: Perl=False Python=True
+     -> verklaring: Perl controleert het verborgen veld difference ('0,40' * 1 = 0) en slaat op; de webapp rekent het verschil en weigert (README 97)
+[68] VERWACHT VERSCHIL afletteren: alles selecteren overschrijft oude afletterdatum
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('3006', '10044', '-100', '2026-04-20', 'BANK-306', '1', '0', None, 'eerste termijn', None, '2026-06-30', None)
+         alleen Python: ('3006', '10044', '-100', '2026-04-20', 'BANK-306', '1', '0', None, 'eerste termijn', None, '2026-05-31', None)
+     -> verklaring: Perl select_all (rc.pl r505, ongezette $i) geeft ook de al afgeletterde regel de nieuwe datum; de webapp houdt 2026-05-31 (README 98)
+[69] VERWACHT VERSCHIL afletteren: samenvoegen per kenmerk, id als deelstring (12 in 123)
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('12', '10044', '-15', '2026-06-10', 'BATCH', '1', '0', None, None, None, None, None)
+         alleen Python: ('12', '10044', '-15', '2026-06-10', 'BATCH', '1', '0', None, None, None, '2026-06-30', None)
+     -> verklaring: Perl RC.pm r267 (id !~ /$ref->{id}/): boeking 12 komt niet in id_$i omdat '123' er al staat en wordt niet afgeletterd; de webapp lettert beide af (README 99)
+[70] OK                afletteren: identieke regels (UNION i.p.v. UNION ALL)
+     (2x verklaard: afletterscherm: identieke acc_trans-regels; Perl's UNION toont er één (README 100), gelijk aan de webapp met die regels samengevoegd)
+[71] VERWACHT VERSCHIL afletteren: zonder koersverschilrekening
+     op 1 (rc_screen):
+         error: Perl=True Python=None
+         save_error: Perl=None Python=False
+         screen: Perl=None Python={'begin': '0.00', 'rows': [['2026-03-10', '', 'Klant A', '', '121.00', '', '121.00'], ['2026-04-20', 'BANK-306', 'Klant A', '', '100.00', '', '221.00'], ['2026-05-01', 'BANK-305', 'Klant A', '', '48.40', '', '269.40'], ['2026-05-15', 'BANK-402', 'Graanhandel De Molen', '', '', '300.00', '-30.60'], ['2026-06-20', 'BANK-302', 'Bakkerij Cees', '', '50.00', '', '19.40'], ['2026-06-29', 'KASSA', 'Kassaklant', '', '24.20', '', '43.60'], ['2026-06-30', 'RENTE', 'Rente', '', '2.50', '', '46.10']], 'total': ['346.10', '300.00'], 'statementbalance': '0.00', 'difference': '0.00'}
+         fout Perl='Error: \n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, g.id, g.description\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN gl g ON (g.id = ac.trans_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND (ac.transdate >= \'2026-03-01\' OR ac.cleared >= \'2026-03-01\') AND ac.transdate <= \'2026-06-30\'\n\t\t\n\t\tUNION\n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, a.id, n.name\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN ar a ON (a.id = ac.trans_id)\n\t\tJOIN customer n ON (n.id = a.customer_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND (ac.transdate >= \'2026-03-01\' OR ac.cleared >= \'2026-03-01\') AND ac.transdate <= \'2026-06-30\'\n\t\t\n\t\tUNION\n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, a.id, n.name\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN ap a ON (a.id = ac.trans_id)\n\t\tJOIN vendor n ON (n.id = a.vendor_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND (ac.transdate >= \'2026-03-01\' OR ac.cleared >= \'2026-03-01\') AND ac.transdate <= \'2026-06-30\'\n\t\tUNION ALL\n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, g.id, g.description\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN gl g ON (g.id = ac.trans_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND ac.transdate < \'2026-03-01\' AND ac.transdate < \'2026-06-30\'\n\t\t AND ac.cleared IS NULL\n\t\tUNION\n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, a.id, n.name\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN ar a ON (a.id = ac.trans_id)\n\t\tJOIN customer n ON (n.id = a.customer_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND ac.transdate < \'2026-03-01\' AND ac.transdate < \'2026-06-30\'\n\t\t AND ac.cleared IS NULL\n\t\tUNION\n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, a.id, n.name\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN ap a ON (a.id = ac.trans_id)\n\t\tJOIN vendor n ON (n.id = a.vendor_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND ac.transdate < \'2026-03-01\' AND ac.transdate < \'2026-06-30\'\n\t\t AND ac.cleared IS NULL ORDER BY 1,2,3\nERROR:  syntax error at or near "AND"\nLINE 11:    AND (ac.transdate >= \'2026-03-01\' OR ac.cleared >= \'2026-...\n            ^' Python=None
+     -> verklaring: Perl RC.pm r138: 'AND NOT ac.chart_id = ' zonder rekening → SQL-fout; de webapp toont het scherm (README 101)
+     op 1: fout Perl='Error: \n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, g.id, g.description\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN gl g ON (g.id = ac.trans_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND (ac.transdate >= \'2026-03-01\' OR ac.cleared >= \'2026-03-01\') AND ac.transdate <= \'2026-06-30\'\n\t\t\n\t\tUNION\n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, a.id, n.name\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN ar a ON (a.id = ac.trans_id)\n\t\tJOIN customer n ON (n.id = a.customer_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND (ac.transdate >= \'2026-03-01\' OR ac.cleared >= \'2026-03-01\') AND ac.transdate <= \'2026-06-30\'\n\t\t\n\t\tUNION\n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, a.id, n.name\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN ap a ON (a.id = ac.trans_id)\n\t\tJOIN vendor n ON (n.id = a.vendor_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND (ac.transdate >= \'2026-03-01\' OR ac.cleared >= \'2026-03-01\') AND ac.transdate <= \'2026-06-30\'\n\t\tUNION ALL\n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, g.id, g.description\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN gl g ON (g.id = ac.trans_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND ac.transdate < \'2026-03-01\' AND ac.transdate < \'2026-06-30\'\n\t\t AND ac.cleared IS NULL\n\t\tUNION\n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, a.id, n.name\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN ar a ON (a.id = ac.trans_id)\n\t\tJOIN customer n ON (n.id = a.customer_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND ac.transdate < \'2026-03-01\' AND ac.transdate < \'2026-06-30\'\n\t\t AND ac.cleared IS NULL\n\t\tUNION\n\t\tSELECT ac.transdate, ac.source, ac.fx_transaction,\n\t\tac.amount, ac.cleared, a.id, n.name\n\t\tFROM acc_trans ac\n\t\tJOIN chart ch ON (ac.chart_id = ch.id)\n\t\tJOIN ap a ON (a.id = ac.trans_id)\n\t\tJOIN vendor n ON (n.id = a.vendor_id)\n\t\tWHERE ch.accno = \'1100\'\n\t\tAND ac.approved = \'1\'\n\t\t\n\t      AND NOT ac.chart_id = \n\t\t AND ac.transdate < \'2026-03-01\' AND ac.transdate < \'2026-06-30\'\n\t\t AND ac.cleared IS NULL ORDER BY 1,2,3\nERROR:  syntax error at or near "AND"\nLINE 11:    AND (ac.transdate >= \'2026-03-01\' OR ac.cleared >= \'2026-...\n            ^' | Python=None
+[72] VERWACHT VERSCHIL afletteren: zonder datums
+     op 1 (rc_screen):
+         screen: Perl={'begin': '0.00', 'rows': [['2026-03-10', '', 'Klant A', '', '121.00', '', '121.00'], ['2026-04-20', 'BANK-306', 'Klant A', '1', '100.00', '', '221.00'], ['2026-05-01', 'BANK-305', 'Klant A', '', '48.40', '', '269.40'], ['2026-05-15', 'BANK-402', 'Graanhandel De Molen', '', '', '300.00', '-30.60'], ['2026-06-20', 'BANK-302', 'Bakkerij Cees', '', '50.00', '', '19.40'], ['2026-06-29', 'KASSA', 'Kassaklant', '', '24.20', '', '43.60'], ['2026-06-30', 'RENTE', 'Rente', '', '2.50', '', '46.10']], 'total': ['346.10', '300.00'], 'statementbalance': '46.10', 'difference': '53.90'} Python={'begin': '0.00', 'rows': [['2026-03-10', '', 'Klant A', '', '121.00', '', '121.00'], ['2026-04-20', 'BANK-306', 'Klant A', '1', '100.00', '', '221.00'], ['2026-05-01', 'BANK-305', 'Klant A', '', '48.40', '', '269.40'], ['2026-05-15', 'BANK-402', 'Graanhandel De Molen', '', '', '300.00', '-30.60'], ['2026-06-20', 'BANK-302', 'Bakkerij Cees', '', '50.00', '', '19.40'], ['2026-06-29', 'KASSA', 'Kassaklant', '', '24.20', '', '43.60'], ['2026-06-30', 'RENTE', 'Rente', '', '2.50', '', '46.10']], 'total': ['346.10', '300.00'], 'statementbalance': '100.00', 'difference': '0.00'}
+     -> verklaring: Perl: zonder tot-datum is het voorgestelde afschriftsaldo de som van álle regels (ook niet afgeletterd, RC.pm r100-116); de webapp telt alleen afgeletterde (README 102)
+[73] OK                relatiescherm (ct.pl) als browser
+[74] VERWACHT VERSCHIL relatiescherm: telefoon/e-mail van de relatie overschreven door contactpersoon
+     tabel customer: kolommen ['id', 'name', 'contact', 'phone', 'fax', 'email', 'notes', 'terms', 'taxincluded', 'customernumber', 'cc', 'bcc', 'business_id', 'taxnumber', 'sic_code', 'discount', 'creditlimit', 'employee_id', 'language_code', 'pricegroup_id', 'curr', 'startdate', 'enddate', 'arap_accno_id', 'payment_accno_id', 'discount_accno_id', 'cashdiscount', 'discountterms', 'threshold', 'paymentmethod_id', 'remittancevoucher', 'prepayment_accno_id']
+         alleen Perl  : ('902', 'Bakkerij Cees', 'Cees Bakker', None, None, None, 'gewijzigd', '30', '0', 'K002', None, None, None, 'NL001B01', None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Python: ('902', 'Bakkerij Cees', 'Cees', '030-1234567', None, 'cees@example.test', 'gewijzigd', '30', '0', 'K002', None, None, None, 'NL001B01', None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+     -> verklaring: Perl toont en bewaart telefoon/e-mail van de contactpersoon en overschrijft zo die van de relatie; ook het veld contact wordt opnieuw opgebouwd. Python laat ongewijzigde velden staan (README 57)
+[75] VERWACHT VERSCHIL relatiescherm: nieuw nummer hoogt teller pas op bij opslaan
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Perl  : ('customernumber', '1')
+     -> verklaring: Perl hoogt customernumber op bij alleen tonen van 'Nieuw nummer' (README 59)
+[76] VERWACHT VERSCHIL relatiescherm: betaalkenmerk/rvc van de bank blijven staan
+     tabel vendor: kolommen ['id', 'name', 'contact', 'phone', 'fax', 'email', 'notes', 'terms', 'taxincluded', 'vendornumber', 'cc', 'bcc', 'gifi_accno', 'business_id', 'taxnumber', 'sic_code', 'discount', 'creditlimit', 'employee_id', 'language_code', 'pricegroup_id', 'curr', 'startdate', 'enddate', 'arap_accno_id', 'payment_accno_id', 'discount_accno_id', 'cashdiscount', 'discountterms', 'threshold', 'paymentmethod_id', 'remittancevoucher', 'prepayment_accno_id']
+         alleen Perl  : ('905', 'Graanhandel De Molen', ' ', None, None, None, 'x', '30', '0', 'L002', None, None, None, None, 'NL905B01', None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Python: ('905', 'Graanhandel De Molen', None, None, None, None, 'x', '30', '0', 'L002', None, None, None, None, 'NL905B01', None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+     -> verklaring: idem: Perl zet het veld contact op ' '
+     tabel contact: kolommen ['id', 'trans_id', 'salutation', 'firstname', 'lastname', 'contacttitle', 'occupation', 'phone', 'fax', 'mobile', 'email', 'gender', 'parent_id', 'typeofcontact']
+         alleen Perl  : ('13', '905', None, None, None, None, None, None, None, None, None, 'M', None, 'company')
+     -> verklaring: Perl maakt bij een relatie zonder contactpersoon een lege aan (README 57)
+     tabel bank: kolommen ['id', 'name', 'iban', 'bic', 'address_id', 'dcn', 'rvc', 'membernumber', 'clearingnumber']
+         alleen Perl  : ('905', 'BANK', 'NL91ABNA0417164300', None, '7', None, None, None, None)
+         alleen Python: ('905', 'BANK', 'NL91ABNA0417164300', None, '7', '<%invnumber%>', 'R1', None, None)
+     -> verklaring: Perl gooit bij opslaan dcn en rvc van de bankrij weg (README 61)
+[77] VERWACHT VERSCHIL relatiescherm: opslaan als nieuw geeft geen dubbel nummer
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Python: ('customernumber', '1')
+     -> verklaring: idem: Python hoogt customernumber op
+     tabel customer: kolommen ['id', 'name', 'contact', 'phone', 'fax', 'email', 'notes', 'terms', 'taxincluded', 'customernumber', 'cc', 'bcc', 'business_id', 'taxnumber', 'sic_code', 'discount', 'creditlimit', 'employee_id', 'language_code', 'pricegroup_id', 'curr', 'startdate', 'enddate', 'arap_accno_id', 'payment_accno_id', 'discount_accno_id', 'cashdiscount', 'discountterms', 'threshold', 'paymentmethod_id', 'remittancevoucher', 'prepayment_accno_id']
+         alleen Perl  : ('10205', 'Klant A kopie', 'Piet Klant', None, None, None, None, '14', '0', 'K001', None, None, None, 'NL900B01', None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Python: ('10205', 'Klant A kopie', 'Piet Klant', None, None, None, None, '14', '0', '1', None, None, None, 'NL900B01', None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+     -> verklaring: Perl bewaart de kopie met hetzelfde klantnummer; Python geeft het volgende nummer (README 58)
+[78] VERWACHT VERSCHIL relatiescherm: verwijderen van een relatie met boekingen
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('904', 'customer', 'Kassaklant', None, 'deleted', '500')
+     -> verklaring: idem
+     tabel customer: kolommen ['id', 'name', 'contact', 'phone', 'fax', 'email', 'notes', 'terms', 'taxincluded', 'customernumber', 'cc', 'bcc', 'business_id', 'taxnumber', 'sic_code', 'discount', 'creditlimit', 'employee_id', 'language_code', 'pricegroup_id', 'curr', 'startdate', 'enddate', 'arap_accno_id', 'payment_accno_id', 'discount_accno_id', 'cashdiscount', 'discountterms', 'threshold', 'paymentmethod_id', 'remittancevoucher', 'prepayment_accno_id']
+         alleen Python: ('904', 'Kassaklant', None, None, None, None, None, '0', '0', 'K004', None, None, None, None, None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+     -> verklaring: idem
+     tabel address: kolommen ['id', 'trans_id', 'address1', 'address2', 'city', 'state', 'zipcode', 'country']
+         alleen Python: ('5', '904', 'Markt 1', None, 'Utrecht', None, '3511AB', 'NL')
+     -> verklaring: idem
+     tabel customertax: kolommen ['customer_id', 'chart_id']
+         alleen Python: ('904', '10078')
+         alleen Python: ('904', '10079')
+     -> verklaring: idem
+     op 1 (ct_ui):
+         error: Perl=None Python=True
+         fout Perl=None Python='ValidationError: Klant Kassaklant wordt gebruikt in boekingen of orders en kan niet verwijderd worden; maak de relatie inactief.'
+     -> verklaring: Perl verwijdert zonder controle op de server (alleen de knop ontbreekt); Python weigert (README 56)
+     op 1: fout Perl=None | Python='ValidationError: Klant Kassaklant wordt gebruikt in boekingen of orders en kan niet verwijderd worden; maak de relatie inactief.'
+[79] OK                beheer: rekeningschema (am.pl) als browser
+     op 7: fout Perl='Error: Cannot set account for more than one of AR, AP or IC' | Python='ValidationError: Een rekening kan maar voor één van debiteuren, crediteuren of voorraad de hoofdrekening zijn.'
+     op 8: fout Perl='Error: Cannot set multiple options for AR' | Python='ValidationError: Kies bij verkoop maar één van omzet/kosten, betaling, korting of btw.'
+     op 9: fout Perl='Error: Account Number missing!' | Python='ValidationError: Rekeningnummer ontbreekt.'
+     op 13: fout Perl='Error: Cannot delete default account!' | Python='ValidationError: Dit is een standaardrekening (fxgain_accno_id, fxgainloss_accno_id, fxloss_accno_id) en kan niet verwijderd worden.'
+[80] VERWACHT VERSCHIL beheer: rekening met boekingen/in gebruik verwijderen (Perl controleert niet)
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('10046', 'chart', '1119', None, 'deleted', '500')
+         alleen Perl  : ('10057', 'chart', '1200', None, 'deleted', '500')
+     -> verklaring: Perl schrijft 'deleted' voor de verwijderde rekeningen.
+     tabel chart: kolommen ['id', 'accno', 'description', 'charttype', 'category', 'link', 'gifi_accno', 'contra', 'closed']
+         alleen Python: ('10046', '1119', 'Postbank Plus', 'A', 'A', None, '1119', '0', '0')
+         alleen Python: ('10057', '1200', 'Debiteuren', 'A', 'A', 'AR', '1200', '0', '0')
+     -> verklaring: Zie op 1 en 2: bij Perl zijn de rekeningen weg.
+     op 1 (am_ui):
+         error: Perl=None Python=True
+         fout Perl=None Python="ValidationError: Op deze rekening is geboekt; zet hem op 'gesloten' in plaats van verwijderen."
+     -> verklaring: Perl verwijdert een rekening met boekingen (am.pl toont alleen geen knop; AM::delete_account controleert niets). Python weigert (README 71).
+     op 2 (am_ui):
+         error: Perl=None Python=True
+         fout Perl=None Python='ValidationError: Deze rekening is nog in gebruik bij: customer (1).'
+     -> verklaring: Perl verwijdert een rekening waar een klant naar verwijst; Python weigert (README 71).
+     op 1: fout Perl=None | Python="ValidationError: Op deze rekening is geboekt; zet hem op 'gesloten' in plaats van verwijderen."
+     op 2: fout Perl=None | Python='ValidationError: Deze rekening is nog in gebruik bij: customer (1).'
+[81] VERWACHT VERSCHIL beheer: btw-tarieven (am.pl) als browser
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+     -> verklaring: Zie op 4: Perl heeft dezelfde audittrailregel één keer meer (de opslag die Python weigert).
+     tabel tax: kolommen ['chart_id', 'rate', 'taxnumber', 'validto']
+         alleen Perl  : ('10079', '0.1', 'NL-LAAG', None)
+         alleen Python: ('10079', '0.09', 'NL-LAAG', None)
+     -> verklaring: Zie op 4: bij Python blijft 9% staan, bij Perl wordt het 10%.
+     op 4 (am_ui):
+         error: Perl=None Python=True
+         fout Perl=None Python='ValidationError: Het tarief van 9% van rekening 1811 is al gebruikt in boekingen tot en met 2026-06-10. Voeg een nieuw tarief toe met een ingangsdatum.'
+     -> verklaring: BT1 (README 203): het tarief van 9% is al gebruikt (factuur van 10-06-2026); Python weigert het te overschrijven, Perl (AM::save_taxes) overschrijft zonder controle.
+     op 4: fout Perl=None | Python='ValidationError: Het tarief van 9% van rekening 1811 is al gebruikt in boekingen tot en met 2026-06-10. Voeg een nieuw tarief toe met een ingangsdatum.'
+[82] VERWACHT VERSCHIL beheer: btw-koppeling weg (Perl wist de tariefhistorie)
+     tabel partstax: kolommen ['parts_id', 'chart_id']
+         alleen Python: ('1001', '10079')
+     -> verklaring: IC_taxservice uit: Perl haalt de btw-rekening bij alle diensten weg (en zet hem bij aan bij álle diensten); Python laat partstax ongemoeid tot de artikelen in fase 3 (README 80).
+     tabel tax: kolommen ['chart_id', 'rate', 'taxnumber', 'validto']
+         alleen Python: ('10079', '0.06', None, '2018-12-31')
+         alleen Python: ('10079', '0.09', 'NL-LAAG', None)
+     -> verklaring: AM::save_account doet DELETE FROM tax als de btw-vlag weggaat; Python bewaart de tarieven (README 70).
+[83] OK                beheer: instellingen (am.pl defaults) als browser
+[84] VERWACHT VERSCHIL beheer: instellingen wissen sleutels buiten het scherm (Perl-fout)
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Perl  : ('cashovershort_accno_id', '10096')
+         alleen Python: ('fxgain_accno_id', '10195')
+         alleen Python: ('fxloss_accno_id', '10195')
+         alleen Python: ('revtrans', '0')
+         alleen Python: ('yearend', '6')
+     -> verklaring: AM::save_defaults gooit de hele tabel weg en schrijft alleen de schermvelden terug: yearend, fxgain_accno_id en fxloss_accno_id verdwijnen en cashovershort_accno_id wordt de eerste rekening van de keuzelijst (geen lege keuze); revtrans '0' wordt niet teruggeschreven. Python schrijft alleen gewijzigde schermvelden (README 73).
+[85] OK                beheer: boekperiode afsluiten (am.pl audit_control)
+[86] OK                beheer: valuta (am.pl) als browser
+[87] VERWACHT VERSCHIL beheer: valuta-volgorde en verwijderen (Perl wijzigt standaardvaluta)
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : (None, 'curr', 'EUR', None, 'deleted', '500')
+     -> verklaring: Perl schrijft 'deleted' voor de verwijderde standaardvaluta.
+     tabel customer: kolommen ['id', 'name', 'contact', 'phone', 'fax', 'email', 'notes', 'terms', 'taxincluded', 'customernumber', 'cc', 'bcc', 'business_id', 'taxnumber', 'sic_code', 'discount', 'creditlimit', 'employee_id', 'language_code', 'pricegroup_id', 'curr', 'startdate', 'enddate', 'arap_accno_id', 'payment_accno_id', 'discount_accno_id', 'cashdiscount', 'discountterms', 'threshold', 'paymentmethod_id', 'remittancevoucher', 'prepayment_accno_id']
+         alleen Perl  : ('900', 'Klant A', None, None, None, None, None, '14', '0', 'K001', None, None, None, 'NL900B01', None, '0', '0', None, None, None, 'USD', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Perl  : ('902', 'Bakkerij Cees', 'Cees', '030-1234567', None, 'cees@example.test', None, '30', '0', 'K002', None, None, None, 'NL001B01', None, '0', '0', None, None, None, 'USD', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Perl  : ('903', 'Overseas Inc', None, None, None, None, None, '14', '0', 'K003', None, None, None, 'US-99', None, '0', '0', None, None, None, 'USD', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Perl  : ('904', 'Kassaklant', None, None, None, None, None, '0', '0', 'K004', None, None, None, None, None, '0', '0', None, None, None, 'USD', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Python: ('900', 'Klant A', None, None, None, None, None, '14', '0', 'K001', None, None, None, 'NL900B01', None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Python: ('902', 'Bakkerij Cees', 'Cees', '030-1234567', None, 'cees@example.test', None, '30', '0', 'K002', None, None, None, 'NL001B01', None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Python: ('903', 'Overseas Inc', None, None, None, None, None, '14', '0', 'K003', None, None, None, 'US-99', None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Python: ('904', 'Kassaklant', None, None, None, None, None, '0', '0', 'K004', None, None, None, None, None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+     -> verklaring: Gevolg van op 1: relaties zonder eigen valuta (curr leeg) volgen de standaardvaluta en zijn in Perl daardoor ongemerkt USD geworden (README 74).
+     tabel vendor: kolommen ['id', 'name', 'contact', 'phone', 'fax', 'email', 'notes', 'terms', 'taxincluded', 'vendornumber', 'cc', 'bcc', 'gifi_accno', 'business_id', 'taxnumber', 'sic_code', 'discount', 'creditlimit', 'employee_id', 'language_code', 'pricegroup_id', 'curr', 'startdate', 'enddate', 'arap_accno_id', 'payment_accno_id', 'discount_accno_id', 'cashdiscount', 'discountterms', 'threshold', 'paymentmethod_id', 'remittancevoucher', 'prepayment_accno_id']
+         alleen Perl  : ('901', 'Leverancier B', None, None, None, None, None, '0', '0', 'L001', None, None, None, None, None, None, '0', '0', None, None, None, 'USD', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Perl  : ('905', 'Graanhandel De Molen', None, None, None, None, None, '30', '0', 'L002', None, None, None, None, 'NL905B01', None, '0', '0', None, None, None, 'USD', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Python: ('901', 'Leverancier B', None, None, None, None, None, '0', '0', 'L001', None, None, None, None, None, None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+         alleen Python: ('905', 'Graanhandel De Molen', None, None, None, None, None, '30', '0', 'L002', None, None, None, None, 'NL905B01', None, '0', '0', None, None, None, 'EUR', None, None, None, None, None, '0', '0', '0', None, '0', None)
+     -> verklaring: Idem bij leveranciers.
+     tabel curr: kolommen ['rn', 'curr', 'prec']
+         alleen Perl  : ('1', 'USD', '2')
+         alleen Python: ('1', 'EUR', '2')
+         alleen Python: ('2', 'USD', '2')
+     -> verklaring: Zie op 1 en 2.
+     op 1 (am_ui):
+         error: Perl=None Python=True
+         fout Perl=None Python="ValidationError: De standaardvaluta blijft bovenaan; kies 'Standaardvaluta maken' om hem te wijzigen."
+     -> verklaring: AM::move zet USD bovenaan: ongemerkt de nieuwe standaardvaluta. Python weigert (README 74).
+     op 2 (am_ui):
+         error: Perl=None Python=True
+         fout Perl=None Python='ValidationError: De standaardvaluta kan niet verwijderd worden.'
+     -> verklaring: Perl verwijdert de standaardvaluta die in boekingen gebruikt wordt (alleen de knop ontbreekt); Python weigert (README 76).
+     op 1: fout Perl=None | Python="ValidationError: De standaardvaluta blijft bovenaan; kies 'Standaardvaluta maken' om hem te wijzigen."
+     op 2: fout Perl=None | Python='ValidationError: De standaardvaluta kan niet verwijderd worden.'
+[88] OK                beheer: koersen (am.pl) als browser
+[89] VERWACHT VERSCHIL beheer: koers naar andere datum (Perl laat de oude staan)
+     tabel exchangerate: kolommen ['curr', 'transdate', 'exchangerate']
+         alleen Perl  : ('USD', '2026-05-20', '1.1')
+     -> verklaring: am.pl save_exchangerate gebruikt oldtransdate niet: de koers op de oude datum blijft staan. Python verplaatst hem (README 77).
+[90] OK                beheer: afdelingen, branches, betaalmethoden (am.pl) als browser
+[91] VERWACHT VERSCHIL beheer: afdeling in gebruik verwijderen (Perl kijkt alleen naar dpt_trans)
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('601', 'department', 'Inkoop', None, 'deleted', '500')
+     -> verklaring: Perl schrijft 'deleted' voor de verwijderde afdeling.
+     tabel department: kolommen ['id', 'description', 'role', 'rn']
+         alleen Python: ('601', 'Inkoop', 'C', '2')
+     -> verklaring: Zie op 1.
+     op 1 (am_ui):
+         error: Perl=None Python=True
+         fout Perl=None Python='ValidationError: Deze afdeling is in gebruik: ap (1), dpt_trans (2), gl (1).'
+     -> verklaring: AM::delete_department verwijdert een afdeling die in gl/ar gebruikt wordt (get_department kijkt alleen in dpt_trans). Python weigert (README 78).
+     op 1: fout Perl=None | Python='ValidationError: Deze afdeling is in gebruik: ap (1), dpt_trans (2), gl (1).'
+[92] OK                beheer: talen en projecten
+     op 3: fout Perl='Error: INSERT INTO language\n                (code, description)\n                VALUES (\'de\',\'Duits\')\nERROR:  duplicate key value violates unique constraint "language_code_key"\nDETAIL:  Key (code)=(de) already exists.' | Python='ValidationError: Taal de bestaat al.'
+[93] VERWACHT VERSCHIL beheer: taal met dubbele spaties en code wijzigen terwijl in gebruik (Perl-fouten)
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : (None, 'language', 'eng', None, 'saved', '500')
+     -> verklaring: Perl schrijft 'saved' voor de hernoemde taal.
+     tabel language: kolommen ['code', 'description']
+         alleen Perl  : ('eng', 'English')
+         alleen Perl  : ('fr', 'Frans-(FR)')
+         alleen Python: ('en', 'English')
+         alleen Python: ('fr', 'Frans (FR)')
+     -> verklaring: Perl maakt van dubbele spaties in de omschrijving '-' ('Frans-(FR)'); Python één spatie (README 79). En zie op 2.
+     op 2 (am_ui):
+         error: Perl=None Python=True
+         fout Perl=None Python='ValidationError: Taalcode en is in gebruik (translation (3)) en kan niet gewijzigd worden.'
+     -> verklaring: Perl hernoemt een taalcode die in translation gebruikt wordt zonder de verwijzingen bij te werken; Python weigert (README 79).
+     op 2: fout Perl=None | Python='ValidationError: Taalcode en is in gebruik (translation (3)) en kan niet gewijzigd worden.'
+[94] OK                artikelscherm (ic.pl) als browser
+[95] VERWACHT VERSCHIL artikelscherm: ongewijzigd opslaan schrijft niets
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('1000', 'ic', 'KOEK-1', 'service', 'saved', '500')
+     -> verklaring: zie tabel parts
+     tabel parts: kolommen ['id', 'partnumber', 'description', 'unit', 'listprice', 'sellprice', 'lastcost', 'priceupdate', 'weight', 'onhand', 'notes', 'makemodel', 'assembly', 'alternate', 'rop', 'inventory_accno_id', 'income_accno_id', 'expense_accno_id', 'bin', 'obsolete', 'bom', 'image', 'drawing', 'microfiche', 'partsgroup_id', 'project_id', 'avgcost', 'tariff_hscode', 'countryorigin', 'barcode', 'toolnumber', 'lot', 'expires', 'checkinventory']
+         alleen Perl  : ('1000', 'KOEK-1', 'Roomboterkoek', 'st', '0', '10', '0', '2026-10-07', '0', '0', None, '0', '0', '0', '0', None, '10173', None, None, '0', '0', None, None, None, '0', None, None, None, None, None, None, None, None, '0')
+         alleen Python: ('1000', 'KOEK-1', 'Roomboterkoek', 'st', None, '10', None, '2026-10-07', None, '0', None, '0', '0', '0', None, None, '10173', None, None, '0', '0', None, None, None, None, None, None, None, None, None, None, None, None, '0')
+     -> verklaring: Perl schrijft alle kolommen opnieuw (leeg wordt 0) en een audittrail-regel; Python schrijft bij ongewijzigd opslaan niets (README, fase 3 AT2)
+[96] OK                samengesteld artikel: stuklijst (ic.pl) als browser
+[97] VERWACHT VERSCHIL samengesteld artikel: assembleren en demonteren (Stock Assembly)
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Python: ('10208', 'ic', 'P-1', 'assembly', 'unstock', '500')
+     -> verklaring: Perl schrijft bij demonteren (negatief aantal) ook action 'stock'; Python 'unstock' (README, fase 3 SA5)
+[98] VERWACHT VERSCHIL samengesteld artikel: prijswijziging onderdeel
+     tabel parts: kolommen ['id', 'partnumber', 'description', 'unit', 'listprice', 'sellprice', 'lastcost', 'priceupdate', 'weight', 'onhand', 'notes', 'makemodel', 'assembly', 'alternate', 'rop', 'inventory_accno_id', 'income_accno_id', 'expense_accno_id', 'bin', 'obsolete', 'bom', 'image', 'drawing', 'microfiche', 'partsgroup_id', 'project_id', 'avgcost', 'tariff_hscode', 'countryorigin', 'barcode', 'toolnumber', 'lot', 'expires', 'checkinventory']
+         alleen Perl  : ('10208', 'S-1', 'Bodem', None, None, '7.5', '3.3', '2026-02-01', '3', '0', None, '0', '1', '0', '0', None, '10173', None, None, '0', '0', None, None, None, '0', None, None, None, None, None, None, None, None, '0')
+         alleen Python: ('10208', 'S-1', 'Bodem', None, None, '8.25', '3.6', '2026-02-01', '3', '0', None, '0', '1', '0', '0', None, '10173', None, None, '0', '0', None, None, None, '0', None, None, None, None, None, None, None, None, '0')
+     -> verklaring: Perl geeft een prijswijziging van een onderdeel niet door aan het samengestelde artikel (omgedraaide voorwaarde IC.pm 281); Python rekent de prijzen opnieuw uit de onderdelen (README, fase 3 SA3)
+[99] OK                factuurscherm (is.pl/ir.pl): inkoop, verkoop met kostprijs, opnieuw opslaan
+[100] OK                factuurscherm: verkoop zonder voorraad, kostprijs bij latere inkoop, aantal wijzigen, verwijderen
+     (1x verklaard: kostprijs per boeking en rekening gelijk, Perl boekt bij opnieuw opslaan/latere inkoop terug en opnieuw op een andere datum (README fase 3 F3))
+[101] OK                factuurscherm: btw inbegrepen, twee tarieven, korting
+[102] OK                factuurscherm: vreemde valuta met betalingen
+[103] OK                factuurscherm: volledig betaald, prijs van inkoop wijzigen, post als nieuw
+     (1x verklaard: kostprijs per boeking en rekening gelijk, Perl boekt bij opnieuw opslaan/latere inkoop terug en opnieuw op een andere datum (README fase 3 F3))
+[104] OK                factuurscherm: samengesteld artikel verkopen
+[105] VERWACHT VERSCHIL factuurscherm: inkoop verwijderen na verkoop, projecten
+     tabel parts: kolommen ['id', 'partnumber', 'description', 'unit', 'listprice', 'sellprice', 'lastcost', 'priceupdate', 'weight', 'onhand', 'notes', 'makemodel', 'assembly', 'alternate', 'rop', 'inventory_accno_id', 'income_accno_id', 'expense_accno_id', 'bin', 'obsolete', 'bom', 'image', 'drawing', 'microfiche', 'partsgroup_id', 'project_id', 'avgcost', 'tariff_hscode', 'countryorigin', 'barcode', 'toolnumber', 'lot', 'expires', 'checkinventory']
+         alleen Perl  : ('2001', 'A-1', 'Appels', 'kg', '5', '5', '2.5', '2026-10-10', None, '-1', None, '0', '0', '0', None, '10155', '10173', '10167', None, '0', '0', None, None, None, None, None, '2.25', None, None, None, None, None, None, '0')
+         alleen Python: ('2001', 'A-1', 'Appels', 'kg', '5', '5', '2.5', '2026-10-10', None, '-1', None, '0', '0', '0', None, '10155', '10173', '10167', None, '0', '0', None, None, None, None, None, '2.5', None, None, None, None, None, None, '0')
+     -> verklaring: F8: gemiddelde inkoopprijs (avgcost) wordt ook bij verwijderen van een inkoop opnieuw berekend; Perl liet hem staan
+     (1x verklaard: kostprijs per boeking en rekening gelijk, Perl boekt bij opnieuw opslaan/latere inkoop terug en opnieuw op een andere datum (README fase 3 F3))
+[106] VERWACHT VERSCHIL factuurscherm: btw inbegrepen in vreemde valuta (inkoop)
+     tabel parts: kolommen ['id', 'partnumber', 'description', 'unit', 'listprice', 'sellprice', 'lastcost', 'priceupdate', 'weight', 'onhand', 'notes', 'makemodel', 'assembly', 'alternate', 'rop', 'inventory_accno_id', 'income_accno_id', 'expense_accno_id', 'bin', 'obsolete', 'bom', 'image', 'drawing', 'microfiche', 'partsgroup_id', 'project_id', 'avgcost', 'tariff_hscode', 'countryorigin', 'barcode', 'toolnumber', 'lot', 'expires', 'checkinventory']
+         alleen Perl  : ('2001', 'A-1', 'Appels', 'kg', '5', '5', '1.67', '2026-10-10', None, '4', None, '0', '0', '0', None, '10155', '10173', '10167', None, '0', '0', None, None, None, None, None, '1.67', None, None, None, None, None, None, '0')
+         alleen Python: ('2001', 'A-1', 'Appels', 'kg', '5', '5', '1.6', '2026-10-10', None, '4', None, '0', '0', '0', None, '10155', '10173', '10167', None, '0', '0', None, None, None, None, None, '1.6', None, None, None, None, None, None, '0')
+     -> verklaring: F7: laatste/gemiddelde inkoopprijs volgen uit dezelfde (bij Perl foute) prijs
+     tabel invoice: kolommen ['trans_id', 'parts_id', 'description', 'qty', 'allocated', 'sellprice', 'fxsellprice', 'discount', 'assemblyitem', 'unit', 'project_id', 'deliverydate', 'serialnumber', 'itemnotes', 'lineitemdetail', 'ordernumber', 'ponumber', 'cost', 'vendor', 'vendor_id', 'kititem']
+         alleen Perl  : ('10205', '2001', 'Appels', '-4', '0', '1.67', '2.42', '0', '0', 'kg', None, None, None, None, '0', None, None, None, None, None, '0')
+         alleen Python: ('10205', '2001', 'Appels', '-4', '0', '1.6', '2.42', '0', '0', 'kg', None, None, None, None, '0', None, None, None, None, None, '0')
+     -> verklaring: F7: nettoprijs bij btw inbegrepen + valuta: Perl trekt de btw in standaardvaluta af van de prijs in vreemde valuta (invoice.sellprice fout)
+[107] VERWACHT VERSCHIL factuurscherm: creditnota klant en leverancier (retouren, F5)
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10207', '10173', '-3', '2026-03-05', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10208', '10155', '5', '2026-03-06', None, '1', '0', None, None, 'cogs', None, None)
+         alleen Python: ('10207', '10167', '2', '2026-03-05', None, '1', '0', None, None, 'cogs', None, None)
+         alleen Python: ('10207', '10173', '-5', '2026-03-05', None, '1', '0', None, None, '1003', None, None)
+         alleen Python: ('10208', '10155', '4', '2026-03-06', None, '1', '0', None, None, 'cogs', None, None)
+         alleen Python: ('10208', '10167', '1', '2026-03-06', None, '1', '0', None, None, 'cogs', None, None)
+     -> verklaring: F5: retour klant tegen oorspronkelijke kostprijs (omzet terug + voorraad tegen kostprijs), retour leverancier tegen FIFO-kostprijs (verschil naar kostprijsrekening); Perl boekt beide tegen de verkoop-/retourprijs
+[108] VERWACHT VERSCHIL orderscherm (oe.pl): verkooporder, korting, btw inbegrepen, opnieuw opslaan
+     tabel semaphore: kolommen ['id', 'login', 'module']
+         alleen Perl  : ('10206', 'admin', 'ar')
+     -> verklaring: Perl laat na opslaan van een geopende order een lock op ar/ap staan (OE.pm retrieve zet locks op oe én ar/ap, save verwijdert alleen oe)
+[109] VERWACHT VERSCHIL orderscherm: inkooporder, offerte en aanvraag opslaan, opslaan als nieuw, verwijderen
+     tabel semaphore: kolommen ['id', 'login', 'module']
+         alleen Perl  : ('10206', 'admin', 'ar')
+     -> verklaring: Perl laat na opslaan van een geopende order een lock op ar/ap staan (OE.pm retrieve zet locks op oe én ar/ap, save verwijdert alleen oe)
+[110] VERWACHT VERSCHIL orderscherm: offerte -> order -> factuur (alles geleverd)
+     tabel inventory: kolommen ['warehouse_id', 'parts_id', 'trans_id', 'qty', 'shippingdate', 'employee_id']
+         alleen Perl  : ('0', '2001', '10206', '-4', '2026-10-10', '500')
+     -> verklaring: O3: Perl schrijft bij factureren magazijnbewegingen voor de geleverde aantallen (inventory); in Python beweegt alleen de factuur de voorraad
+[111] VERWACHT VERSCHIL orderscherm: inkooporder -> deellevering -> nabestelling
+     tabel inventory: kolommen ['warehouse_id', 'parts_id', 'trans_id', 'qty', 'shippingdate', 'employee_id']
+         alleen Perl  : ('0', '2001', '10205', '6', '2026-02-01', '500')
+         alleen Perl  : ('0', '2002', '10205', '4', '2026-02-01', '500')
+     -> verklaring: O3: Perl schrijft bij factureren magazijnbewegingen voor de geleverde aantallen (inventory); in Python beweegt alleen de factuur de voorraad
+     (2 id's omgenummerd: Perl maakt de nabestelling vóór de factuur, Python pas bij het boeken van de factuur (O4); inhoud verder vergeleken)
+[112] VERWACHT VERSCHIL orderscherm: verkooporder deels gefactureerd, nabestelling gefactureerd
+     tabel inventory: kolommen ['warehouse_id', 'parts_id', 'trans_id', 'qty', 'shippingdate', 'employee_id']
+         alleen Perl  : ('0', '2001', '10206', '-5', '2026-03-01', '500')
+     -> verklaring: O3: Perl schrijft bij factureren magazijnbewegingen voor de geleverde aantallen (inventory); in Python beweegt alleen de factuur de voorraad
+     (2 id's omgenummerd: Perl maakt de nabestelling vóór de factuur, Python pas bij het boeken van de factuur (O4); inhoud verder vergeleken)
+[113] VERWACHT VERSCHIL orderscherm: aanvraag -> inkooporder, order -> offerte (order blijft open)
+     tabel oe: kolommen ['id', 'ordnumber', 'transdate', 'vendor_id', 'customer_id', 'amount', 'netamount', 'reqdate', 'taxincluded', 'shippingpoint', 'notes', 'curr', 'employee_id', 'closed', 'quotation', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'terms', 'waybill', 'warehouse_id', 'description', 'aa_id', 'exchangerate', 'backorder']
+         alleen Perl  : ('10207', '1', '2026-03-01', '0', '902', '14.12', '12.95', None, '0', None, None, 'EUR', '500', '1', '0', None, None, '0', None, None, None, '30', None, '0', None, None, '1', '0')
+         alleen Python: ('10207', '1', '2026-03-01', '0', '902', '14.12', '12.95', None, '0', None, None, 'EUR', '500', '0', '0', None, None, '0', None, None, None, '30', None, '0', None, None, '1', '0')
+     -> verklaring: O2: "Order -> offerte" sluit de order niet meer (Perl sloot hem)
+[114] VERWACHT VERSCHIL orderscherm: vreemde valuta, project op de regel, afdeling, samengesteld artikel (SA11)
+     tabel semaphore: kolommen ['id', 'login', 'module']
+         alleen Perl  : ('10205', 'admin', 'ar')
+     -> verklaring: Perl laat na opslaan van een geopende order een lock op ar/ap staan (OE.pm retrieve zet locks op oe én ar/ap, save verwijdert alleen oe)
+[115] VERWACHT VERSCHIL orderscherm: factuur met nabestelling verwijderen (F6, ON3)
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('10207', 'oe', '1', 'sales_order', 'saved', '500')
+         alleen Perl  : ('10208', 'ar', '1', 'invoice', 'deleted', '500')
+         alleen Perl  : ('10208', 'ar', '1', 'invoice', 'posted', '500')
+         alleen Python: ('10207', 'ar', '1', 'invoice', 'deleted', '500')
+         alleen Python: ('10207', 'ar', '1', 'invoice', 'posted', '500')
+         alleen Python: ('10208', 'oe', '1', 'sales_order', 'deleted', '500')
+         alleen Python: ('10208', 'oe', '1', 'sales_order', 'saved', '500')
+     -> verklaring: ON3: Python logt het verwijderen van de nabestelling; nabestelling en factuur in andere id-volgorde (O4)
+     tabel parts: kolommen ['id', 'partnumber', 'description', 'unit', 'listprice', 'sellprice', 'lastcost', 'priceupdate', 'weight', 'onhand', 'notes', 'makemodel', 'assembly', 'alternate', 'rop', 'inventory_accno_id', 'income_accno_id', 'expense_accno_id', 'bin', 'obsolete', 'bom', 'image', 'drawing', 'microfiche', 'partsgroup_id', 'project_id', 'avgcost', 'tariff_hscode', 'countryorigin', 'barcode', 'toolnumber', 'lot', 'expires', 'checkinventory']
+         alleen Perl  : ('2001', 'A-1', 'Appels', 'kg', '5', '5', '2', '2026-10-10', None, '5', None, '0', '0', '0', None, '10155', '10173', '10167', None, '0', '0', None, None, None, None, None, '2', None, None, None, None, None, None, '0')
+         alleen Python: ('2001', 'A-1', 'Appels', 'kg', '5', '5', '2', '2026-10-10', None, '10', None, '0', '0', '0', None, '10155', '10173', '10167', None, '0', '0', None, None, None, None, None, '2', None, None, None, None, None, None, '0')
+     -> verklaring: O3: na verwijderen van de factuur is er niets geleverd; Perl laat de voorraad toch verlaagd staan (order verlaagde hem, reset_shipped en de factuur heffen elkaar niet op), Python zet hem terug
+     tabel oe: kolommen ['id', 'ordnumber', 'transdate', 'vendor_id', 'customer_id', 'amount', 'netamount', 'reqdate', 'taxincluded', 'shippingpoint', 'notes', 'curr', 'employee_id', 'closed', 'quotation', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'terms', 'waybill', 'warehouse_id', 'description', 'aa_id', 'exchangerate', 'backorder']
+         alleen Perl  : ('10207', '1', '2026-03-01', '0', '900', '18.15', '15', None, '0', None, None, 'EUR', '500', '0', '0', None, None, '0', None, None, None, '14', None, '0', None, None, '1', '1')
+     -> verklaring: ON3: Python verwijdert de onaangeroerde nabestelling die bij de verwijderde factuur ontstond (Perl laat hem staan: restant dubbel open)
+     tabel orderitems: kolommen ['trans_id', 'parts_id', 'description', 'qty', 'sellprice', 'discount', 'unit', 'project_id', 'reqdate', 'ship', 'serialnumber', 'itemnotes', 'lineitemdetail', 'ordernumber', 'ponumber', 'cost', 'vendor', 'vendor_id']
+         alleen Perl  : ('10206', '2001', 'Appels', '8', '5', '0', 'kg', None, None, '5', None, None, '0', None, None, '2', None, '0')
+         alleen Perl  : ('10207', '2001', 'Appels', '3', '5', '0', 'kg', None, None, '0', None, None, '0', None, None, '2', None, '0')
+         alleen Python: ('10206', '2001', 'Appels', '8', '5', '0', 'kg', None, None, '0', None, None, '0', None, None, '2', None, '0')
+     -> verklaring: ON3: nabestelling weg en verzonden aantallen van de heropende order op 0 (Perl laat ship staan)
+     tabel inventory: kolommen ['warehouse_id', 'parts_id', 'trans_id', 'qty', 'shippingdate', 'employee_id']
+         alleen Perl  : ('0', '2001', '10206', '-5', '2026-03-01', '500')
+     -> verklaring: O3: Perl schrijft bij factureren magazijnbewegingen voor de geleverde aantallen (inventory); in Python beweegt alleen de factuur de voorraad
+[116] OK                herhalen: verkoopfactuur met artikelen, korting en dienst (2 termijnen)
+[117] OK                herhalen: inkoopfactuur (voorraad en kostprijs van een open verkoop)
+     (1x verklaard: kostprijs per boeking en rekening gelijk, Perl boekt bij opnieuw opslaan/latere inkoop terug en opnieuw op een andere datum (README fase 3 F3))
+[118] OK                herhalen: verkoop samengesteld artikel
+[119] OK                herhalen: btw-instelling klant gewijzigd na het origineel (RH2)
+[120] VERWACHT VERSCHIL herhalen: leverdatum op de factuurregel (RH4)
+     tabel invoice: kolommen ['trans_id', 'parts_id', 'description', 'qty', 'allocated', 'sellprice', 'fxsellprice', 'discount', 'assemblyitem', 'unit', 'project_id', 'deliverydate', 'serialnumber', 'itemnotes', 'lineitemdetail', 'ordernumber', 'ponumber', 'cost', 'vendor', 'vendor_id', 'kititem']
+         alleen Perl  : ('10207', '2001', 'Appels', '2', '-2', '5', '5', '0', '0', 'kg', None, '2026-03-10', None, None, '0', None, None, '2', None, '0', '0')
+         alleen Python: ('10207', '2001', 'Appels', '2', '-2', '5', '5', '0', '0', 'kg', None, '2027-01-24', None, None, '0', None, None, '2', None, '0', '0')
+     -> verklaring: RH4: Python schuift de leverdatum van de regel evenveel dagen mee (2027-01-24); Perl houdt 2026-03-10
+[121] VERWACHT VERSCHIL herhalen: te weinig voorraad (voorraad controleren, RH3)
+     tabel ar: kolommen ['id', 'invnumber', 'transdate', 'customer_id', 'taxincluded', 'amount', 'netamount', 'paid', 'datepaid', 'duedate', 'invoice', 'shippingpoint', 'terms', 'notes', 'curr', 'ordnumber', 'employee_id', 'till', 'quonumber', 'intnotes', 'department_id', 'shipvia', 'language_code', 'ponumber', 'approved', 'cashdiscount', 'discountterms', 'waybill', 'warehouse_id', 'description', 'onhold', 'exchangerate', 'dcn', 'bank_id', 'paymentmethod_id']
+         alleen Perl  : ('10207', '2', '2027-01-15', '900', '0', '12.1', '10', '0', None, '2027-01-29', '1', None, '14', None, 'EUR', None, '500', None, None, None, '0', None, None, None, '1', '0', '0', None, '0', None, '0', '1', None, '10044', '0')
+     -> verklaring: RH3: Perl (IS::post_invoice) controleert de voorraad niet en boekt de kopie (voorraad -2); Python slaat de termijn over
+     tabel acc_trans: kolommen ['trans_id', 'chart_id', 'amount', 'transdate', 'source', 'approved', 'fx_transaction', 'project_id', 'memo', 'id', 'cleared', 'vr_id']
+         alleen Perl  : ('10207', '10057', '-12.1', '2027-01-15', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10207', '10078', '2.1', '2027-01-15', None, '1', '0', None, None, None, None, None)
+         alleen Perl  : ('10207', '10173', '10', '2027-01-15', None, '1', '0', None, None, '1003', None, None)
+     -> verklaring: idem (RH3)
+     tabel defaults: kolommen ['fldname', 'fldvalue']
+         alleen Perl  : ('sinumber', '2')
+         alleen Python: ('sinumber', '1')
+     -> verklaring: idem: geen factuurnummer (RH3)
+     tabel audittrail: kolommen ['trans_id', 'tablename', 'reference', 'formname', 'action', 'employee_id']
+         alleen Perl  : ('10207', 'ar', '2', 'invoice', 'posted', '500')
+     -> verklaring: idem (RH3)
+     tabel recurring: kolommen ['id', 'reference', 'startdate', 'nextdate', 'enddate', 'repeat', 'unit', 'howmany', 'payment', 'description']
+         alleen Perl  : ('10206', None, '2027-01-15', '2027-02-15', '2027-02-15', '1', 'months', '2', '0', None)
+         alleen Python: ('10206', None, '2027-01-15', '2027-01-15', '2027-02-15', '1', 'months', '2', '0', None)
+     -> verklaring: idem: volgende datum blijft staan (RH3)
+     tabel semaphore: kolommen ['id', 'login', 'module']
+         alleen Python: ('10206', 'admin', 'ar')
+     -> verklaring: Perl's boeking ruimt de lock van het openen (schemascherm) op; Python boekt niet, de lock blijft tot de gebruiker de factuur sluit
+     tabel parts: kolommen ['id', 'partnumber', 'description', 'unit', 'listprice', 'sellprice', 'lastcost', 'priceupdate', 'weight', 'onhand', 'notes', 'makemodel', 'assembly', 'alternate', 'rop', 'inventory_accno_id', 'income_accno_id', 'expense_accno_id', 'bin', 'obsolete', 'bom', 'image', 'drawing', 'microfiche', 'partsgroup_id', 'project_id', 'avgcost', 'tariff_hscode', 'countryorigin', 'barcode', 'toolnumber', 'lot', 'expires', 'checkinventory']
+         alleen Perl  : ('2001', 'A-1', 'Appels', 'kg', '5', '5', '2', '2026-10-10', None, '-2', None, '0', '0', '0', None, '10155', '10173', '10167', None, '0', '0', None, None, None, None, None, '2', None, None, None, None, None, None, '1')
+         alleen Python: ('2001', 'A-1', 'Appels', 'kg', '5', '5', '2', '2026-10-10', None, '0', None, '0', '0', '0', None, '10155', '10173', '10167', None, '0', '0', None, None, None, None, None, '2', None, None, None, None, None, None, '1')
+     -> verklaring: idem: voorraad A-1 -2 in Perl (RH3)
+     tabel invoice: kolommen ['trans_id', 'parts_id', 'description', 'qty', 'allocated', 'sellprice', 'fxsellprice', 'discount', 'assemblyitem', 'unit', 'project_id', 'deliverydate', 'serialnumber', 'itemnotes', 'lineitemdetail', 'ordernumber', 'ponumber', 'cost', 'vendor', 'vendor_id', 'kititem']
+         alleen Perl  : ('10207', '2001', 'Appels', '2', '0', '5', '5', '0', '0', 'kg', None, None, None, None, '0', None, None, '2', None, '0', '0')
+     -> verklaring: idem (RH3)
+[122] VERWACHT VERSCHIL herhalen: verkooporder met leverdatum (kop)
+     tabel semaphore: kolommen ['id', 'login', 'module']
+         alleen Perl  : ('10205', 'admin', 'ar')
+     -> verklaring: Perl laat na het openen van een order (OE.pm retrieve) een lock op ar/ap staan; de lock op oe ruimt het verwerken op (zoals scenarios_oe)
+     tabel orderitems: kolommen ['trans_id', 'parts_id', 'description', 'qty', 'sellprice', 'discount', 'unit', 'project_id', 'reqdate', 'ship', 'serialnumber', 'itemnotes', 'lineitemdetail', 'ordernumber', 'ponumber', 'cost', 'vendor', 'vendor_id']
+         alleen Perl  : ('10206', '2001', 'Appels', '4', '5', '0', 'kg', None, '2026-03-20', '0', None, None, '0', None, None, '2', None, '0')
+         alleen Perl  : ('10206', '2004', 'Cake', '3', '12.95', '0.1', 'st', None, '2026-03-20', '0', None, None, '0', None, None, '4.333', None, '0')
+         alleen Perl  : ('10207', '2001', 'Appels', '4', '5', '0', 'kg', None, '2026-03-20', '0', None, None, '0', None, None, '2', None, '0')
+         alleen Perl  : ('10207', '2004', 'Cake', '3', '12.95', '0.1', 'st', None, '2026-03-20', '0', None, None, '0', None, None, '4.333', None, '0')
+         alleen Python: ('10206', '2001', 'Appels', '4', '5', '0', 'kg', None, '2027-02-03', '0', None, None, '0', None, None, '2', None, '0')
+         alleen Python: ('10206', '2004', 'Cake', '3', '12.95', '0.1', 'st', None, '2027-02-03', '0', None, None, '0', None, None, '4.333', None, '0')
+         alleen Python: ('10207', '2001', 'Appels', '4', '5', '0', 'kg', None, '2027-03-06', '0', None, None, '0', None, None, '2', None, '0')
+         alleen Python: ('10207', '2004', 'Cake', '3', '12.95', '0.1', 'st', None, '2027-03-06', '0', None, None, '0', None, None, '4.333', None, '0')
+     -> verklaring: RH4: Python schuift de leverdatum van de orderregels evenveel dagen mee als de kop (2027-02-03, 2027-03-06); Perl houdt 2026-03-20 op de regels
+[123] VERWACHT VERSCHIL herhalen: inkooporder deels geleverd (RH5)
+     tabel semaphore: kolommen ['id', 'login', 'module']
+         alleen Perl  : ('10205', 'admin', 'ap')
+     -> verklaring: Perl laat na het openen van een order (OE.pm retrieve) een lock op ar/ap staan; de lock op oe ruimt het verwerken op (zoals scenarios_oe)
+     tabel orderitems: kolommen ['trans_id', 'parts_id', 'description', 'qty', 'sellprice', 'discount', 'unit', 'project_id', 'reqdate', 'ship', 'serialnumber', 'itemnotes', 'lineitemdetail', 'ordernumber', 'ponumber', 'cost', 'vendor', 'vendor_id']
+         alleen Perl  : ('10208', '2001', 'Appels', '10', '2', '0', 'kg', None, None, '6', None, None, '0', None, None, '2', None, '0')
+         alleen Perl  : ('10208', '2002', 'Bananen', '4', '1.25', '0', 'kg', None, None, '4', None, None, '0', None, None, '1.25', None, '0')
+         alleen Python: ('10208', '2001', 'Appels', '10', '2', '0', 'kg', None, None, '0', None, None, '0', None, None, '2', None, '0')
+         alleen Python: ('10208', '2002', 'Bananen', '4', '1.25', '0', 'kg', None, None, '0', None, None, '0', None, None, '1.25', None, '0')
+     -> verklaring: RH5: Perl neemt het geleverde aantal (ship 6/4) over in de kopie; Python begint de nieuwe order op 0
+     tabel inventory: kolommen ['warehouse_id', 'parts_id', 'trans_id', 'qty', 'shippingdate', 'employee_id']
+         alleen Perl  : ('0', '2001', '10205', '6', '2026-02-01', '500')
+         alleen Perl  : ('0', '2002', '10205', '4', '2026-02-01', '500')
+     -> verklaring: O3: Perl schrijft bij factureren magazijnbewegingen (inventory)
+     (2 id's omgenummerd: Perl maakt de nabestelling vóór de factuur, Python pas bij het boeken van de factuur (O4); inhoud verder vergeleken)
+
+123 scenario's, 0 met onverwachte verschillen

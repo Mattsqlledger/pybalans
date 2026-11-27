@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ _("E-mail") }} {{ doc_label }} {{ number }}{% endblock %}
+{% block content %}
+<h2>{{ _("E-mail") }} {{ doc_label|lower }} {{ number }} — {{ v.name }}</h2>
+{% include "help/mail_send.html" %}
+{% if warning %}<p class="warn">{{ warning }}</p>{% endif %}
+{% if not ms.enabled %}
+<p class="warn">{{ _("E-mail is niet ingesteld voor deze administratie.") }}
+  {% if ctx.has_role('admin') %}<a href="/beheer/email">{{ _("Nu instellen") }}</a>{% else %}{{ _("Vraag de beheerder om dit in te stellen.") }}{% endif %}</p>
+{% elif ms.mode == 'folder' %}
+<p class="warn">{{ _("Testmodus: de mail wordt niet verstuurd maar in een map gezet.") }}</p>
+{% endif %}
+<form method="post" class="stack wide mailtext">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="variant" value="{{ f.variant }}">
+  <div class="grid">
+    <label>{{ _("Aan") }} <input name="to" value="{{ f.to }}" required autocomplete="off"></label>
+    <label>{{ _("Cc") }} <input name="cc" value="{{ f.cc }}" autocomplete="off"></label>
+    <label>{{ _("Bcc") }} <input name="bcc" value="{{ f.bcc }}" autocomplete="off"></label>
+  </div>
+  <p class="muted small">{{ _("Meerdere adressen scheiden met een komma.") }}
+    {% if ms.enabled %}{{ _("Afzender:") }} {{ "%s <%s>"|format(ms.from_name, ms.from_address) }}{% endif %}</p>
+  <label>{{ _("Onderwerp") }} <input name="subject" value="{{ f.subject }}" required maxlength="500"></label>
+  <label>{{ _("Bericht") }} <textarea name="message" rows="14" cols="70">
+{{ f.message }}</textarea></label>
+  <p>{{ _("Bijlage:") }} <a href="/document/{{ formname }}/{{ trans_id }}.pdf?voorbeeld=1{% if f.variant %}&amp;variant={{ f.variant|urlencode }}{% endif %}" target="_blank" rel="noopener">{{ filename }}</a></p>
+  <p class="actions">
+    <button name="action" value="send"{% if not ms.enabled %} disabled{% endif %}>{{ _("Verzenden") }}</button>
+    <a class="button secondary" href="{{ back }}">{{ _("Annuleren") }}</a>
+  </p>
+</form>
+{% endblock %}

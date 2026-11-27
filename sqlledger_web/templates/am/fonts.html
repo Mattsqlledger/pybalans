@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Lettertypen: licenties en makers") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Lettertypen: licenties en makers") }}</h2>
+<p>{{ _("Voor de documenten (Beheer > Huisstijl) worden vijf lettertypen meegeleverd. Ze zijn gratis en open source onder de SIL Open Font License 1.1: ze mogen gebruikt, meegeleverd en in documenten (PDF) ingesloten worden, maar niet los verkocht. De licentie geldt voor de lettertypen, niet voor de documenten die ermee gemaakt worden. De bestanden zijn onveranderd; alle rechten blijven bij de makers.") }}</p>
+{% for x in fonts %}
+<section class="fontlicense">
+  <h3 class="font-{{ x.key }}">{{ x.f.label }}</h3>
+  <dl class="facts">
+    <dt>{{ _("Maker") }}</dt><dd>{{ x.f.author }}</dd>
+    <dt>{{ _("Copyright") }}</dt><dd>{{ x.f.copyright }}</dd>
+    <dt>{{ _("Bron") }}</dt><dd>{{ x.f.source }}</dd>
+    <dt>{{ _("Licentie") }}</dt><dd>{{ license_name }}</dd>
+  </dl>
+  <details><summary>{{ _("Volledige licentietekst") }}</summary><pre>{{ x.license }}</pre></details>
+</section>
+{% endfor %}
+<link rel="stylesheet" href="/lettertypen/lettertypen.css">
+{% endblock %}

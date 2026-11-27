@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Rekeningoverzichten") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Rekeningoverzichten") }}</h2>
+  <a class="button secondary" href="/rapporten/ouderdom-verkoop">{{ _("Ouderdomsanalyse") }}</a>
+</div>
+{% include "help/dunning_statements.html" %}
+<p class="muted small">{{ _("Per klant en valuta een overzicht van de posten die op de peildatum openstonden (betalingen na de peildatum tellen niet mee), verdeeld over de gekozen ouderdomskolommen.") }}</p>
+
+<form method="get" action="/rekeningoverzichten" class="report-form">
+  <div class="filters">
+    <label>{{ _("Peildatum") }} <input type="date" name="asof" value="{{ f.asof.isoformat() }}"></label>
+    <label>{{ _("Klant") }} <input name="name" value="{{ f.name }}"></label>
+    <label>{{ _("Klantnummer") }} <input name="vcnumber" value="{{ f.vcnumber }}"></label>
+    {% if departments %}<label>{{ _("Afdeling") }} <select name="department_id"><option value="">{{ _("Alle") }}</option>
+      {% for d in departments %}<option value="{{ d.id }}"{% if d.id == f.department_id %} selected{% endif %}>{{ d.description }}</option>{% endfor %}</select></label>{% endif %}
+  </div>
+  <div class="filters">
+    <span>{{ _("Kolommen") }}:</span>
+    {% for b in all_buckets %}<label class="check"><input type="checkbox" name="buckets" value="{{ b }}"{% if b in f.buckets %} checked{% endif %}> {{ _("Lopend") if b == 'c0' else b[1:] }}</label>{% endfor %}
+    <label class="check"><input type="checkbox" name="overdue" value="1"{% if f.overdue %} checked{% endif %}> {{ _("Dagen vanaf vervaldatum") }}</label>
+  </div>
+  <div class="actions"><button>{{ _("Toon") }}</button></div>
+</form>
+
+{% include "dunning/_results.html" %}
+
+<form method="post" action="/rekeningoverzichten">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% for k, v in f.hidden() %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+  <div class="table-wrap">
+  <table class="list">
+    <thead><tr><th>{% if statements %}<input type="checkbox" data-check-all="st" aria-label="{{ _('alles selecteren') }}">{% endif %}</th><th>{{ _("Klant") }}</th><th>{{ _("Valuta") }}</th>
+      {% for b in f.buckets %}<th class="num">{{ ranges[b] }}</th>{% endfor %}
+      <th class="num">{{ _("Totaal") }}</th><th>{{ _("E-mail") }}</th></tr></thead>
+    <tbody>
+    {% for s in statements %}
+      <tr>
+        <td><input type="checkbox" name="st" value="{{ s.key }}"{% if checked is none or s.key in checked %} checked{% endif %}
+                   aria-label="{{ _('Opnemen') }} {{ s.name }} {{ s.curr }}"></td>
+        <td>{{ s.name }}{% if s.customernumber %} <span class="muted">({{ s.customernumber }})</span>{% endif %}</td>
+        <td>{{ s.curr }}</td>
+        {% for b in f.buckets %}<td class="num">{{ s.totals[b] | amount(ctx.user.numberformat, 2, "") }}</td>{% endfor %}
+        <td class="num"><strong>{{ s.total | amount(ctx.user.numberformat) }}</strong></td>
+        <td>{% if emails.get(s.vc_id) %}<span class="muted addr">{{ emails.get(s.vc_id) }}</span>{% else %}<span class="tag">{{ _("geen") }}</span>{% endif %}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="{{ f.buckets|length + 5 }}" class="muted">{{ _("Geen openstaande posten op deze peildatum.") }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% if statements %}
+  <p class="actions">
+    <button name="action" value="preview" formtarget="_blank" class="secondary">{{ _("Voorbeeld") }}</button>
+    {% if can_send %}
+    <button name="action" value="pdf" formtarget="_blank">{{ _("PDF") }}</button>
+    <button name="action" value="mail">{{ _("Mailen") }}</button>
+    {% endif %}
+  </p>
+  {% endif %}
+</form>
+<script src="/static/docs.js" defer></script>
+{% endblock %}

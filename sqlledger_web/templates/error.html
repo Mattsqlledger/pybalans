@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Fout") }} {{ status }}{% endblock %}
+{% block plain %}<p class="error">{{ message }}</p><p><a href="/">{{ _("Naar het begin") }}</a></p>{% endblock %}
+{% block content %}<p class="error">{{ message }}</p>{% if back %}<p class="actions"><a class="button secondary" href="{{ back }}">{{ _("Terug") }}</a></p>{% endif %}{% endblock %}

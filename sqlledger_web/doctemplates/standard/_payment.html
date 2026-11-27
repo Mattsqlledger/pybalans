@@ -1,0 +1,56 @@
+{#- Betalingsspecificatie per betaling per relatie (fase 4 stap 4b, SB7): receipt.html (ontvangst van een klant)
+    en check.html (betaling aan een leverancier) zetten ``kind``. Per factuur nummer, datum, factuurbedrag,
+    korting en betaald in deze betaling; wat niet aan een factuur is toegewezen staat als vooruitbetaling.
+    Inleidende tekst, slottekst en opmerking zijn in te stellen bij Beheer > Documentinstellingen. -#}
+{% set intros = {'receipt': 'Wij hebben uw betaling ontvangen en als volgt verwerkt.',
+                 'check': 'Wij hebben het onderstaande bedrag aan u overgemaakt voor de volgende facturen.'} %}
+{% extends "_base.html" %}
+{% block title %}{{ t('Betalingsspecificatie') }} {{ name }}{% endblock %}
+{% block body %}
+{% include "_parties.html" %}
+
+<div class="titlebar">
+  <h1>{{ t('Betalingsspecificatie') }}</h1>
+  <table>
+    <tr><td>{{ t('Datum') }}</td><td>{{ datepaid }}</td></tr>
+    {% if source %}<tr><td>{{ t('Kenmerk') }}</td><td>{{ source }}</td></tr>{% endif %}
+    {% if kind == 'receipt' and customernumber %}<tr><td>{{ t('Klantnummer') }}</td><td>{{ customernumber }}</td></tr>{% endif %}
+    {% if kind == 'check' and vendornumber %}<tr><td>{{ t('Leveranciersnummer') }}</td><td>{{ vendornumber }}</td></tr>{% endif %}
+  </table>
+</div>
+
+<p class="intro">{% if doc.intro %}{{ doc.intro }}{% else %}{{ t(intros[kind]) }}{% endif %}</p>
+
+<table class="lines">
+  <thead><tr>
+    <th>{{ t('Factuurnummer') }}</th><th>{{ t('Factuurdatum') }}</th><th class="r">{{ t('Factuurbedrag') }}</th>
+    {% if has_discount %}<th class="r">{{ t('Korting') }}</th>{% endif %}
+    <th class="r">{{ t('Betaald') }}</th>
+  </tr></thead>
+  <tbody>
+  {% for r in paylines %}
+    <tr>
+      {% if r.prepayment %}
+      <td colspan="3">{{ t('Vooruitbetaling') }}</td>
+      {% else %}
+      <td class="num">{{ r.invnumber }}{% if r.ponumber %}<div class="note">{{ t('Uw referentie') }} {{ r.ponumber }}</div>{% endif %}</td>
+      <td class="num">{{ r.invdate }}</td><td class="r">{{ r.amount }}</td>
+      {% endif %}
+      {% if has_discount %}<td class="r">{{ r.discount }}</td>{% endif %}
+      <td class="r">{{ r.paid }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<div class="totals"><table>
+  {% if has_discount %}<tr><td>{{ t('Korting') }}</td><td class="r">{{ total_discount }}</td></tr>{% endif %}
+  <tr class="grand"><td>{{ t('Totaal ontvangen') if kind == 'receipt' else t('Totaal betaald') }}</td><td class="r">{{ amount }}</td></tr>
+</table></div>
+<div class="currency">{{ t('Alle bedragen in') }} <strong>{{ currency }}</strong>.</div>
+{% if memo %}<p>{{ t('Omschrijving') }}: {{ memo }}</p>{% endif %}
+{% if kind == 'receipt' and account_iban %}<p>{{ t('Ontvangen op rekening') }} {{ account_iban }}.</p>{% endif %}
+{% if kind == 'check' and vendoriban %}<p>{{ t('Overgemaakt naar rekening') }} {{ vendoriban }}.</p>{% endif %}
+{% if doc.note %}<div class="docnote">{{ doc.note }}</div>{% endif %}
+{% if doc.closing %}<div class="closing">{{ doc.closing }}</div>{% endif %}
+{% endblock %}

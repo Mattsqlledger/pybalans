@@ -1,0 +1,4 @@
+{% if error %}<p class="error">{{ _("Geen verbinding:") }} {{ error }}</p>
+{% elif warning %}<p class="error">{{ _("Verbinding gelukt:") }} {{ info.company or _("(geen bedrijfsnaam)") }} · SQL-Ledger {{ info.version }}<br>{{ warning }}</p>
+{% elif unsupported %}<p class="notice warning">{{ _("Verbinding gelukt:") }} {{ info.company or _("(geen bedrijfsnaam)") }} · SQL-Ledger {{ info.version }}<br>{{ unsupported }}</p>
+{% else %}<p class="notice">{{ _("Verbinding gelukt:") }} {{ info.company or _("(geen bedrijfsnaam)") }} · SQL-Ledger {{ info.version or "?" }}</p>{% endif %}

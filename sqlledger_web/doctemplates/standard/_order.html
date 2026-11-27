@@ -1,0 +1,42 @@
+{% extends "_base.html" %}
+{#- Orderbevestiging, inkooporder, offerte en offerteaanvraag (doc/templates/Dutch/sales_order.tex e.a.).
+    Een sjabloon dat dit uitbreidt zet doc_title, date_label, number_label, req_label, show_prices,
+    show_shipto en closing_text. -#}
+{% set docnumber = quonumber if quodate is defined else ordnumber %}
+{% set docdate = quodate if quodate is defined else orddate %}
+{% block title %}{{ t(doc_title) }} {{ docnumber }}{% endblock %}
+{% block body %}
+{% include "_parties.html" %}
+
+<div class="titlebar">
+  <h1>{{ t(doc_title) }}</h1>
+  <table>
+    <tr><td>{{ t(date_label) }}</td><td>{{ docdate }}</td></tr>
+    <tr><td>{{ t(number_label) }}</td><td>{{ docnumber }}</td></tr>
+    {% if customernumber %}<tr><td>{{ t('Klantnummer') }}</td><td>{{ customernumber }}</td></tr>{% endif %}
+    {% if vendornumber %}<tr><td>{{ t('Leveranciersnummer') }}</td><td>{{ vendornumber }}</td></tr>{% endif %}
+    {% if reqdate %}<tr><td>{{ t(req_label) }}</td><td>{{ reqdate }}</td></tr>{% endif %}
+    {% if ponumber %}<tr><td>{{ t('Uw referentie') }}</td><td>{{ ponumber }}</td></tr>{% endif %}
+    {% if shipvia %}<tr><td>{{ t('Verzending') }}</td><td>{{ shipvia }}</td></tr>{% endif %}
+  </table>
+</div>
+
+{% from "_lines.html" import line_table with context %}
+{% set cols = doc.columns if show_prices else doc.columns|rejectattr('name', 'in', ['sellprice', 'discount', 'linetotal'])|list %}
+{{ line_table(cols, doc.notes, lines, priced=show_prices, subtotal='span', note_date=reqdate) }}
+
+{% if show_prices %}
+<div class="totals"><table>
+  <tr><td>{{ t('Subtotaal') }}</td><td class="r">{{ subtotal }}</td></tr>
+  {% for x in taxes %}
+  <tr><td>{{ x.taxdescription }} {{ t('over') }} {{ x.taxbase }}</td><td class="r">{{ x.tax }}</td></tr>
+  {% endfor %}
+  <tr class="grand"><td>{{ t('Totaal') }}</td><td class="r">{{ ordtotal }}</td></tr>
+</table></div>
+<div class="currency">{{ t('Alle bedragen in') }} <strong>{{ currency }}</strong>.</div>
+{% endif %}
+
+{% if doc.note %}<div class="docnote">{{ doc.note }}</div>{% endif %}
+{% if notes %}<div class="notes">{{ notes|nl2br }}</div>{% endif %}
+{% if doc.closing %}<div class="closing">{{ doc.closing }}</div>{% elif closing_text %}<div class="closing">{{ t(closing_text) }}</div>{% endif %}
+{% endblock %}

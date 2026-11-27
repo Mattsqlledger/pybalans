@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Voorraadcorrectie") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Voorraadcorrectie") }} <span class="muted">{{ p.partnumber }} {{ p.description }}</span></h2>
+</div>
+{% include "help/ic_stock.html" %}
+<p>{{ _("Op voorraad") }}: <strong>{{ onhand }}</strong> {{ p.unit }}</p>
+{% if can_edit %}
+<form method="post" action="/artikelen/{{ p.id }}/voorraad" class="report-form">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="filters">
+    <label>{{ _("Datum") }} <input type="date" name="transdate" value="{{ values.transdate }}" required></label>
+    <fieldset><legend>{{ _("Invoer") }}</legend>
+      <label class="check"><input type="radio" name="mode" value="new"{% if values.mode != "diff" %} checked{% endif %}> {{ _("nieuw aantal (telling)") }}</label>
+      <label class="check"><input type="radio" name="mode" value="diff"{% if values.mode == "diff" %} checked{% endif %}> {{ _("verschil (+/−)") }}</label>
+    </fieldset>
+    <label>{{ _("Aantal") }} <input name="amount" value="{{ values.amount }}" class="num" inputmode="decimal" required></label>
+    <label class="wide">{{ _("Reden") }} <input name="reason" value="{{ values.reason }}" maxlength="200" required></label>
+  </div>
+  <p class="muted small">{{ _("Een correctie wijzigt alleen het aantal; er wordt niets in het grootboek geboekt.") }}</p>
+  <div class="actions"><button>{{ _("Corrigeren") }}</button>
+    <a class="button secondary" href="/artikelen/{{ p.id }}">{{ _("Terug naar het artikel") }}</a></div>
+</form>
+{% else %}
+<p class="actions noprint"><a class="button secondary" href="/artikelen/{{ p.id }}">{{ _("Terug naar het artikel") }}</a></p>
+{% endif %}
+<h3>{{ _("Eerdere correcties") }}</h3>
+<div class="table-wrap">
+<table class="list report">
+  <thead><tr>{% for c in table.columns %}<th{% if c.kind == 'amount' %} class="num"{% endif %}>{{ _(c.label) }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for r in table.rows %}
+  <tr>{% for c in table.columns %}<td class="{{ 'num' if c.kind == 'amount' }}{{ ' nowrap' if c.kind == 'date' }}">{{ cell(c, r) }}</td>{% endfor %}</tr>
+  {% else %}
+  <tr><td colspan="{{ table.columns|length }}" class="muted">{{ _("Nog geen correcties.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

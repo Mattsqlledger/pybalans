@@ -1,0 +1,11 @@
+{% if results %}
+<div class="notice" role="status">
+  <ul>
+  {% for r in results %}
+    <li>{% if r.ok %}{{ _("{name}: gemaild naar {to}").format(name=r.name, to=r.to) }}
+        {% else %}<span class="err">{{ _("{name}: niet gemaild: {reason}").format(name=r.name, reason=r.reason) }}</span>{% endif %}</li>
+  {% endfor %}
+  {% for n in without or [] %}<li class="muted">{{ _("{name}: geen e-mailadres, niet gemaild").format(name=n) }}</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}

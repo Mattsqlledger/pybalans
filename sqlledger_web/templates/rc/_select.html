@@ -1,0 +1,19 @@
+{# Keuze rekening en periode (GET), gedeeld door afletteren en het rapport. #}
+<form method="get" action="{{ action }}" class="glhead noprint">
+  <label>{{ _("Rekening") }} *
+    <select name="rekening" required>
+      <option value="">{{ _("kies…") }}</option>
+      {% for a in accounts %}<option value="{{ a.accno }}"{% if a.accno == s.rekening %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+    </select></label>
+  <label class="check"><input type="checkbox" name="alle" value="1"{% if s.alle %} checked{% endif %}>
+    {{ _("Alle balansrekeningen") }}</label>
+  <label>{{ _("Van") }} <input type="date" name="van" value="{{ s.van }}"></label>
+  <label>{{ _(tot_label) }} <input type="date" name="tot" value="{{ s.tot }}"></label>
+  <fieldset><legend>{{ _("Weergave") }}</legend>
+    <label class="check"><input type="radio" name="weergave" value="samenvatting"{% if s.summary %} checked{% endif %}> {{ _("Samenvatting (per kenmerk)") }}</label>
+    <label class="check"><input type="radio" name="weergave" value="detail"{% if not s.summary %} checked{% endif %}> {{ _("Detail") }}</label>
+  </fieldset>
+  <label class="check"><input type="hidden" name="koers" value="0"><input type="checkbox" name="koers" value="1"{% if s.koers %} checked{% endif %}>
+    {{ _("Koersverschillen meenemen") }}</label>
+  <p class="wide"><button>{{ _("Tonen") }}</button></p>
+</form>

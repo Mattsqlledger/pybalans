@@ -1,0 +1,24 @@
+{% from "dashboard/_chart.html" import chart as draw %}
+<section class="card dash-resultaat">
+{% if not r %}
+  <h3>{{ _("Resultaat") }}</h3><p class="muted">{{ _("Nog geen boekingen op opbrengsten of kosten.") }}</p>
+{% else %}
+  <h3>{{ _("Resultaat") }} <small>{{ r.label }} · {{ r.prev_label }}</small></h3>
+  <div class="table-wrap"><table class="cmp">
+    <thead><tr><th></th>
+      <th><a href="{{ href }}">{{ _("{year} t/m {date}").format(year=r.label, date=v.date(r.todate)) }}</a></th><th>{{ r.prev_label }}</th>
+      <th><a href="{{ month_href }}">{{ month_name }} {{ r.month_from.year }}</a></th><th>{{ month_name }} {{ r.month_from.year - 1 }}</th></tr></thead>
+    <tbody>
+      <tr><td>{{ _("Omzet") }}</td><td>{{ v.amount(r.ytd.income) }}</td><td>{{ v.amount(r.ytd_prev.income) }}</td><td>{{ v.amount(r.mtd.income) }}</td><td>{{ v.amount(r.mtd_prev.income) }}</td></tr>
+      <tr><td>{{ _("Kosten") }}</td><td>{{ v.amount(r.ytd.expense) }}</td><td>{{ v.amount(r.ytd_prev.expense) }}</td><td>{{ v.amount(r.mtd.expense) }}</td><td>{{ v.amount(r.mtd_prev.expense) }}</td></tr>
+      <tr class="res"><td>{{ _("Resultaat") }}</td>
+        <td>{{ v.amount(r.ytd.result) }}</td><td>{{ v.amount(r.ytd_prev.result) }}</td>
+        <td>{{ v.amount(r.mtd.result) }}</td><td>{{ v.amount(r.mtd_prev.result) }}</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted small">{{ _("Resultaat per maand") }}</p>
+  {{ draw(chart, _("Resultaat per maand")) }}
+  <div class="legend"><span><i class="b-this"></i>{{ r.label }}</span><span><i class="b-prev"></i>{{ r.prev_label }}</span>
+    <span>{{ _("klik op een maand voor de winst en verlies van die maand") }}</span></div>
+{% endif %}
+</section>

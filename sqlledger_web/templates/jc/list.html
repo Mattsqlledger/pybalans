@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Tijdkaarten") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Tijdkaarten") }}</h2>{% if can_edit %}<a class="button" href="/uren/tijdkaart/nieuw">{{ _("Tijdkaart toevoegen") }}</a>{% endif %}</div>
+{% include "help/jc_list.html" %}
+<form method="get" action="/uren/tijdkaarten" class="filters">
+  <label>{{ _("Project") }} <select name="project"><option value="">{{ _("alle") }}</option>
+    {% for p in links.projects %}<option value="{{ p.id }}"{% if p.id|string == q.project %} selected{% endif %}>{{ p.projectnumber }}</option>{% endfor %}</select></label>
+  <label>{{ _("Medewerker") }} <select name="employee"><option value="">{{ _("alle") }}</option>
+    {% for e in links.employees %}<option value="{{ e.id }}"{% if e.id|string == q.employee %} selected{% endif %}>{{ e.name }}</option>{% endfor %}</select></label>
+  <label>{{ _("Van") }} <input type="date" name="van" value="{{ q.van or '' }}"></label>
+  <label>{{ _("Tot en met") }} <input type="date" name="tot" value="{{ q.tot or '' }}"></label>
+  <label>{{ _("Status") }} <select name="status">
+    {% for v, label in [("all", N_("alle")), ("open", N_("nog niet op een order")), ("closed", N_("op een order"))] %}
+    <option value="{{ v }}"{% if v == status %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}</select></label>
+  <button class="secondary">{{ _("Tonen") }}</button>
+</form>
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("Datum") }}</th><th>{{ _("Medewerker") }}</th><th>{{ _("Project") }}</th><th>{{ _("Dienst") }}</th><th>{{ _("Omschrijving") }}</th><th class="num">{{ _("Uren") }}</th><th class="num">{{ _("Op order") }}</th><th class="num">{{ _("Bedrag") }}</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr><td><a href="/uren/tijdkaart/{{ r.id }}">{{ r.transdate | userdate(ctx.user.dateformat) }}</a></td><td>{{ r.employee or "" }}</td><td>{{ r.projectnumber }}{% if r.kind == "internal" %} <span class="tag">{{ _("intern") }}</span>{% endif %}</td><td>{{ r.partnumber }}</td><td>{{ r.description or "" }}</td>
+    <td class="num">{{ r.qty | amount(ctx.user.numberformat, places) }}</td><td class="num">{{ r.allocated | amount(ctx.user.numberformat, places) if r.allocated else "" }}</td><td class="num">{{ r.amount | amount(ctx.user.numberformat, places) }}</td></tr>
+  {% else %}<tr><td colspan="8" class="muted">{{ _("Geen tijdkaarten gevonden.") }}</td></tr>{% endfor %}
+  </tbody>
+  {% if rows %}<tfoot><tr><th colspan="5">{{ _("Totaal") }}</th><th class="num">{{ total_qty | amount(ctx.user.numberformat, places) }}</th><th></th><th class="num">{{ total_amount | amount(ctx.user.numberformat, places) }}</th></tr></tfoot>{% endif %}
+</table></div>
+{% endblock %}

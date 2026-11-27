@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Logboek") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Logboek") }}</h2>
+{% include "help/sys_log.html" %}
+<form method="get" class="filters">
+  <label>{{ _("Login") }} <input name="login" value="{{ f.login }}"></label>
+  <label>{{ _("Actie") }} <select name="action"><option value="">{{ _("alle") }}</option>
+    {% for a in actions %}<option value="{{ a }}"{% if a == f.action %} selected{% endif %}>{{ _(ACTIONS.get(a, a)) }}</option>{% endfor %}</select></label>
+  <label>{{ _("Van") }} <input type="date" name="from" value="{{ f['from'] or '' }}"></label>
+  <label>{{ _("Tot en met") }} <input type="date" name="to" value="{{ f.to or '' }}"></label>
+  <button>{{ _("Zoeken") }}</button>
+  <button name="csv" value="1" class="secondary">{{ _("CSV") }}</button>
+</form>
+<div class="table-wrap"><table class="list">
+<thead><tr><th>{{ _("Tijd") }}</th><th>{{ _("Login") }}</th><th>{{ _("Administratie") }}</th><th>{{ _("Actie") }}</th><th>IP</th><th>{{ _("Details") }}</th></tr></thead>
+<tbody>
+{% for r in rows %}
+<tr>
+  <td class="nowrap">{{ r.at.astimezone().strftime("%Y-%m-%d %H:%M:%S") }}</td>
+  <td>{{ r.login or "" }}</td><td>{{ r.company or "" }}</td><td title="{{ r.action }}">{{ _(ACTIONS.get(r.action, r.action)) }}</td><td>{{ r.ip or "" }}</td>
+  <td class="small">{% if r.detail %}{% for k, v in r.detail.items() %}{{ k }}={{ v }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</td>
+</tr>
+{% else %}
+<tr><td colspan="6" class="muted">{{ _("Niets gevonden.") }}</td></tr>
+{% endfor %}
+</tbody>
+</table></div>
+<p class="pager">
+{% if page > 1 %}<a href="?{{ ctx.request.query_params | pageparams(page - 1) }}">« {{ _("nieuwer") }}</a>{% endif %}
+{% if more %}<a href="?{{ ctx.request.query_params | pageparams(page + 1) }}">{{ _("ouder") }} »</a>{% endif %}
+</p>
+{% endblock %}

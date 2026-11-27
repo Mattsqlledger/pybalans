@@ -1,0 +1,18 @@
+{# Beheer > Audittrail (HELP_ANALYSE golf 3, tekst B12) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Wie wanneer welke boeking of stamgegevens heeft opgeslagen, gemaild of verwijderd. Handig bij controle en om terug te zoeken wie iets veranderd heeft.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies zo nodig een {m}, een periode met {v} en {t}, een {a} of een {b}, of vul een deel van het kenmerk in bij {k}.", m=hl("Medewerker"), v=hl("Van"), t=hl("Tot en met"), a=hl("Actie"), b=hl("Tabel"), k=hl("Kenmerk bevat")) }}</li>
+  <li>{{ ht("Klik op {z}. Het nieuwste staat bovenaan. Klik op een kenmerk om de boeking te openen.", z=hl("Zoeken")) }}</li>
+  <li>{{ ht("Met {c} downloadt u de hele lijst met dezelfde filters.", c=hl("CSV")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Er wordt alleen iets vastgelegd als {f} aan staat in {m}.", f=hl("Audittrail bijhouden"), m=hm("Beheer", "Afsluiten")) }}</li>
+  <li>{{ _("Acties en tabellen staan er met hun technische naam, bijvoorbeeld posted (geboekt), saved (opgeslagen) en deleted (verwijderd), en ar (verkoop), ap (inkoop) en gl (memoriaal).") }}</li>
+  <li>{{ _("Het audittrail wordt nooit gewist.") }}</li>
+  <li>{{ _("Inloggen en het beheer van gebruikers en administraties staan hier niet. Die staan in het logboek van de systeembeheerder.") }}</li>
+</ul>
+</details>

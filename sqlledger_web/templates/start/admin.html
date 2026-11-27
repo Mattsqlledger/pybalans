@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Beheerder aanmaken") }}{% endblock %}
+{% block plain %}
+{% include "start/_steps.html" %}
+<h2>{{ _("Beheerder aanmaken") }}</h2>
+<p class="small">{{ _("De beheerder richt de server in: administraties, gebruikers en rechten. Daarna stelt u tweestapsverificatie in; dat is verplicht voor beheerders.") }}</p>
+<form method="post" action="/welkom/beheerder" class="stack">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Startcode") }} <input name="startcode" autocomplete="off" placeholder="XXXX-XXXX-XXXX" required autofocus>
+    <span class="muted small">{{ _("Staat in het logbestand van de server (bijvoorbeeld log/web.log, of bij Docker: docker compose logs app).") }}</span></label>
+  <label>{{ _("Login") }} <input name="login" value="{{ values.login or '' }}" autocomplete="username" required>
+    <span class="muted small">{{ _("Waarmee u inlogt. Kort, zonder spaties, bijvoorbeeld jsmith. Hoofdletters maken niet uit.") }}</span></label>
+  <label>{{ _("Naam") }} <input name="name" value="{{ values.name or '' }}" autocomplete="name">
+    <span class="muted small">{{ _("Uw volledige naam, bijvoorbeeld Jane Smith. Die ziet u in het menu en op documenten, en zo vindt de app uw medewerker in een ingelezen administratie.") }}</span></label>
+  <label>{{ _("E-mail") }} <input type="email" name="email" value="{{ values.email or '' }}" autocomplete="email"></label>
+  <label>{{ _("Nieuw wachtwoord") }} <input type="password" name="password" autocomplete="new-password" minlength="{{ ctx.settings.password_min_length }}" required></label>
+  <label>{{ _("Herhaal wachtwoord") }} <input type="password" name="repeat" autocomplete="new-password" required></label>
+  <button>{{ _("Beheerder aanmaken") }}</button>
+</form>
+<p class="small"><a href="/welkom">{{ _("Andere taal") }}</a></p>
+{% endblock %}

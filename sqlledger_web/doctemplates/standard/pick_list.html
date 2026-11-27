@@ -1,0 +1,33 @@
+{% extends "_base.html" %}
+{#- Picklijst (doc/templates/Dutch/pick_list.tex): voor het magazijn, zonder prijzen, op locatie
+    gesorteerd (het document wordt met sortering "bin" gemaakt), met afvinkvakje. -#}
+{% set from_order = orddate is defined %}
+{% set docnumber = ordnumber if from_order else invnumber %}
+{% set docdate = orddate if from_order else invdate %}
+{% set ship_main = true %}
+{% block title %}{{ t('Picklijst') }} {{ docnumber }}{% endblock %}
+{% block body %}
+{% include "_parties.html" %}
+
+<div class="titlebar">
+  <h1>{{ t('Picklijst') }}</h1>
+  <table>
+    <tr><td>{{ t('Datum') }}</td><td>{{ docdate }}</td></tr>
+    <tr><td>{{ t('Ordernummer') if from_order else t('Factuurnummer') }}</td><td>{{ docnumber }}</td></tr>
+    {% if reqdate %}<tr><td>{{ t('Leverdatum') }}</td><td>{{ reqdate }}</td></tr>{% endif %}
+    {% if shipvia %}<tr><td>{{ t('Verzending') }}</td><td>{{ shipvia }}</td></tr>{% endif %}
+    {% if employee %}<tr><td>{{ t('Medewerker') }}</td><td>{{ employee }}</td></tr>{% endif %}
+  </table>
+</div>
+
+{% from "_lines.html" import line_table, weight_table with context %}
+{{ line_table(doc.columns, doc.notes, lines, priced=false, check=true, qty_key='toship' if from_order else 'qty', merge_bom=false, subtotal=none) }}
+{% if doc.note %}<div class="docnote">{{ doc.note }}</div>{% endif %}
+{% if doc.weights %}{{ weight_table(lines) }}{% endif %}
+{% if notes %}<div class="notes">{{ notes|nl2br }}</div>{% endif %}
+{% if doc.closing %}<div class="closing">{{ doc.closing }}</div>{% endif %}
+<table class="sign">
+  <tr><td>{{ t('Gepickt door') }}</td><td></td></tr>
+  <tr><td>{{ t('Gecontroleerd door') }}</td><td></td></tr>
+</table>
+{% endblock %}

@@ -1,0 +1,20 @@
+{# Rapporten > Proefbalans (HELP_ANALYSE golf 2, tekst 9) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Per rekening het {b}, wat er in de periode in {d} en {c} is geboekt, en het {e}. Zo controleert u of alles klopt.", b=hl("Beginsaldo"), d=hl("Debet"), c=hl("Credit"), e=hl("Eindsaldo")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {p} en klik op {b}.", p=hl("Periode"), b=hl("Toon")) }}</li>
+  <li>{{ _("Klik op een rekening om de mutaties te zien.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: toont ook rekeningen waarop in de periode niets is geboekt.", f=hl("Ook rekeningen zonder mutaties")) }}</li>
+  <li>{{ ht("{k} en {s} (onder {m}): de kopjes en subtotalen uit het rekeningschema.", k=hl("Koppen tonen"), s=hl("Subtotalen"), m=hl("Meer opties")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Een geboekte jaarafsluiting telt hier mee. Na de afsluiting staan opbrengsten en kosten op die datum op nul. Wilt u het resultaat van het jaar zien, gebruik dan {w}.", w=hm("Rapporten", "Winst en verlies")) }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

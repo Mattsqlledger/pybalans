@@ -1,0 +1,63 @@
+{% extends "_base.html" %}
+{#- Verkoop/inkoop zonder artikelen (doc/templates/Dutch/ar_transaction.tex e.a.): regels met omschrijving
+    en bedrag. Zet doc_title, show_accounts, show_duedate, show_payinfo. -#}
+{% block title %}{{ t(doc_title) }} {{ invnumber }}{% endblock %}
+{% block body %}
+{% include "_parties.html" %}
+
+<div class="titlebar">
+  <h1>{{ t(doc_title) }}</h1>
+  <table>
+    <tr><td>{{ t('Factuurdatum') }}</td><td>{{ invdate }}</td></tr>
+    <tr><td>{{ t('Factuurnummer') }}</td><td>{{ invnumber }}</td></tr>
+    {% if customernumber %}<tr><td>{{ t('Klantnummer') }}</td><td>{{ customernumber }}</td></tr>{% endif %}
+    {% if vendornumber %}<tr><td>{{ t('Leveranciersnummer') }}</td><td>{{ vendornumber }}</td></tr>{% endif %}
+    {% if show_duedate and duedate and duedate != invdate %}<tr><td>{{ t('Vervaldatum') }}</td><td>{{ duedate }}</td></tr>{% endif %}
+    {% if ponumber %}<tr><td>{{ t('Uw referentie') }}</td><td>{{ ponumber }}</td></tr>{% endif %}
+    {% if ordnumber %}<tr><td>{{ t('Ordernummer') }}</td><td>{{ ordnumber }}</td></tr>{% endif %}
+    {% if customertaxnumber %}<tr><td>{{ t('Btw-nummer') }}</td><td>{{ customertaxnumber }}</td></tr>{% endif %}
+  </table>
+</div>
+
+{% if invdescription %}<p class="intro">{{ invdescription }}</p>{% endif %}
+<table class="lines">
+  <thead><tr>
+    {% if show_accounts %}<th>{{ t('Rekening') }}</th>{% endif %}
+    <th>{{ t('Omschrijving') }}</th>
+    <th class="r">{{ t('Bedrag') }}</th>
+  </tr></thead>
+  <tbody>
+  {% for r in tlines %}
+    <tr>
+      {% if show_accounts %}<td class="num">{{ r.accno }} {{ r.account }}</td>{% endif %}
+      <td>{{ r.description or (r.account if not show_accounts else '') }}{% if r.projectnumber %}<div class="note">{{ r.projectnumber }}</div>{% endif %}</td>
+      <td class="r">{{ r.amount }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<div class="totals"><table>
+  <tr><td>{{ t('Subtotaal') }}</td><td class="r">{{ subtotal }}</td></tr>
+  {% for x in taxes if x.tax not in ['0,00', '0.00', ''] %}
+  <tr><td>{{ x.taxdescription }}</td><td class="r">{{ x.tax }}</td></tr>
+  {% endfor %}
+  <tr class="grand"><td>{{ t('Totaal') }}</td><td class="r">{{ invtotal }}</td></tr>
+  {% if paid and paid not in ['0,00', '0.00'] %}
+  <tr><td>{{ t('Betaald') }}</td><td class="r">{{ paid }}</td></tr>
+  <tr class="grand"><td>{{ t('Te betalen') }}</td><td class="r">{{ amountdue }}</td></tr>
+  {% endif %}
+</table></div>
+<div class="currency">{{ t('Alle bedragen in') }} <strong>{{ currency }}</strong>.</div>
+{% if doc.note %}<div class="docnote">{{ doc.note }}</div>{% endif %}
+
+{% if notes %}<div class="notes">{{ notes|nl2br }}</div>{% endif %}
+
+{% if show_payinfo and doc.payinfo and amountdue not in ['0,00', '0.00', ''] and iban %}
+<div class="payinfo">
+  {{ t('Graag betalen vóór') }} <strong>{{ duedate }}</strong> {{ t('op rekening') }} <strong>{{ iban }}</strong>{% if doc.bankname %} {{ t('bij') }} {{ doc.bankname }}{% endif %}{% if bic %} (BIC {{ bic }}){% endif %}
+  {{ t('t.n.v.') }} {{ company }}, {{ t('onder vermelding van') }} <strong>{{ dcn or invnumber }}</strong>.
+</div>
+{% endif %}
+{% if doc.closing %}<div class="closing">{{ doc.closing }}</div>{% endif %}
+{% endblock %}

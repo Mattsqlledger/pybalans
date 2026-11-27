@@ -1,0 +1,30 @@
+{# Herhaalschema, knop "Herhalen" op een boeking, factuur of order (HELP_ANALYSE golf 4, tekst B2) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een boeking, factuur of order laten terugkomen, bijvoorbeeld de huur elke maand of een abonnement elk kwartaal. U legt vast hoe vaak en hoe lang.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Open een opgeslagen memoriaal-, verkoop- of inkoopboeking, factuur of verkoop- of inkooporder en klik op {b}.", b=hl("Herhalen")) }}</li>
+  <li>{{ ht("Controleer de {f}. Standaard is dat de boekdatum: de boeking zelf telt dan als de eerste keer.", f=hl("Startdatum")) }}</li>
+  <li>{{ ht("Vul bij {f} in hoe vaak, bijvoorbeeld 1 maand(en), en daarachter hoeveel keer in totaal, de eerste meegeteld.", f=hl("Elke")) }}</li>
+  <li>{{ _("Kies zo nodig wat er na het verwerken gebeurt: mailen of een PDF (niet bij een memoriaalboeking).") }}</li>
+  <li>{{ ht("Klik op {b}. U komt terug op de boeking.", b=hl("Schema opslaan")) }}</li>
+  <li>{{ ht("Verwerken doet u daarna op {m}.", m=hm("Terugkerend", "Terugkerende boekingen")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: het nummer van de eerste kopie, als dat nog niet bestaat. Leeg: het volgende nummer.", f=hl("Kenmerk")) }}</li>
+  <li>{{ ht("{f}: alleen voor de lijst met schema's; de kopie krijgt de omschrijving van de boeking.", f=hl("Omschrijving in de lijst")) }}</li>
+  <li>{{ ht("{f}: verschijnt bij een opgeslagen schema. Leeg: de eerste termijn na de boekdatum.", f=hl("Volgende datum")) }}</li>
+  <li>{{ ht("{f} (verkoop en inkoop): de betaling van de boeking komt ook op de kopie, evenveel dagen later. Zonder dit vinkje is de kopie onbetaald.", f=hl("Betaling meenemen")) }}</li>
+  <li>{{ ht("{f}: elk nieuw document gaat als PDF naar het e-mailadres van de relatie. Bij {b} kunt u een eigen tekst schrijven.", f=hl("Na verwerken: mailen"), b=hl("Bericht (leeg: standaardtekst uit Beheer > E-mail)")) }}</li>
+  <li>{{ ht("{f}: de nieuwe documenten komen samen in één PDF op de resultaatpagina.", f=hl("Na verwerken: PDF")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("De kopie krijgt dezelfde regels, een nieuw nummer en een vervaldatum (of leverdatum) die even ver na de datum ligt als bij het origineel. Een maandeinde blijft een maandeinde.") }}</li>
+  <li>{{ _("Bij facturen en orders met artikelen volgt de btw de instellingen op de nieuwe datum. Een orderkopie is altijd een nieuwe open order.") }}</li>
+  <li>{{ _("Offertes, offerteaanvragen en kassabonnen kunnen niet herhaald worden.") }}</li>
+  <li>{{ ht("Onder het formulier staan de einddatum en de volgende termijnen, ter controle. {b} haalt het schema weg; de boeking en eerdere kopieën blijven staan.", b=hl("Schema verwijderen")) }}</li>
+</ul>
+</details>

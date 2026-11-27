@@ -1,0 +1,6 @@
+# Lokale ontwikkelinstellingen (testomgeving ~/sqlledger-test, geen echte data).
+app_dsn = "host=127.0.0.1 port=55432 user=postgres dbname=sqlledger_app_dev"
+db_host = "127.0.0.1"
+db_port = 55432
+db_user = "postgres"
+secure_cookies = false

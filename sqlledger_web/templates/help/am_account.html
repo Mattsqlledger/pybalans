@@ -1,0 +1,30 @@
+{# Beheer > Rekeningschema > Rekening toevoegen/wijzigen (HELP_ANALYSE golf 3, tekst A5) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Eén rekening of kopregel van het rekeningschema maken of wijzigen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul {n} en {o} in en kies de {s}.", n=hl("Rekeningnummer"), o=hl("Omschrijving"), s=hl("Soort")) }}</li>
+  <li>{{ ht("Kies {r}, of {k} voor een kopregel.", r=hl("Rekening"), k=hl("Kop (geen boekingen)")) }}</li>
+  <li>{{ _("Vink de koppelingen aan: in welke lijsten moet de rekening te kiezen zijn?") }}</li>
+  <li>{{ ht("Is het een bank- of kasrekening (koppeling {b} bij {v} of {i})? Vul dan onder {g} het {n} in.", b=hl("Betaling"), v=hl("Verkoop"), i=hl("Inkoop"), g=hl("Bankgegevens"), n=hl("IBAN")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: de debiteuren-, crediteuren- of voorraadrekening. Zo'n rekening kan geen andere koppelingen hebben.", f=hl("Hoofdrekening voor")) }}</li>
+  <li>{{ ht("{v} en {i}: kies per kant hoogstens één van {o} of {k}, {b}, {r} en {t}.", v=hl("Verkoop"), i=hl("Inkoop"), o=hl("Omzet"), k=hl("Kosten"), b=hl("Betaling"), r=hl("Korting"), t=hl("Btw")) }}</li>
+  <li>{{ ht("{f}: de rekening komt in {m}, eerst met 0%. Vul daar het echte tarief in.", f=hl("Btw"), m=hm("Btw", "Btw-tarieven")) }}</li>
+  <li>{{ ht("{f}: in de rapporten telt het saldo andersom, zodat het binnen de groep afgetrokken wordt.", f=hl("Tegenrekening (bv. afschrijving)")) }}</li>
+  <li>{{ ht("{f}: de rekening staat niet meer in de keuzelijsten. Oude boekingen blijven gewoon staan.", f=hl("Gesloten")) }}</li>
+  <li>{{ ht("{f}: komt op uw facturen en wordt gebruikt om bankafschriften in te lezen. Het programma controleert of het IBAN geldig is.", f=hl("IBAN")) }}</li>
+  <li>{{ ht("{f}: een code uit de {m}, om rekeningen in de rapporten samen te tellen. Kies hem uit de lijst. In de rapporten kiest u dan bij {r} voor {g}. Een code die niet in de indeling staat, wordt bewaard, maar u krijgt een waarschuwing.", f=hl("GIFI"), m=hm("Beheer", "GIFI-indeling"), r=hl("Rekeningen"), g=hl("GIFI")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{b} maakt een kopie. Geef de kopie eerst een ander rekeningnummer.", b=hl("Opslaan als nieuw")) }}</li>
+  <li>{{ ht("{b} kan alleen bij een rekening waarop nog niet geboekt is, die geen standaardrekening is en die nergens gebruikt wordt. Anders zet u de rekening op {g}.", b=hl("Verwijderen"), g=hl("Gesloten")) }}</li>
+  <li>{{ _("Onderaan ziet u of er al op geboekt is en waar de rekening gebruikt wordt.") }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: zet u de btw-koppeling uit, dan blijven de btw-tarieven bewaard. Oude boekingen houden zo hun tarief.") }}</li>
+</ul>
+</details>

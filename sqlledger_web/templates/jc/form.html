@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Tijdkaart") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Tijdkaart") }}{% if f.id %} {{ f.id }}{% endif %}</h2><a href="/uren/tijdkaarten">{{ _("Tijdkaarten") }}</a></div>
+{% include "help/jc_form.html" %}
+<form method="post" action="/uren/tijdkaart" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% if f.id %}<input type="hidden" name="id" value="{{ f.id }}">{% endif %}
+  {% for k in ("old_in", "old_out", "old_qty", "old_parts_id") %}<input type="hidden" name="{{ k }}" value="{{ f[k] }}">{% endfor %}
+  <div class="grid">
+    <label>{{ _("Datum") }} * <input type="date" name="transdate" value="{{ f.transdate }}" required{% if not can_edit %} disabled{% endif %}></label>
+    <label>{{ _("Project") }} * <select name="project_id" required{% if not can_edit %} disabled{% endif %}><option value=""></option>
+      {% for p in links.projects %}<option value="{{ p.id }}"{% if p.id|string == f.project_id %} selected{% endif %}>{{ p.projectnumber }} – {{ p.description }}{% if p.kind == "internal" %} ({{ _("intern") }}){% endif %}</option>{% endfor %}</select></label>
+    <label>{{ _("Medewerker") }} <select name="employee_id"{% if not can_edit %} disabled{% endif %}><option value="">{{ _("— ikzelf —") }}</option>
+      {% for e in links.employees %}<option value="{{ e.id }}"{% if e.id|string == f.employee_id %} selected{% endif %}>{{ e.name }}</option>{% endfor %}</select></label>
+    <label>{{ _("Dienst") }} * <select name="parts_id" required{% if not can_edit %} disabled{% endif %}><option value=""></option>
+      {% for s in links.services %}<option value="{{ s.id }}"{% if s.id|string == f.parts_id %} selected{% endif %}>{{ s.partnumber }} – {{ s.description }}</option>{% endfor %}</select></label>
+    <label class="full">{{ _("Omschrijving") }} <input name="description" value="{{ f.description }}"{% if not can_edit %} disabled{% endif %}></label>
+    <label>{{ _("Begintijd") }} <input type="time" name="checkedin" value="{{ f.checkedin }}"{% if not can_edit %} disabled{% endif %}></label>
+    <label>{{ _("Eindtijd") }} <input type="time" name="checkedout" value="{{ f.checkedout }}"{% if not can_edit %} disabled{% endif %}></label>
+    <label>{{ _("Geklokt") }} <input value="{{ clocked }}" class="num" disabled></label>
+    <label>{{ _("Niet te declareren") }} <input name="noncharge" value="{{ f.noncharge }}" class="num" inputmode="decimal"{% if not can_edit %} disabled{% endif %}></label>
+    <label>{{ _("Uren") }} <input name="qty" value="{{ f.qty }}" class="num" inputmode="decimal"{% if not can_edit %} disabled{% endif %}></label>
+    <label>{{ _("Prijs") }} <input name="sellprice" value="{{ f.sellprice }}" class="num" inputmode="decimal"{% if not can_edit %} disabled{% endif %}></label>
+    <label>{{ _("Bedrag") }} <input value="{{ amount }}" class="num" disabled></label>
+    {% if costprice %}<label>{{ _("Intern tarief") }} <input value="{{ costprice }}" class="num" disabled title="{{ costsource }}"></label>{% endif %}
+    {% if allocated %}<label>{{ _("Al op een verkooporder") }} <input value="{{ allocated }}" class="num" disabled></label>{% endif %}
+    <label class="full">{{ _("Notities") }} <textarea name="notes" rows="2"{% if not can_edit %} disabled{% endif %}>{{ f.notes }}</textarea></label>
+  </div>
+  <p class="muted small">{{ _("Met begin- en eindtijd rekent het programma de uren uit (min het deel dat niet te declareren is); zonder tijden vult u de uren zelf in.") }}</p>
+  {% if can_edit %}
+  {% if confirm == "delete" %}
+  <div class="confirm" role="alert"><p>{{ _("Deze tijdkaart verwijderen?") }}</p>
+    <p><button name="action" value="delete_confirmed" class="danger" formnovalidate>{{ _("Ja, verwijderen") }}</button>
+      <a href="/uren/tijdkaart/{{ f.id }}">{{ _("Annuleren") }}</a></p></div>
+  {% else %}
+  <p class="actions"><button name="action" value="save">{{ _("Opslaan") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Bijwerken") }}</button>
+    {% if f.id and not allocated %}<button name="action" value="delete" class="danger secondary" formnovalidate>{{ _("Verwijderen") }}</button>{% endif %}</p>
+  {% endif %}
+  {% endif %}
+</form>
+{% endblock %}

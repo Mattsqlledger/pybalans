@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% from "_file.html" import filepick with context %}
+{% block title %}{{ _("Sjablonen") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Sjablonen") }}</h2></div>
+{% include "help/am_doctemplates.html" %}
+<p class="muted">{{ _("Documenten worden gemaakt met de standaardsjablonen, tenzij hier een eigen sjabloon staat. Download een sjabloon als startpunt, pas het aan en upload het weer; het wordt eerst gecontroleerd met een proef-PDF. Bewerken in de browser kan niet.") }}</p>
+
+<nav class="tabs" aria-label="{{ _('Varianten') }}">
+  <a href="/beheer/sjablonen"{% if not variant %} aria-current="page"{% endif %}>{{ _("Zonder variant") }}</a>
+  {% for v in variants %}<a href="/beheer/sjablonen?variant={{ v|urlencode }}"{% if v == variant %} aria-current="page"{% endif %}>{{ v }}</a>{% endfor %}
+</nav>
+{% if variant %}<p class="small">{{ _("Variant {v}: geldt voor documenten met deze taal of variant (veld Sjabloonvariant). Zonder eigen sjabloon in de variant geldt dat van de administratie, anders de standaard.").format(v=variant) }}</p>{% endif %}
+
+{% if confirm %}
+<form method="post" action="/beheer/sjablonen" class="confirm" role="alert">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="variant" value="{{ variant }}"><input type="hidden" name="naam" value="{{ confirm.naam }}">
+  {% if confirm.action == "variant_remove_confirmed" %}
+  <p><strong>{{ _("Variant {v} verwijderen?").format(v=confirm.naam) }}</strong>
+    {% if confirm.versions %}{{ _("De vorige versies van de sjablonen in deze variant ({n}) gaan ook weg.").format(n=confirm.versions) }}{% endif %}</p>
+  <button name="action" value="{{ confirm.action }}" class="danger">{{ _("Ja, variant verwijderen") }}</button>
+  {% else %}
+  <p><strong>{{ _("Eigen sjabloon {naam} weghalen en de standaard gebruiken?").format(naam=confirm.naam) }}</strong>
+    {{ _("Het huidige bestand blijft bewaard als vorige versie.") }}</p>
+  <button name="action" value="{{ confirm.action }}" class="danger">{{ _("Ja, terug naar standaard") }}</button>
+  {% endif %}
+  <a href="/beheer/sjablonen{% if variant %}?variant={{ variant|urlencode }}{% endif %}">{{ _("Annuleren") }}</a>
+</form>
+{% endif %}
+
+<form method="post" action="/beheer/sjablonen" enctype="multipart/form-data" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="variant" value="{{ variant }}">
+  <h3>{{ _("Sjabloon uploaden") }}</h3>
+  <div class="grid">
+    <label>{{ _("Sjabloon") }}
+      <select name="naam">{% for r in rows %}<option value="{{ r.name }}"{% if r.name == failed %} selected{% endif %}>{{ _(r.label) }}</option>{% endfor %}</select></label>
+    <label>{{ _("Bestand (.html, UTF-8, maximaal {n} kB)").format(n=max_kb) }} {{ filepick("bestand", ".html,.htm,text/html") }}</label>
+  </div>
+  <div><button name="action" value="upload">{{ _("Controleren en opslaan") }}</button></div>
+</form>
+
+<div class="table-wrap">
+<table class="list">
+  <thead><tr><th>{{ _("Sjabloon") }}</th><th>{{ _("Bestand") }}</th><th>{{ _("In gebruik") }}</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr>
+    <td>{{ _(r.label) }}</td>
+    <td><code>{{ r.name ~ ".html" }}</code></td>
+    <td>{% if r.own %}<strong>{{ _("eigen") }}</strong>{% elif r.own_base %}{{ _("eigen (zonder variant)") }}{% else %}{{ _("standaard") }}{% endif %}</td>
+    <td class="actions">
+      <a href="/beheer/sjablonen/bestand?naam={{ r.name }}{% if variant %}&amp;variant={{ variant|urlencode }}{% endif %}">{{ _("Downloaden") }}</a>
+      {% if not r.partial %} · <a href="/beheer/sjablonen/voorbeeld?naam={{ r.name }}{% if variant %}&amp;variant={{ variant|urlencode }}{% endif %}" target="_blank" rel="noopener">{{ _("Voorbeeld") }}</a>{% endif %}
+      {% if r.own %}
+      <form method="post" action="/beheer/sjablonen" class="inline">
+        <input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="variant" value="{{ variant }}">
+        <input type="hidden" name="naam" value="{{ r.name }}">
+        <button name="action" value="reset" class="link">{{ _("Terug naar standaard") }}</button></form>
+      {% endif %}
+      {% if r.versions %}
+      <details class="more"><summary>{{ _("Vorige versies") }} ({{ r.versions|length }})</summary>
+        <ul class="plain">{% for st in r.versions %}
+          <li><a href="/beheer/sjablonen/bestand?naam={{ r.name }}&amp;versie={{ st }}{% if variant %}&amp;variant={{ variant|urlencode }}{% endif %}">{{ st[6:8] }}-{{ st[4:6] }}-{{ st[0:4] }} {{ st[9:11] }}:{{ st[11:13] }}</a>
+            <form method="post" action="/beheer/sjablonen" class="inline">
+              <input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="variant" value="{{ variant }}">
+              <input type="hidden" name="naam" value="{{ r.name }}"><input type="hidden" name="versie" value="{{ st }}">
+              <button name="action" value="restore" class="link">{{ _("Terugzetten") }}</button></form></li>
+        {% endfor %}</ul></details>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="small muted">{{ _("Voorbeeld gebruikt het laatste document van die soort. Voor een ander document zet u {code} achter de link.").format(code="&nummer=…") }}</p>
+
+<form method="post" action="/beheer/sjablonen" enctype="multipart/form-data" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="variant" value="{{ variant }}">
+  <h3>{{ _("Logo") }}</h3>
+  <p class="small"><a href="/beheer/huisstijl">{{ _("Logo en huisstijl instellen: Huisstijl") }}</a></p>
+  {% if logo %}<p><img src="{{ logo }}" alt="{{ _('Logo') }}" class="logo-preview"> <code>{{ logo_name }}</code></p>{% else %}<p class="muted">{{ _("Geen logo.") }}</p>{% endif %}
+  <label>{{ _("Bestand (PNG, JPEG of SVG, maximaal {n} kB)").format(n=max_logo_kb) }} {{ filepick("logo", "image/png,image/jpeg,image/svg+xml") }}</label>
+  <p class="actions"><button name="action" value="logo">{{ _("Logo opslaan") }}</button>
+    {% if logo %}<button name="action" value="logo_delete" class="secondary danger">{{ _("Logo verwijderen") }}</button>{% endif %}</p>
+</form>
+
+<form method="post" action="/beheer/sjablonen" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="variant" value="{{ variant }}">
+  <h3>{{ _("Varianten") }}</h3>
+  <p class="muted small">{{ _("Een variant is een eigen set sjablonen voor een taal uit Beheer > Talen (bijvoorbeeld voor Engelstalige klanten).") }}</p>
+  {% if languages %}
+  <div class="grid"><label>{{ _("Taal") }} <select name="code"><option value=""></option>
+    {% for l in languages %}<option value="{{ l.code }}">{{ l.label }} ({{ l.code }})</option>{% endfor %}</select></label></div>
+  <p class="actions"><button name="action" value="variant_add" class="secondary">{{ _("Variant toevoegen") }}</button>
+  {% else %}<p class="actions"><span class="muted small">{{ _("Voeg eerst een taal toe bij Beheer > Talen.") }}</span>{% endif %}
+    {% if variant %}<button name="action" value="variant_remove" class="secondary danger">{{ _("Variant {v} verwijderen").format(v=variant) }}</button>{% endif %}</p>
+</form>
+{% endblock %}

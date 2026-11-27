@@ -1,0 +1,21 @@
+{# Systeem > RGS-lijst (HELP_ANALYSE golf 3, tekst C12) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("De officiële RGS-lijst inlezen. Die is nodig voor {m}, waar u per rekening een RGS-code kiest. Eén lijst geldt voor alle administraties van deze installatie.", m=hm("Beheer", "RGS-koppeling")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Download het Excel-bestand zoals beschreven onder {s}.", s=hl("Het bestand ophalen")) }}</li>
+  <li>{{ ht("Kies het bij {f} en klik op {b}.", f=hl("RGS-bestand (xlsx)"), b=hl("Inlezen")) }}</li>
+  <li>{{ _("Controleer bovenaan versie en aantal codes.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: de nieuwste staat op {g}. Een nieuwe versie komt naast de oude; koppelingen aan de oude versie worden bij de nieuwe als voorstel getoond.", f=hl("Ingelezen versies"), g=hl("in gebruik")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Lees een definitieve versie in, geen alfa, bèta of consultatie. Het scherm waarschuwt als het daar op lijkt.") }}</li>
+  <li>{{ ht("{b} vraagt eerst om bevestiging en toont welke administraties rekeningen aan die versie hebben gekoppeld. Die koppelingen blijven bewaard.", b=hl("Verwijderen")) }}</li>
+  <li>{{ _("De RGS-lijst zit niet in de back-up van een administratie.") }}</li>
+</ul>
+</details>

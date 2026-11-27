@@ -1,0 +1,16 @@
+{# Beheer > Run my Accounts-gegevens (RMA_IMPORT_ANALYSE.md RI7) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Deze administratie is ingelezen uit een back-up van Run my Accounts of ledger123. Hier staat wat daarbij is overgenomen, wat apart is bewaard en hoe het is gecontroleerd.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Lees de waarschuwingen bovenaan en pas zo nodig de instellingen aan (bijvoorbeeld de rekening voor koersverschillen).") }}</li>
+  <li>{{ ht("Kijk bij {s} wat PyBalans (nog) niet gebruikt; zulke gegevens moet u zo nodig met de hand bijhouden, bijvoorbeeld een aanmaningsstop.", s=hl("Bewaard, maar (nog) zonder plek in PyBalans")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Run my Accounts is een eigen versie van SQL-Ledger, afgetakt bij versie 2.8.10. Wat het originele SQL-Ledger niet kent (zoals de banklaag, auditlogs, btw-afrekeningen, transfers en assemblagedocumenten) staat ongewijzigd in een apart deel van de database (schema rma). PyBalans leest of wijzigt het niet, maar het gaat mee in elke back-up.") }}</li>
+  <li>{{ _("Voorraad per magazijn is nog niet omgezet. De voorraad per artikel klopt; de magazijnregels van Run my Accounts zijn bewaard en worden later omgezet.") }}</li>
+  <li>{{ _("Bij het inlezen zijn de proefbalans per rekening en het openstaande bedrag per factuur vóór en na vergeleken. Was er een verschil, dan was er niets aangemaakt.") }}</li>
+</ul>
+</details>

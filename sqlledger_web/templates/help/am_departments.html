@@ -1,0 +1,21 @@
+{# Afdelingen en projecten > Afdelingen (HELP_ANALYSE golf 4, tekst B3) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Afdelingen om boekingen naar onderdeel van het bedrijf te kunnen uitsplitsen in de rapporten.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Klik op {b}, vul de {o} in en kies de {s}.", b=hl("Afdeling toevoegen"), o=hl("Omschrijving"), s=hl("Soort")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Opslaan")) }}</li>
+  <li>{{ _("Zet met ↑ en ↓ de volgorde; zo staan ze in de keuzelijsten.") }}</li>
+  <li>{{ ht("Kies de afdeling op een boeking, factuur of order in het veld {f}. In de rapporten filtert u erop onder {m}.", f=hl("Afdeling"), m=hl("Meer opties")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: {w} (een onderdeel met omzet) of {k} (alleen kosten). Bij verkoop kunt u alleen een winstplaats kiezen. Een intern project hoort bij een kostenplaats.", f=hl("Soort"), w=hl("Winstplaats"), k=hl("Kostenplaats")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Het veld {f} verschijnt op de boekingen pas als hier minstens één afdeling staat.", f=hl("Afdeling")) }}</li>
+  <li>{{ ht("Een afdeling die gebruikt wordt (op een boeking, of als kostenplaats van een project), kunt u niet verwijderen. De kolom {k} toont dat; in het bewerkscherm staat waar.", k=hl("In gebruik")) }}</li>
+</ul>
+</details>

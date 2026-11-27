@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Nieuwe administratie") }}{% endblock %}
+{% block content %}
+<script src="/static/dbname.js" defer></script>
+<script src="/static/companycreate.js" defer></script>
+{% if wizard %}{% set step = 4 %}{% include "start/_steps.html" %}
+<div class="head"><h2>{{ _("Nieuwe administratie") }}</h2></div>
+{% else %}
+<div class="head"><h2>{{ _("Nieuwe administratie") }}</h2><a href="/systeem/administraties">{{ _("Alle administraties") }}</a></div>
+{% endif %}
+{% include "help/sys_company_create.html" %}
+<p class="muted">{{ _("Maakt een nieuwe database met een standaardrekeningschema. Een bestaande SQL-Ledger-database gebruiken? Kies dan") }} <a href="{{ '/welkom/administratie/koppelen' if wizard else '/systeem/administraties/nieuw' }}">{{ _("Bestaande database koppelen") }}</a>.</p>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+<form method="post" action="{{ action }}" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="grid">
+    <label>{{ _("Naam") }} <input name="name" value="{{ values.name or '' }}" required data-dbname-source>
+      <span class="muted small">{{ _("Ook de bedrijfsnaam op documenten; later te wijzigen bij Beheer > Instellingen.") }}</span></label>
+    <label>{{ _("Code") }} <input name="code" value="{{ values.code or '' }}" maxlength="12" autocomplete="off">
+      <span class="muted small">{{ _("Kort nummer of letters, in de kopregel en het keuzemenu (bv. 108220). Mag leeg.") }}</span></label>
+    <label>{{ _("Databasenaam") }} <input name="dbname" value="{{ values.dbname or '' }}" pattern="[a-z][a-z0-9_]*" maxlength="63" autocomplete="off" spellcheck="false" data-dbname-target>
+      <span class="muted small">{{ _("Kleine letters, cijfers en _, bv. bakkerij_jansen; leeg = uit de naam. Een bestaande database wordt nooit overschreven.") }}</span></label>
+  </div>
+  <fieldset>
+    <legend>{{ _("Rekeningschema") }}</legend>
+    <label class="full">{{ _("Land en schema") }} <select name="chart" required data-chart aria-describedby="chart-help">
+      {% for country, charts in groups %}
+      <optgroup label="{{ _(country) }}">
+        {% for c in charts %}<option value="{{ c.id }}"{% if c.id == values.chart %} selected{% endif %} data-help="{{ chart_help(c.id) }}" data-currency="{{ c.currency }}">{{ _(country) }} – {{ c.name(ctx.user.language) }} · {{ c.accounts | length }} {{ _("rekeningen") }} · {{ c.currency }}</option>{% endfor %}
+      </optgroup>
+      {% endfor %}
+    </select>
+      <span class="muted small" id="chart-help" aria-live="polite" data-chart-help>{{ chart_help(chosen.id) if chosen else "" }}</span></label>
+    <div class="grid full">
+      <label>{{ _("Taal van de rekeningnamen") }} <select name="language">
+        <option value="">{{ _("Taal van het land") }}</option>
+        {% for k, v in languages.items() %}<option value="{{ k }}"{% if k == values.language %} selected{% endif %}>{{ _(v) }}</option>{% endfor %}
+      </select>
+        <span class="muted small">{{ _("Ook de taal van de documenten (facturen e.d.); bij Italiaans de taal van het scherm.") }}</span></label>
+      <label>{{ _("Standaardvaluta") }} <select name="currency" autocomplete="off">
+        <option value="" data-currency-default data-label="{{ _('{code} (volgens het land)') }}">{{ _("{code} (volgens het land)").format(code=chosen.currency if chosen else "") }}</option>
+        {% for c in currencies %}<option value="{{ c }}"{% if c == (values.currency or '')|upper %} selected{% endif %}>{{ c }}</option>{% endfor %}
+      </select></label>
+      <label>{{ _("Boekjaar eindigt in") }} <select name="yearend">
+        {% for m in months %}<option value="{{ loop.index }}"{% if loop.index == values.yearend %} selected{% endif %}>{{ _(m) }}</option>{% endfor %}
+      </select></label>
+    </div>
+    <p class="muted small">{{ _("Btw-rekeningen met de huidige tarieven zitten erin; in Nederland ook gekoppeld aan de rubrieken van de btw-aangifte. Rekeningen toevoegen of wijzigen kan daarna bij Beheer > Rekeningschema.") }}</p>
+  </fieldset>
+  <fieldset>
+    <legend>{{ _("Modules") }}</legend>
+    {% for k, v in MODULES.items() %}
+    <label class="check"><input type="checkbox" name="mod_{{ k }}" value="1"{% if k in (values.modules or []) %} checked{% endif %}> {{ _(v) }}</label>
+    {% endfor %}
+  </fieldset>
+  <label class="check"><input type="checkbox" name="add_me" value="1"{% if values.add_me %} checked{% endif %}> {{ _("Mij als beheerder van deze administratie toevoegen") }}</label>
+  <div class="actions"><button>{{ _("Administratie aanmaken") }}</button>
+    {% if wizard %}<a class="button secondary" href="/welkom/administratie">{{ _("Terug") }}</a>{% endif %}</div>
+</form>
+{% endblock %}

@@ -1,0 +1,99 @@
+{# Zoekvelden en rapporttabellen. #}
+
+{% macro options(list, current) -%}
+{% for value, label in list %}<option value="{{ value }}"{% if value == (current or '') %} selected{% endif %}>{{ label }}</option>{% endfor %}
+{%- endmacro %}
+
+{% macro period(f, v, years, asof=False) %}
+<fieldset class="period" data-period>
+  <legend>{{ _(f.label) }}</legend>
+  <label>{{ _("Soort") }}
+    <select name="period" data-period-select>
+      {% set kinds = [("", N_("Per datum") if asof else N_("Vrije datums")), ("month", N_("Maand")), ("quarter", N_("Kwartaal")), ("year", N_("Jaar"))] %}
+      {# JA3 B: "Boekjaar" alleen als het boekjaar niet op 31 december eindigt #}
+      {% if yearend is defined and yearend != 12 and fyears is defined %}{% set kinds = kinds + [("fiscal", N_("Boekjaar"))] %}{% endif %}
+      {% for value, label in kinds %}
+      <option value="{{ value }}"{% if value == (v.period or '') %} selected{% endif %}>{{ _(label) }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  {% if not asof %}
+  <label data-show="dates">{{ _("Van") }} <input type="date" name="fromdate" value="{{ v.fromdate or '' }}"></label>
+  {% endif %}
+  <label data-show="dates">{{ _("Per datum") if asof else _("Tot en met") }} <input type="date" name="todate" value="{{ v.todate or '' }}"></label>
+  <label data-show="month quarter year">{{ _("Jaar") }}
+    <select name="year">{% for y in years %}<option{% if y == v.year %} selected{% endif %}>{{ y }}</option>{% endfor %}</select>
+  </label>
+  {% if yearend is defined and yearend != 12 and fyears is defined %}
+  <label data-show="fiscal">{{ _("Boekjaar") }}
+    <select name="fyear">{% for value, label in fyears %}<option value="{{ value }}"{% if value == v.fyear %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  </label>
+  {% endif %}
+  <label data-show="month">{{ _("Maand") }}
+    <select name="month">{% for i in range(1, 13) %}<option value="{{ i }}"{% if i|string == v.month %} selected{% endif %}>{{ i }}</option>{% endfor %}</select>
+  </label>
+  <label data-show="quarter">{{ _("Kwartaal") }}
+    <select name="quarter">{% for i in range(1, 5) %}<option value="{{ i }}"{% if i|string == v.quarter %} selected{% endif %}>Q{{ i }}</option>{% endfor %}</select>
+  </label>
+</fieldset>
+{% endmacro %}
+
+{% macro field(f, v, choices, years) %}
+{% if f.type == "period" %}{{ period(f, v, years) }}
+{% elif f.type == "asof" %}{{ period(f, v, years, asof=True) }}
+{% elif f.type == "check" %}
+<label class="check"><input type="checkbox" name="{{ f.name }}" value="1"{% if v[f.name] %} checked{% endif %}> {{ _(f.label) }}</label>
+{% elif f.type == "radio" %}
+<fieldset><legend>{{ _(f.label) }}</legend>
+  {% for value, label in choices[f.name] %}
+  <label class="check"><input type="radio" name="{{ f.name }}" value="{{ value }}"{% if value == (v[f.name] or '') %} checked{% endif %}> {{ label }}</label>
+  {% endfor %}
+</fieldset>
+{% elif f.type == "checks" %}
+<fieldset><legend>{{ _(f.label) }}</legend>
+  {% for value, label in choices[f.name] %}
+  <label class="check"><input type="checkbox" name="{{ f.name }}" value="{{ value }}"{% if not v[f.name] or value in v[f.name] %} checked{% endif %}> {{ label }}</label>
+  {% else %}<span class="muted">{{ _("geen") }}</span>
+  {% endfor %}
+</fieldset>
+{% elif f.type == "select" %}
+<label>{{ _(f.label) }} <select name="{{ f.name }}">{{ options(choices[f.name], v[f.name]) }}</select></label>
+{% elif f.type == "date" %}
+<label>{{ _(f.label) }} <input type="date" name="{{ f.name }}" value="{{ v[f.name] or '' }}"></label>
+{% elif f.type == "hidden" %}{% if v[f.name] %}<input type="hidden" name="{{ f.name }}" value="{{ v[f.name] }}">{% endif %}
+{% elif f.type == "int" %}
+<label>{{ _(f.label) }} <input type="number" min="0" max="10" name="{{ f.name }}" value="{{ v[f.name] if v[f.name] is not none else '' }}" class="short"></label>
+{% else %}
+<label>{{ _(f.label) }} <input name="{{ f.name }}" value="{{ v[f.name] or '' }}"></label>
+{% endif %}
+{% endmacro %}
+
+{% macro chart_pick(r) -%}
+{#- grafiekteken bij een rekening, kop of rubriek van winst en verlies (v1.1, GR1) -#}
+{%- set href = "/rapporten/" ~ rep.key ~ "?" ~ chart_query ~ ("&" if chart_query) ~ "grafiek=" ~ (r.chart | urlencode) -%}
+{%- set name = ((r.cells.accno ~ " ") if r.cells.accno else "") ~ r.cells.description -%}
+<a class="pl-row noprint" href="{{ href }}#grafiek" hx-get="{{ href }}" hx-target="#result" hx-select="#result"
+   hx-swap="outerHTML show:#grafiek:top" hx-push-url="true" title="{{ _('Toon in grafiek: {name}').format(name=name) }}"
+   aria-label="{{ _('Toon in grafiek: {name}').format(name=name) }}"{% if chart and chart.selected == r.chart %} aria-current="true"{% endif %}><svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true"><rect x="1" y="6" width="3" height="6"/><rect x="5.5" y="2" width="3" height="10"/><rect x="10" y="4" width="3" height="8"/></svg></a>
+{%- endmacro %}
+
+{% macro table(t, cell) %}
+{% if t.title %}<h3>{{ t.title }}</h3>{% endif %}
+<div class="table-wrap">
+<table class="list report">
+<thead><tr>{% for c in t.columns %}<th{% if c.kind == 'amount' %} class="num"{% endif %}>{{ _(c.label) | replace(" t/m ", " t/m\n") }}</th>{% endfor %}</tr></thead>
+<tbody>
+{% for r in t.rows %}
+<tr class="k-{{ r.kind }}">
+  {% for c in t.columns %}{% set txt = cell(c, r) %}{% set url = r.links.get(c.key) %}
+  <td class="{{ 'num' if c.kind == 'amount' }}{{ ' nowrap' if c.kind == 'date' }}">{% if url and txt %}<a href="{{ url }}">{{ txt }}</a>{% else %}{{ txt }}{% endif %}
+  {%- if r.chart and c.key == "description" and view == "beide" %}{{ chart_pick(r) }}{% endif %}</td>
+  {% endfor %}
+</tr>
+{% else %}
+<tr><td colspan="{{ t.columns | length }}" class="muted">{{ _("Niets gevonden.") }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endmacro %}

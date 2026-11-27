@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_file.html" import filepick with context %}
+{% block title %}{{ _("Importeren") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Importeren") }}</h2><a href="/beheer/exporteren">{{ _("Exporteren") }}</a></div>
+{% include "help/am_import.html" %}
+<p>{{ _("Lees klanten, leveranciers, artikelen, diensten, artikelgroepen, rekeningen, GIFI-codes, memoriaalboekingen, verkoopfacturen, verkooporders, inkooporders of betalingen in uit een CSV- of Excel-bestand (xlsx) met een kopregel. U ziet eerst wat er gebeurt; pas na \"Importeren\" wordt er iets opgeslagen.") }}</p>
+<form method="post" action="/beheer/importeren" enctype="multipart/form-data" class="stack">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Wat wilt u importeren?") }} <select name="kind">
+    {% for k, label in kinds.items() %}<option value="{{ k }}"{% if k == kind %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}
+  </select></label>
+  <label>{{ _("Bestand (CSV of xlsx)") }} {{ filepick("bestand", ".csv,.txt,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", required=True) }}</label>
+  <p class="actions"><button>{{ _("Verder") }}</button></p>
+</form>
+<details><summary>{{ _("Hoe moet het bestand eruitzien?") }}</summary>
+  <ul>
+    <li>{{ _("Eerste regel: de kolomnamen. De namen uit SQL-Ledger (bv. customernumber, name, city) en die van onze eigen export worden vanzelf herkend; andere koppelt u in de volgende stap.") }}</li>
+    <li>{{ _("Een bestaand nummer (klant, leverancier, artikel, rekening) wordt bijgewerkt, een nieuw nummer toegevoegd; zonder nummer krijgt een relatie of artikel het volgende nummer.") }}</li>
+    <li>{{ _("Een lege cel laat het veld ongewijzigd.") }}</li>
+    <li>{{ _("Bedragen en datums in uw notatie of als 1234.56 en 2026-10-11.") }}</li>
+    <li>{{ _("GIFI-indeling: kolommen accno (de code) en description. Een bestaande code krijgt de nieuwe omschrijving; een code zelf wijzigen doet u bij Beheer > GIFI-indeling. Zet in Excel de kolom met codes op tekst, anders wordt 020 het getal 20.") }}</li>
+    <li>{{ _("Memoriaal: één regel per rekening; regels met dezelfde referentie vormen één boeking, die in balans moet zijn.") }}</li>
+    <li>{{ _("Verkoopfacturen en orders: één rij per regel, met klant- of leveranciersnummer, datum en artikelnummer. Rijen met hetzelfde nummer en dezelfde relatie vormen één document, ook als ze niet onder elkaar staan. Een rij zonder nummer hoort bij het document erboven, tenzij de relatie of de datum anders is; zo'n document krijgt het volgende nummer.") }}</li>
+    <li>{{ _("Een factuur- of ordernummer dat al bestaat, geeft een fout: er wordt nooit iets vervangen. Klanten, leveranciers en artikelen moeten al bestaan; importeer ze zo nodig eerst.") }}</li>
+    <li>{{ _("Betalingen: één rij per betaling, met betaaldatum, bedrag en factuurnummer of betalingskenmerk. Er wordt nooit alleen op het bedrag gekoppeld. Een bankafschrift (CAMT.053 of MT940) leest u in bij Bank > Bankafschrift inlezen.") }}</li>
+    <li>{{ _("Tip: maak eerst een export, dan hebt u meteen het goede formaat.") }}</li>
+  </ul>
+</details>
+{% endblock %}

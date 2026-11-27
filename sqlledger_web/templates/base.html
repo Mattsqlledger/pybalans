@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="{{ lang() }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
+<title>{% block title %}{% endblock %} · PyBalans</title>
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/static/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/htmx.min.js" defer></script>
+<script src="/static/filepick.js" defer></script>
+<script src="/static/switcher.js" defer></script>
+<script src="/static/dates.js" defer></script>
+<script src="/static/combo.js" defer></script>
+</head>
+{% set full = ctx and ctx.user and ctx.session and ctx.session.stage == 'full' %}
+<body{% if ctx %} hx-headers='{"X-CSRF-Token": "{{ ctx.csrf }}"}'{% endif %} class="{{ 'app' if full else 'plain' }}"
+      data-msg-date="{{ _('Vul een volledige datum in (dag, maand en jaar), of maak het veld leeg.') }}"
+      data-msg-date-required="{{ _('Vul een volledige datum in (dag, maand en jaar).') }}"
+      data-msg-date-clear="{{ _('Datum wissen') }}" data-msg-more="{{ _('nog {n} – typ verder') }}">
+{% if full %}
+<header class="topbar">
+  <a class="brand" href="/">PyBalans</a>
+  <span class="company">
+    {% if ctx.company %}{% include "_switcher.html" %}
+    {% else %}<a href="/administratie" class="small">{{ _("Administratie kiezen") }}</a>{% endif %}
+  </span>
+  <span class="spacer"></span>
+  <a href="/instellingen" class="mysettings" title="{{ _('Mijn instellingen') }}" aria-label="{{ _('Mijn instellingen') }}: {{ ctx.user.name or ctx.user.login }}"><span aria-hidden="true">⚙</span> {{ ctx.user.name or ctx.user.login }}</a>
+  <a href="/help">{{ _("Help") }}</a>
+  <form method="post" action="/uitloggen" class="inline">
+    <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+    <button class="link">{{ _("Uitloggen") }}</button>
+  </form>
+</header>
+<div class="layout">
+  <nav class="menu" aria-label="{{ _('Menu') }}">
+    {% set path = ctx.request.url.path.rstrip('/') ~ '/' %}
+    {% set full = ctx.request.url.path ~ ('?' ~ ctx.request.url.query if ctx.request.url.query else '') %}
+    {% set cur = namespace(len=0, label=None) %}
+    {% for group in ctx.menu() %}{% for item in group.items %}
+      {# een item met een vraag in het adres (Koersverschilboeking = /memoriaal/nieuw?fx=1, Creditnota) telt alleen
+         bij precies dat adres; anders zou het ook "Memoriaal" of "Boeking toevoegen" overnemen #}
+      {% if item.url and '?' in item.url %}
+        {% if full == item.url %}{% set cur.len = 10000 %}{% set cur.label = group.key ~ ':' ~ item.label %}{% endif %}
+        {% set cands = [item.match or None] %}
+      {% else %}
+        {% set cands = [item.url.rstrip('/') ~ '/' if item.url else None, item.match or None] %}
+      {% endif %}
+      {% for pre in cands %}
+        {% if pre and path.startswith(pre) and pre|length > cur.len %}{% set cur.len = pre|length %}{% set cur.label = group.key ~ ':' ~ item.label %}{% endif %}
+      {% endfor %}
+    {% endfor %}{% endfor %}
+    {% if ctx.company %}<a class="home{{ ' current' if path == '/' }}" href="/"{% if path == '/' %} aria-current="page"{% endif %}>{{ _("Dashboard") }}</a>{% endif %}
+    {% for group in ctx.menu() %}
+    {% set here = cur.label and cur.label.startswith(group.key ~ ':') %}
+    <details{% if here or group.key == 'system' and path.startswith('/systeem/') %} open{% endif %}>
+      <summary>{{ _(group.label) }}</summary>
+      <ul>
+      {% for item in group.items %}
+        {% if item.heading %}
+        <li class="heading">{{ pgettext("menu", item.label) }}</li>
+        {% elif item.url %}
+        <li><a href="{{ item.url }}"{% if cur.label == group.key ~ ':' ~ item.label %} aria-current="page"{% endif %}>{{ pgettext("menu", item.label) }}</a></li>
+        {% else %}
+        <li class="planned" title="{{ _('Volgt in {phase}').format(phase=_(item.planned)) }}">{{ pgettext("menu", item.label) }}</li>
+        {% endif %}
+      {% endfor %}
+      </ul>
+    </details>
+    {% endfor %}
+    <a class="about{{ ' current' if path == '/over/' }}" href="/over"{% if path == '/over/' %} aria-current="page"{% endif %}>{{ _("Over PyBalans") }}</a>
+  </nav>
+  <main class="content">
+    {% set sb = switch_bar(ctx) %}{% if sb %}
+    <nav class="switchbar noprint" aria-label="{{ _('Overstap') }}"><span>{{ _("Overstap:") }} <strong>{{ sb.text }}</strong></span>
+      {% if sb.links %}<span class="links">{% for l in sb.links %}<a href="{{ l.href }}">{{ l.label }}</a>{% endfor %}</span>{% endif %}
+      <a href="{{ sb.back }}">{{ _("Terug naar de overstaplijst") }}</a></nav>{% endif %}
+    {% if notice %}<p class="notice">{{ notice }}</p>{% endif %}
+    {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% else %}
+<main class="card">
+  <h1 class="brand">PyBalans</h1>
+  {% block tagline %}{% endblock %}
+  {% if notice %}<p class="notice">{{ notice }}</p>{% endif %}
+  {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+  {% block plain %}{% endblock %}
+</main>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,14 @@
+<h2>{{ _("Tweestapsverificatie instellen") }}</h2>
+{% if show_help %}{% include "help/totp_setup.html" %}{% endif %}
+{% if forced %}<p>{{ _("Voor beheerders is tweestapsverificatie verplicht.") }}</p>{% endif %}
+<ol>
+  <li>{{ _("Scan de QR-code met een authenticator-app (bijv. 1Password, Google Authenticator, Microsoft Authenticator).") }}</li>
+  <li>{{ _("Voer daarna de code van 6 cijfers in.") }}</li>
+</ol>
+<div class="qr">{{ qr | safe }}</div>
+<p class="small">{{ _("Of voer deze sleutel handmatig in:") }} <code class="secret">{{ secret }}</code></p>
+<form method="post" action="/2fa/instellen" class="stack">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Code") }} <input name="code" inputmode="numeric" autocomplete="one-time-code" autofocus required></label>
+  <button>{{ _("Bevestigen") }}</button>
+</form>

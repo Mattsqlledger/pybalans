@@ -1,0 +1,43 @@
+{# Orders > Verkooporder, Inkooporder en Offertes > Offerte, Offerteaanvraag (HELP_ANALYSE golf 4, tekst A1) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een order of offerte met artikelen uit uw artikellijst. Een verkooporder en een offerte maakt u voor een klant, een inkooporder en een offerteaanvraag voor een leverancier. Het programma rekent de btw en het totaal uit. Later zet u hem met één klik om naar een order of factuur.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Typ bij {c} of {v} een naam of nummer en kies uit de lijst. Termijn, valuta en btw komen van die relatie.", c=hl("Klant"), v=hl("Leverancier")) }}</li>
+  <li>{{ ht("Controleer de datum en vul zo nodig de {l} in (bij een offerte: {g}).", l=hl("Leverdatum"), g=hl("Geldig tot")) }}</li>
+  <li>{{ ht("Typ op een regel bij {p} een nummer of omschrijving en kies het artikel. Vul {q} in en zo nodig {price} of {disc}. Er komt vanzelf een nieuwe lege regel bij.", p=hl("Artikel"), q=hl("Aantal"), price=hl("Prijs"), disc=hl("Korting %")) }}</li>
+  <li>{{ ht("Klik op {s}, of op {sp} als u het document meteen wilt zien.", s=hl("Opslaan"), sp=hl("Opslaan en PDF")) }}</li>
+  <li>{{ ht("Daarna kunt u het document afdrukken met {p} of versturen met {m}. Bij een verkooporder kiest u daar ook een {pb} of {pl}.", p=hl("PDF"), m=hl("E-mail"), pb=hl("Pakbon"), pl=hl("Picklijst")) }}</li>
+  <li>{{ ht("Gaat de klant akkoord of komt de levering binnen? Klik onder {o} op het vervolg:", o=hl("Opslaan en omzetten naar")) }}
+    <ul>
+      <li>{{ ht("offerte → {a} of {b};", a=hl("Verkooporder"), b=hl("Verkoopfactuur")) }}</li>
+      <li>{{ ht("offerteaanvraag → {a} of {b};", a=hl("Inkooporder"), b=hl("Inkoopfactuur")) }}</li>
+      <li>{{ ht("verkooporder → {a} (of terug naar {b});", a=hl("Verkoopfactuur"), b=hl("Offerte")) }}</li>
+      <li>{{ ht("inkooporder → {a} (of terug naar {b}).", a=hl("Inkoopfactuur"), b=hl("Offerteaanvraag")) }}</li>
+    </ul>
+    {{ _("Het nieuwe scherm opent met dezelfde gegevens en de datum van vandaag. Sla het op of boek het.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{a}, {b} of {c}: laat dit leeg, dan krijgt het document bij opslaan vanzelf het volgende nummer. {n} vult dat nummer meteen in.", a=hl("Ordernummer"), b=hl("Offertenummer"), c=hl("Aanvraagnummer"), n=hl("Nieuw nummer")) }}</li>
+  <li>{{ ht("{f} bovenaan: komt vanzelf op elke nieuwe regel (niet bij offertes). Per regel kunt u hem aanpassen.", f=hl("Leverdatum")) }}</li>
+  <li>{{ ht("{f}: de betaaltermijn die later op de factuur komt. Een offerteaanvraag heeft geen termijn.", f=hl("Termijn (dagen)")) }}</li>
+  <li>{{ ht("{f}: de referentie van de relatie, bijvoorbeeld het bestelnummer van uw klant. Het staat op het document.", f=hl("Inkoopordernummer")) }}</li>
+  <li>{{ ht("{a} komen op het document, {b} niet.", a=hl("Notities"), b=hl("Interne notities")) }}</li>
+  <li>{{ ht("{f}: zet dit aan als de prijzen al inclusief btw zijn.", f=hl("Btw inbegrepen")) }}</li>
+  <li>{{ ht("{f}: alleen invullen als het afleveradres anders is dan het adres van de relatie.", f=hl("Afleveradres en verzending")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("De bron wordt pas gesloten als u het vervolg opslaat (order) of boekt (factuur). Een verkooporder die u omzet naar een offerte blijft open.") }}</li>
+  <li>{{ _("Factureert u minder dan besteld? Verlaag dan in het factuurscherm de aantallen. Het restant wordt bij het boeken een nabestelling: een nieuwe order met hetzelfde nummer.") }}</li>
+  <li>{{ ht("Een gefactureerde order, een gesloten order en een order in een afgesloten periode kunt u alleen nog lezen. Een gesloten order zonder factuur zet u met {h} weer open. Een gefactureerde order gaat weer open als u de factuur verwijdert.", h=hl("Heropenen")) }}</li>
+  <li>{{ ht("{d} kan alleen bij een open order en kunt u niet ongedaan maken. Kwam de order uit een offerte, dan gaat die offerte weer open.", d=hl("Verwijderen")) }}</li>
+  <li>{{ _("PDF en e-mail gebruiken de opgeslagen versie. Sla wijzigingen dus eerst op.") }} {{ ht("{n} maakt een kopie; de bijlagen blijven bij het origineel.", n=hl("Opslaan als nieuw")) }}</li>
+  <li>{{ _("Elke regel moet een artikel uit de artikellijst hebben. Een samengesteld artikel kan niet op een inkooporder.") }}</li>
+  <li>{{ ht("{h} (alleen orders, na opslaan) verschijnt als de module Terugkerend aanstaat.", h=hl("Herhalen")) }}</li>
+  <li>{{ ht("Zet u een offerte of order om, dan gaan de bijlagen mee ({g}); met {w} laat u er een achter.", g=hl("gaat mee bij Opslaan"), w=hl("weghalen")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: een order verandert de voorraad niet. Dat doet pas de factuur.") }}</li>
+</ul>
+</details>

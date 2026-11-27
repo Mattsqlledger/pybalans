@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Wachtwoord instellen") }}{% endblock %}
+{% block plain %}
+<p>{{ _("Kies een wachtwoord met de eenmalige code van de beheerder.") }}</p>
+<form method="post" action="/activeren" class="stack">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Login") }} <input name="login" value="{{ login }}" autocomplete="username" required></label>
+  <label>{{ _("Eenmalige code") }} <input name="code" value="{{ code or '' }}" autocomplete="off" placeholder="XXXX-XXXX-XXXX" required></label>
+  <label>{{ _("Nieuw wachtwoord") }} <input type="password" name="password" autocomplete="new-password" minlength="{{ ctx.settings.password_min_length }}" required></label>
+  <label>{{ _("Herhaal wachtwoord") }} <input type="password" name="repeat" autocomplete="new-password" required></label>
+  <button>{{ _("Wachtwoord instellen") }}</button>
+</form>
+<p class="small"><a href="/login">{{ _("Terug naar inloggen") }}</a></p>
+{% endblock %}

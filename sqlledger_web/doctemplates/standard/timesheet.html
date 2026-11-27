@@ -1,0 +1,41 @@
+{% extends "_base.html" %}
+{#- Urenstaat per medewerker en maand (fase Uren U-4, UR3): om door de klant te laten aftekenen. Met een project
+    met klant: de klant als geadresseerde. -#}
+{% block title %}{{ t('Urenstaat') }} {{ employee }} {{ period }}{% endblock %}
+{% block body %}
+{% if name %}{% include "_parties.html" %}{% endif %}
+
+<div class="titlebar">
+  <h1>{{ t('Urenstaat') }}</h1>
+  <table>
+    <tr><td>{{ t('Medewerker') }}</td><td>{{ employee }}</td></tr>
+    <tr><td>{{ t('Periode') }}</td><td>{{ period }}</td></tr>
+    {% if projectnumber %}<tr><td>{{ t('Project') }}</td><td>{{ projectnumber }}{% if projectdescription %} – {{ projectdescription }}{% endif %}</td></tr>{% endif %}
+  </table>
+</div>
+
+<table class="lines">
+  <thead><tr>
+    <th>{{ t('Datum') }}</th>{% if not projectnumber %}<th>{{ t('Project') }}</th>{% endif %}<th>{{ t('Dienst') }}</th>
+    <th>{{ t('Omschrijving') }}</th><th class="r">{{ t('Uren') }}</th>
+  </tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td class="num">{{ r.transdate }}</td>{% if not projectnumber %}<td>{{ r.projectnumber }}</td>{% endif %}<td>{{ r.partnumber }}</td>
+      <td>{{ r.description }}{% if r.notes %}<div class="note">{{ r.notes|nl2br }}</div>{% endif %}</td>
+      <td class="r">{{ r.qty }}</td>
+    </tr>
+  {% endfor %}
+    <tr class="subtotal"><td colspan="{{ 3 if projectnumber else 4 }}">{{ t('Totaal') }}</td><td class="r"><strong>{{ total }}</strong></td></tr>
+  </tbody>
+</table>
+
+<table class="sign">
+  <tr><th colspan="2" style="text-align: left; padding: 0 0 1mm">{{ t('Voor akkoord') }}</th></tr>
+  <tr><td>{{ t('Naam') }}</td><td></td></tr>
+  <tr><td>{{ t('Datum') }}</td><td></td></tr>
+  <tr><td>{{ t('Handtekening') }}</td><td style="height: 14mm"></td></tr>
+</table>
+{% if doc.note %}<div class="docnote">{{ doc.note }}</div>{% endif %}
+{% endblock %}

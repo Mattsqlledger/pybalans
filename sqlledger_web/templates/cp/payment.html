@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}{{ _(k.title) }}{% endblock %}
+{% block content %}
+{% set foreign = f.currency and f.currency != ch.defaultcurrency %}
+{% set has_discount = f.rows | selectattr("inv.calcdiscount") | list %}
+<div class="head">
+  <h2>{{ _(k.title) }}</h2>
+  <p class="actions noprint">
+    {% if f.back %}<a href="/{{ k.many }}?rekening={{ f.payment_accno }}&amp;datum={{ f.datepaid }}">{{ _(k.back_label) }}</a>{% endif %}
+    <a href="/{{ k.many }}">{{ _(k.many_label) }}</a>
+    <a href="/{{ k.many }}/corrigeren">{{ _("Corrigeren") }}</a>
+    <a href="/rapporten/{{ k.many }}">{{ _("Overzicht") }}</a>
+  </p>
+</div>
+{% include "help/cp_payment.html" %}
+{% if posted %}
+<p class="notice">{{ _(k.posted).format(source=posted.source, name=posted.name, amount=amount(posted.amount, "0")) }}
+  {% if posted.invoices %}({% for i in posted.invoices %}<a href="/boekingen/{{ i.id }}">{{ i.invnumber }}</a>{% if not i.amount %} {{ _(k.prepay_lc) }}{% endif %}{{ ", " if not loop.last }}{% endfor %}){% endif %}</p>
+{% with specs = [posted] if posted.key else [] %}{% include "cp/_specs.html" %}{% endwith %}
+{% endif %}
+{% for n in f.notices %}<p class="notice warn" role="alert">{{ n }}</p>{% endfor %}
+
+<form method="post" action="/{{ k.prefix }}" class="cpform" data-vc-url="/{{ k.prefix }}/relaties">
+  <p class="error" role="alert" id="cp-error"{% if not calc_error %} hidden{% endif %}>{{ calc_error or "" }}</p>
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% for name in ["vc_id", "vc_shown", "key", "oldpayment_accno", "olddatepaid", "oldcurrency", "back"] %}
+  <input type="hidden" name="{{ name }}" value="{{ f[name] if f[name] is not none else '' }}">
+  {% endfor %}
+
+  <fieldset class="glhead">
+    <label class="vc">{{ _(k.vc_label) }} *
+      <input name="vc_text" value="{{ f.vc_text }}" list="vclist" autocomplete="off" data-refresh data-vc
+             placeholder="{{ _('naam of nummer') }}"></label>
+    <datalist id="vclist" data-remote></datalist>
+    <label class="check"><input type="checkbox" name="all_vc" value="1"{% if f.all_vc %} checked{% endif %} data-refresh>
+      {{ _("Alle relaties (ook zonder open posten)") }}</label>
+    {% if f.info %}
+    <div class="facts wide"><span>{{ [f.info.address1, f.info.address2, f.info.zipcode, f.info.city, f.info.country] | select | join(", ") }}</span></div>
+    {% endif %}
+    <label>{{ _("Datum") }} * <input type="date" name="datepaid" value="{{ f.datepaid }}" required data-refresh></label>
+    <label>{{ _("Betaalrekening") }} *
+      <select name="payment_accno" data-refresh>
+        {% for a in ch.paid_accounts %}<option value="{{ a.accno }}"{% if a.accno == f.payment_accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+      </select></label>
+    <label>{{ _("Kenmerk") }} <input name="source" value="{{ f.source }}" maxlength="100"></label>
+    <label>{{ _("Memo") }} <input name="memo" value="{{ f.memo }}" maxlength="200"></label>
+    {% if ch.currencies|length > 1 %}
+    <label>{{ _("Valuta") }}
+      <select name="currency" data-refresh>
+        {% for c in ch.currencies %}<option{% if c == f.currency %} selected{% endif %}>{{ c }}</option>{% endfor %}
+      </select></label>
+    {% if foreign %}<label>{{ _("Koers") }} * <input name="exchangerate" value="{{ f.exchangerate }}" class="num" inputmode="decimal"></label>{% endif %}
+    {% else %}<input type="hidden" name="currency" value="{{ f.currency }}">{% endif %}
+    {% if ch.discount_accounts %}
+    <label>{{ _("Rekening contante korting") }}
+      <select name="discount_accno">
+        {% for a in ch.discount_accounts %}<option value="{{ a.accno }}"{% if a.accno == f.discount_accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+      </select></label>
+    {% endif %}
+    {% if ch.paymentmethods %}
+    <label>{{ _("Betaalmethode") }}
+      <select name="paymentmethod_id" data-refresh><option value=""></option>
+        {% for pm in ch.paymentmethods %}<option value="{{ pm.id }}"{% if pm.id|string == f.paymentmethod_id %} selected{% endif %}>{{ pm.description }}</option>{% endfor %}
+      </select></label>
+    {% endif %}
+  </fieldset>
+  {% include "cp/_filters.html" %}
+
+  <div id="cp-calc">
+  <div class="table-wrap">
+  <table class="list gllines cplines">
+    <thead><tr>
+      <th><input type="checkbox" name="allbox" value="1"{% if f.allbox %} checked{% endif %} data-calc aria-label="{{ _('Alles selecteren') }}">
+          <input type="hidden" name="oldallbox" value="{{ '1' if f.oldallbox else '' }}"></th>
+      <th>{{ _("Factuur") }}</th><th>{{ _("Factuurdatum") }}</th><th>{{ _("Vervaldatum") }}</th>
+      <th class="num">{{ _("Bedrag") }}</th><th class="num">{{ _("Openstaand") }}</th>
+      <th class="num">{{ _("Betaald") }}</th>{% if has_discount %}<th class="num">{{ _("Korting") }}</th>{% endif %}
+      <th class="num">{{ _("Totaal") }}</th>
+    </tr></thead>
+    <tbody>
+    {% for r in f.rows %}{% set i = r.inv.id %}
+      <tr{% if r.checked %} class="checked"{% endif %}>
+        <td><input type="checkbox" name="checked_{{ i }}" value="1"{% if r.checked %} checked{% endif %} data-calc aria-label="{{ _('Betalen') }} {{ r.inv.invnumber }}">
+            <input type="hidden" name="due_{{ i }}" value="{{ amount(r.inv.due) }}">
+            <input type="hidden" name="sug_{{ i }}" value="{{ r.sug }}">
+            <input type="hidden" name="dsug_{{ i }}" value="{{ r.dsug }}">
+            <input type="hidden" name="invnumber_{{ i }}" value="{{ r.inv.invnumber or '' }}"></td>
+        <td><a href="/boekingen/{{ i }}" target="_blank">{{ r.inv.invnumber or "" }}</a>
+          {% if r.inv.description %}<span class="muted small">{{ r.inv.description }}</span>{% endif %}</td>
+        <td>{{ r.inv.transdate }}</td><td>{{ r.inv.duedate or "" }}</td>
+        <td class="num">{{ amount(r.inv.amount / r.inv.exchangerate, "0") }}</td>
+        <td class="num">{{ amount(r.inv.due, "0") }}</td>
+        <td><input name="paid_{{ i }}" value="{{ r.paid }}" class="num" inputmode="decimal" data-calc aria-label="{{ _('Betaald') }} {{ r.inv.invnumber }}"></td>
+        {% if has_discount %}
+        <td>{% if r.inv.calcdiscount or r.discount %}<input name="discount_{{ i }}" value="{{ r.discount }}" class="num short" inputmode="decimal" data-calc aria-label="{{ _('Korting') }} {{ r.inv.invnumber }}">{% endif %}</td>
+        {% endif %}
+        <td class="num">{{ amount(r.total) }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="9" class="muted">{% if f.vc_id %}{{ _("Geen openstaande posten (met deze filters).") }}{% else %}{{ _("Kies eerst een relatie.") }}{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+    {% if f.rows %}
+    <tfoot><tr class="total">
+      <th colspan="4"></th><th class="num">{{ amount(f.sum_amount, "0") }}</th><th class="num">{{ amount(f.sum_due, "0") }}</th>
+      <th class="num">{{ amount(f.sum_paid, "0") }}</th>{% if has_discount %}<th class="num">{{ amount(f.sum_discount, "0") }}</th>{% endif %}
+      <th class="num">{{ amount(f.sum_paid + f.sum_discount, "0") }}</th>
+    </tr></tfoot>
+    {% endif %}
+  </table>
+  </div>
+  <p class="cpsum">
+    <label>{{ _("Totaalbedrag") }} {% if foreign %}({{ f.currency }}){% endif %}
+      <input name="amount" value="{{ f.amount }}" class="num" inputmode="decimal" data-calc></label>
+    <input type="hidden" name="oldsum" value="{{ f.oldsum }}">
+    {% if f.rest > 0 %}<strong class="warn">{{ _(k.rest_label).format(amount=amount(f.rest)) }}</strong>
+    {% elif f.rest < 0 and f.sum_paid > 0 %}<strong class="warn">{{ _("Lager dan de bedragen bij de posten: {amount}").format(amount=amount(-f.rest)) }}</strong>{% endif %}
+  </p>
+  </div>
+
+  {% if confirm == "prepay" %}
+  <div class="confirm" role="alert">
+    <p><strong>{{ _("{amount} is niet aan een post toegewezen").format(amount=amount(f.rest)) }}</strong> {{ _(k.prepay_booked) }}
+      {{ _("Doorgaan?") }}</p>
+    <button name="action" value="post_confirmed">{{ _("Ja, boeken") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Terug") }}</button>
+  </div>
+  {% else %}
+  <p class="actions glbuttons">
+    <button name="action" value="post">{{ _("Boeken") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate data-update>{{ _("Bijwerken") }}</button>
+  </p>
+  {% endif %}
+</form>
+<script src="/static/cp.js" defer></script>
+{% endblock %}

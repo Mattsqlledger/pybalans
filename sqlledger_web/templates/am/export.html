@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Exporteren") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Exporteren") }}</h2>{% if ctx.has_role("admin") %}<a href="/beheer/importeren">{{ _("Importeren") }}</a>{% endif %}</div>
+{% include "help/am_export.html" %}
+<p>{{ _("De export heeft precies het formaat van de import: aanpassen in Excel en weer inlezen kan. Bedragen en datums staan in uw notatie.") }}</p>
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("Gegevens") }}</th><th>{{ _("Bestand") }}</th></tr></thead>
+  <tbody>
+  {% for k, label in kinds.items() %}
+  <tr><td>{{ _(label) }}</td><td><a href="/beheer/exporteren/{{ k }}.xlsx" download>Excel</a> · <a href="/beheer/exporteren/{{ k }}.csv" download>CSV</a></td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% endblock %}

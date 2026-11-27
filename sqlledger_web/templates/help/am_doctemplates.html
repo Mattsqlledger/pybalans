@@ -1,0 +1,26 @@
+{# Beheer > Sjablonen (HELP_ANALYSE golf 3, tekst B11) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Voor wie de opmaak van een document verder wil aanpassen dan {h} en {d} toelaten. U past de HTML van het sjabloon aan op uw eigen computer en uploadt het hier.", h=hm("Beheer", "Huisstijl"), d=hm("Beheer", "Documentinstellingen")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Klik in de regel van het document op {b}. U krijgt uw eigen sjabloon, of anders de standaard als startpunt.", b=hl("Downloaden")) }}</li>
+  <li>{{ _("Pas het bestand aan in een teksteditor.") }}</li>
+  <li>{{ ht("Kies bij {u} het {s} en het bestand, en klik op {b}. Het sjabloon wordt eerst gecontroleerd met een proef-PDF; bij een fout ziet u het regelnummer.", u=hl("Sjabloon uploaden"), s=hl("Sjabloon"), b=hl("Controleren en opslaan")) }}</li>
+  <li>{{ ht("Klik op {b} om het resultaat te zien met het laatste document van die soort.", b=hl("Voorbeeld")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: {e} (uw sjabloon), {z} (in een variant geldt uw algemene sjabloon) of {s}.", f=hl("In gebruik"), e=hl("eigen"), z=hl("eigen (zonder variant)"), s=hl("standaard")) }}</li>
+  <li>{{ ht("Gedeelde delen, zoals {b} of {a}, gelden voor meerdere documenten tegelijk.", b=hl("Basis (kop, voet, opmaak)"), a=hl("Adresblok")) }}</li>
+  <li>{{ ht("{f}: een eigen set sjablonen voor een taal uit {m}. Een document met die taal in {s} gebruikt dan de sjablonen van de variant.", f=hl("Varianten"), m=hm("Beheer", "Talen"), s=hl("Sjabloonvariant")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{t} haalt uw eigen sjabloon weg. Het blijft bewaard onder {v}; daar staan de laatste vijf versies, die u met {z} weer in gebruik neemt.", t=hl("Terug naar standaard"), v=hl("Vorige versies"), z=hl("Terugzetten")) }}</li>
+  <li>{{ _("Met een eigen sjabloon geldt de huisstijl alleen als het sjabloon er gebruik van maakt.") }}</li>
+  <li>{{ ht("Het logo is hetzelfde als bij {m}.", m=hm("Beheer", "Huisstijl")) }}</li>
+  <li>{{ ht("Een variant verwijderen kan als er geen eigen sjablonen meer in staan (zet ze eerst {t}). De vorige versies in de variant gaan mee weg, na {b}.", t=hl("Terug naar standaard"), b=hl("Ja, variant verwijderen")) }}</li>
+  <li>{{ _("Bewerken in de browser kan niet.") }}</li>
+</ul>
+</details>

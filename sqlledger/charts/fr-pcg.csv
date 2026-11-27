@@ -1,0 +1,242 @@
+# Plan comptable général abrégé (PME), France, nomenclature 2025 (ANC 2014-03 modifié par ANC 2022-06), intitulés fr, en, nl, de.
+# id: fr-pcg
+# land: FR
+# talen: fr en nl de
+# valuta: EUR
+# naam.fr: PCG abrégé (PME)
+# naam.en: Abridged PCG (SME)
+# naam.nl: PCG verkort (MKB)
+# naam.de: PCG gekürzt (KMU)
+# bron: sqlledger-py, eigen werk naar het Plan comptable général (ANC); nummers gelijk aan leeg-fr (REKENINGSCHEMA_ANALYSE.md deelstap 5)
+# licentie: GPL-2.0-or-later
+# voorraad: 370000
+# omzet: 707000
+# kosten: 607000
+# koersverschil: 656000
+# btw-afdracht: 445510
+# btw-afronding: 658000
+# volgorde: 1
+rekening;soort;categorie;koppeling;contra;tarief;rubriek;rgs;fr;en;nl;de
+1;H;Q;;;;;;Comptes de capitaux;Equity and long-term liabilities;Eigen vermogen en langlopende schulden;Eigenkapital und langfristige Verbindlichkeiten
+101000;A;Q;;;;;;Capital;Share capital;Kapitaal;Gezeichnetes Kapital
+104000;A;Q;;;;;;Primes liées au capital;Share premium;Agio;Kapitalrücklage
+106100;A;Q;;;;;;Réserve légale;Legal reserve;Wettelijke reserve;Gesetzliche Rücklage
+106800;A;Q;;;;;;Autres réserves;Other reserves;Overige reserves;Andere Gewinnrücklagen
+108000;A;Q;;;;;;Compte de l'exploitant;Owner's drawings;Privérekening ondernemer;Privatkonto
+110000;A;Q;;;;;;Report à nouveau (solde créditeur);Retained earnings;Onverdeelde winst;Gewinnvortrag
+119000;A;Q;;;;;;Report à nouveau (solde débiteur);Accumulated losses;Overgebracht verlies;Verlustvortrag
+120000;A;Q;;;;;;Résultat de l'exercice (bénéfice);Profit for the year;Winst van het boekjaar;Jahresüberschuss
+129000;A;Q;;;;;;Résultat de l'exercice (perte);Loss for the year;Verlies van het boekjaar;Jahresfehlbetrag
+131000;A;Q;;;;;;Subventions d'équipement;Investment grants;Investeringssubsidies;Investitionszuschüsse
+145000;A;Q;;;;;;Amortissements dérogatoires;Accelerated tax depreciation;Fiscale extra afschrijvingen;Steuerliche Sonderabschreibungen
+15;H;L;;;;;;Provisions;Provisions;Voorzieningen;Rückstellungen
+151000;A;L;;;;;;Provisions pour risques;Provisions for risks;Voorzieningen voor risico's;Rückstellungen für Risiken
+152000;A;L;;;;;;Provisions pour charges;Provisions for liabilities and charges;Voorzieningen voor kosten;Rückstellungen für Aufwendungen
+16;H;L;;;;;;Emprunts et dettes assimilées;Borrowings;Leningen;Darlehen
+164000;A;L;;;;;;Emprunts auprès des établissements de crédit;Bank loans;Bankleningen;Bankdarlehen
+165000;A;L;;;;;;Dépôts et cautionnements reçus;Deposits received;Ontvangen waarborgsommen;Erhaltene Kautionen
+168000;A;L;;;;;;Autres emprunts et dettes assimilées;Other borrowings;Overige leningen;Sonstige Darlehen
+168800;A;L;;;;;;Intérêts courus sur emprunts;Accrued interest on borrowings;Opgelopen rente op leningen;Aufgelaufene Darlehenszinsen
+2;H;A;;;;;;Comptes d'immobilisations;Fixed assets;Vaste activa;Anlagevermögen
+20;H;A;;;;;;Immobilisations incorporelles;Intangible assets;Immateriële vaste activa;Immaterielle Vermögensgegenstände
+201000;A;A;;;;;;Frais d'établissement;Formation expenses;Oprichtingskosten;Gründungskosten
+205000;A;A;;;;;;Concessions, brevets, licences, logiciels;Concessions, patents, licences, software;Concessies, octrooien, licenties, software;Konzessionen, Patente, Lizenzen, Software
+206000;A;A;;;;;;Droit au bail;Leasehold rights;Huurrecht;Mietrecht
+207000;A;A;;;;;;Fonds commercial;Goodwill;Goodwill;Geschäfts- oder Firmenwert
+21;H;A;;;;;;Immobilisations corporelles;Tangible fixed assets;Materiële vaste activa;Sachanlagen
+211000;A;A;;;;;;Terrains;Land;Terreinen;Grundstücke
+213000;A;A;;;;;;Constructions;Buildings;Gebouwen;Gebäude
+215400;A;A;;;;;;Matériel industriel;Industrial equipment;Machines;Maschinen
+215500;A;A;;;;;;Outillage industriel;Industrial tools;Gereedschap;Werkzeuge
+218100;A;A;;;;;;Installations générales, agencements, aménagements divers;Fixtures and fittings;Installaties en verbouwingen;Einbauten und Einrichtungen
+218200;A;A;;;;;;Matériel de transport;Vehicles;Vervoermiddelen;Fahrzeuge
+218300;A;A;;;;;;Matériel de bureau et matériel informatique;Office and computer equipment;Kantoor- en computerapparatuur;Büro- und EDV-Ausstattung
+218400;A;A;;;;;;Mobilier;Furniture;Meubilair;Mobiliar
+23;H;A;;;;;;Immobilisations en cours;Assets under construction;Activa in aanbouw;Anlagen im Bau
+231000;A;A;;;;;;Immobilisations corporelles en cours;Tangible assets under construction;Materiële vaste activa in aanbouw;Sachanlagen im Bau
+238000;A;A;;;;;;Avances et acomptes versés sur immobilisations;Advances paid on fixed assets;Vooruitbetalingen op vaste activa;Anzahlungen auf Anlagen
+26;H;A;;;;;;Participations;Participations;Deelnemingen;Beteiligungen
+261000;A;A;;;;;;Titres de participation;Participating interests;Aandelen in deelnemingen;Beteiligungen
+27;H;A;;;;;;Autres immobilisations financières;Other financial assets;Overige financiële vaste activa;Sonstige Finanzanlagen
+274000;A;A;;;;;;Prêts;Loans granted;Verstrekte leningen;Ausleihungen
+275000;A;A;;;;;;Dépôts et cautionnements versés;Deposits paid;Betaalde waarborgsommen;Geleistete Kautionen
+28;H;A;;;;;;Amortissements des immobilisations;Accumulated depreciation;Cumulatieve afschrijvingen;Kumulierte Abschreibungen
+280100;A;A;;1;;;;Amortissements des frais d'établissement;Accumulated amortisation formation expenses;Cumulatieve afschrijving oprichtingskosten;Kumulierte Abschreibung Gründungskosten
+280500;A;A;;1;;;;Amortissements des concessions, brevets, licences, logiciels;Accumulated amortisation concessions, patents, software;Cumulatieve afschrijving concessies, octrooien, software;Kumulierte Abschreibung Konzessionen, Patente, Software
+281300;A;A;;1;;;;Amortissements des constructions;Accumulated depreciation buildings;Cumulatieve afschrijving gebouwen;Kumulierte Abschreibung Gebäude
+281540;A;A;;1;;;;Amortissements du matériel industriel;Accumulated depreciation industrial equipment;Cumulatieve afschrijving machines;Kumulierte Abschreibung Maschinen
+281550;A;A;;1;;;;Amortissements de l'outillage industriel;Accumulated depreciation industrial tools;Cumulatieve afschrijving gereedschap;Kumulierte Abschreibung Werkzeuge
+281810;A;A;;1;;;;Amortissements des installations générales, agencements;Accumulated depreciation fixtures and fittings;Cumulatieve afschrijving installaties en verbouwingen;Kumulierte Abschreibung Einbauten
+281820;A;A;;1;;;;Amortissements du matériel de transport;Accumulated depreciation vehicles;Cumulatieve afschrijving vervoermiddelen;Kumulierte Abschreibung Fahrzeuge
+281830;A;A;;1;;;;Amortissements du matériel de bureau et informatique;Accumulated depreciation office and computer equipment;Cumulatieve afschrijving kantoor- en computerapparatuur;Kumulierte Abschreibung Büro- und EDV-Ausstattung
+281840;A;A;;1;;;;Amortissements du mobilier;Accumulated depreciation furniture;Cumulatieve afschrijving meubilair;Kumulierte Abschreibung Mobiliar
+29;H;A;;;;;;Dépréciations des immobilisations;Impairment of fixed assets;Bijzondere waardeverminderingen vaste activa;Wertberichtigungen Anlagevermögen
+290700;A;A;;1;;;;Dépréciations du fonds commercial;Impairment of goodwill;Waardevermindering goodwill;Wertberichtigung Firmenwert
+296100;A;A;;1;;;;Dépréciations des titres de participation;Impairment of participating interests;Waardevermindering deelnemingen;Wertberichtigung Beteiligungen
+3;H;A;;;;;;Stocks et en-cours;Inventories and work in progress;Voorraden en onderhanden werk;Vorräte und unfertige Leistungen
+310000;A;A;IC;;;;;Matières premières et fournitures;Raw materials and supplies;Grond- en hulpstoffen;Roh-, Hilfs- und Betriebsstoffe
+320000;A;A;;;;;;Autres approvisionnements;Other supplies;Overige voorraden;Sonstige Vorräte
+331000;A;A;;;;;;Produits en cours;Work in progress (goods);Onderhanden productie;Unfertige Erzeugnisse
+345000;A;A;;;;;;Prestations de services en cours;Services in progress;Onderhanden diensten;Unfertige Leistungen
+355000;A;A;;;;;;Produits finis;Finished goods;Gereed product;Fertige Erzeugnisse
+370000;A;A;IC;;;;;Stocks de marchandises;Goods for resale;Voorraad handelsgoederen;Handelswaren
+391000;A;A;;1;;;;Dépréciations des matières premières;Impairment of raw materials;Waardevermindering grondstoffen;Wertberichtigung Rohstoffe
+397000;A;A;;1;;;;Dépréciations des stocks de marchandises;Impairment of goods for resale;Waardevermindering handelsgoederen;Wertberichtigung Handelswaren
+40;H;L;;;;;;Fournisseurs et comptes rattachés;Suppliers;Crediteuren;Lieferanten
+401000;A;L;AP;;;;;Fournisseurs;Trade creditors;Crediteuren;Verbindlichkeiten aus Lieferungen und Leistungen
+403000;A;L;;;;;;Fournisseurs - effets à payer;Bills payable;Te betalen wissels;Wechselverbindlichkeiten
+404000;A;L;AP;;;;;Fournisseurs d'immobilisations;Suppliers of fixed assets;Crediteuren vaste activa;Lieferanten Anlagevermögen
+408000;A;L;;;;;;Fournisseurs - factures non parvenues;Invoices not yet received;Nog te ontvangen facturen;Ausstehende Eingangsrechnungen
+409;H;A;;;;;;Fournisseurs débiteurs;Supplier debit balances;Debiteurensaldi leveranciers;Debitorische Kreditoren
+409100;A;A;;;;;;Fournisseurs - avances et acomptes versés;Advances paid to suppliers;Vooruitbetalingen aan leveranciers;Geleistete Anzahlungen
+409800;A;A;;;;;;Rabais, remises, ristournes à obtenir;Discounts receivable;Te ontvangen kortingen;Ausstehende Lieferantenboni
+41;H;A;;;;;;Clients et comptes rattachés;Customers;Debiteuren;Kunden
+411000;A;A;AR;;;;;Clients;Trade debtors;Debiteuren;Forderungen aus Lieferungen und Leistungen
+413000;A;A;;;;;;Clients - effets à recevoir;Bills receivable;Te ontvangen wissels;Besitzwechsel
+416000;A;A;;;;;;Clients douteux ou litigieux;Doubtful debtors;Dubieuze debiteuren;Zweifelhafte Forderungen
+418000;A;A;;;;;;Clients - produits non encore facturés;Unbilled revenue;Nog te factureren opbrengsten;Noch nicht fakturierte Erlöse
+419;H;L;;;;;;Clients créditeurs;Customer credit balances;Crediteurensaldi klanten;Kreditorische Debitoren
+419100;A;L;;;;;;Clients - avances et acomptes reçus;Advances received from customers;Vooruitontvangen van klanten;Erhaltene Anzahlungen
+42;H;L;;;;;;Personnel et comptes rattachés;Staff;Personeel;Personal
+421000;A;L;;;;;;Personnel - rémunérations dues;Wages payable;Te betalen lonen;Verbindlichkeiten Löhne
+428200;A;L;;;;;;Dettes provisionnées pour congés à payer;Accrued holiday pay;Opgebouwd vakantiegeld;Rückstellung Urlaubsansprüche
+43;H;L;;;;;;Sécurité sociale et autres organismes sociaux;Social security;Sociale verzekeringen;Sozialversicherung
+431000;A;L;;;;;;Sécurité sociale;Social security contributions payable;Te betalen sociale premies;Verbindlichkeiten Sozialversicherung
+437000;A;L;;;;;;Autres organismes sociaux;Other social bodies;Overige sociale instellingen;Sonstige Sozialkassen
+438200;A;L;;;;;;Charges sociales sur congés à payer;Social charges on holiday pay;Sociale lasten op vakantiegeld;Sozialabgaben auf Urlaubsansprüche
+44;H;L;;;;;;État et autres collectivités publiques;Taxes payable;Belastingen;Steuern
+444000;A;L;;;;;;État - impôts sur les bénéfices;Corporation tax payable;Te betalen winstbelasting;Ertragsteuerverbindlichkeiten
+445200;A;L;;;;;;TVA due intracommunautaire;EU acquisition VAT payable;Verschuldigde btw intracommunautair;Umsatzsteuer innergemeinschaftlicher Erwerb
+445510;A;L;;;;;;TVA à décaisser;VAT payable;Af te dragen btw;Umsatzsteuer-Zahllast
+4456;H;A;;;;;;Taxes sur le chiffre d'affaires déductibles;Input VAT;Te vorderen btw;Vorsteuer
+445620;A;A;;;;;;TVA déductible sur immobilisations;Input VAT on fixed assets;Te vorderen btw op vaste activa;Vorsteuer auf Anlagegüter
+445660;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.20;20;;TVA déductible 20 %;Input VAT 20%;Te vorderen btw 20 %;Vorsteuer 20 %
+445661;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.10;20;;TVA déductible 10 %;Input VAT 10%;Te vorderen btw 10 %;Vorsteuer 10 %
+445662;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.055;20;;TVA déductible 5,5 %;Input VAT 5.5%;Te vorderen btw 5,5 %;Vorsteuer 5,5 %
+445663;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.021;20;;TVA déductible 2,1 %;Input VAT 2.1%;Te vorderen btw 2,1 %;Vorsteuer 2,1 %
+445670;A;A;;;;;;Crédit de TVA à reporter;VAT credit carried forward;Over te dragen btw-tegoed;Vorsteuerüberhang
+4457;H;L;;;;;;Taxes sur le chiffre d'affaires collectées;Output VAT;Te betalen btw;Umsatzsteuer
+445710;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.20;08;;TVA collectée 20 %;VAT payable 20%;Te betalen btw 20 %;Umsatzsteuer 20 %
+445711;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.10;9B;;TVA collectée 10 %;VAT payable 10%;Te betalen btw 10 %;Umsatzsteuer 10 %
+445712;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.055;09;;TVA collectée 5,5 %;VAT payable 5.5%;Te betalen btw 5,5 %;Umsatzsteuer 5,5 %
+445713;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.021;T6;;TVA collectée 2,1 %;VAT payable 2.1%;Te betalen btw 2,1 %;Umsatzsteuer 2,1 %
+447000;A;L;;;;;;Autres impôts, taxes et versements assimilés;Other taxes payable;Overige te betalen belastingen;Sonstige Steuerverbindlichkeiten
+45;H;L;;;;;;Groupe et associés;Group and shareholders;Groep en aandeelhouders;Konzern und Gesellschafter
+455000;A;L;;;;;;Associés - comptes courants;Shareholders' current accounts;Rekening-courant aandeelhouders;Gesellschafter-Verrechnungskonten
+457000;A;L;;;;;;Associés - dividendes à payer;Dividends payable;Te betalen dividend;Dividendenverbindlichkeiten
+46;H;L;;;;;;Débiteurs et créditeurs divers;Other debtors and creditors;Overige debiteuren en crediteuren;Sonstige Forderungen und Verbindlichkeiten
+467000;A;L;;;;;;Autres comptes débiteurs ou créditeurs;Other accounts receivable or payable;Overige vorderingen en schulden;Sonstige Forderungen und Verbindlichkeiten
+47;H;A;;;;;;Comptes transitoires ou d'attente;Suspense accounts;Tussenrekeningen;Verrechnungskonten
+471000;A;A;;;;;;Compte d'attente;Suspense account;Vraagposten;Klärungskonto
+48;H;A;;;;;;Comptes de régularisation;Accruals and deferrals;Overlopende posten;Rechnungsabgrenzung
+486000;A;A;;;;;;Charges constatées d'avance;Prepaid expenses;Vooruitbetaalde kosten;Aktive Rechnungsabgrenzung
+487;H;L;;;;;;Produits constatés d'avance;Deferred income;Vooruitontvangen opbrengsten;Passive Rechnungsabgrenzung
+487000;A;L;;;;;;Produits constatés d'avance;Deferred income;Vooruitontvangen opbrengsten;Passive Rechnungsabgrenzung
+491000;A;A;;1;;;;Dépréciations des comptes clients;Allowance for doubtful debts;Voorziening dubieuze debiteuren;Wertberichtigung auf Forderungen
+5;H;A;;;;;;Comptes financiers;Cash and bank;Liquide middelen;Flüssige Mittel
+503000;A;A;;;;;;Valeurs mobilières de placement - actions;Short-term investments - shares;Kortlopende beleggingen - aandelen;Wertpapiere des Umlaufvermögens - Aktien
+508000;A;A;;;;;;Autres valeurs mobilières de placement;Other short-term investments;Overige kortlopende beleggingen;Sonstige Wertpapiere
+512000;A;A;AR_paid:AP_paid;;;;;Banque;Bank;Bank;Bank
+517000;A;A;;;;;;Autres organismes financiers;Other financial institutions;Overige financiële instellingen;Sonstige Finanzinstitute
+518000;A;A;;;;;;Intérêts courus à recevoir;Accrued interest receivable;Te ontvangen rente;Zinsforderungen
+519;H;L;;;;;;Concours bancaires courants;Bank overdrafts;Rekening-courantkrediet bank;Kontokorrentkredite
+519000;A;L;;;;;;Concours bancaires courants;Bank overdrafts;Rekening-courantkrediet bank;Kontokorrentkredite
+530000;A;A;AR_paid:AP_paid;;;;;Caisse;Cash;Kas;Kasse
+580000;A;A;;;;;;Virements internes;Internal transfers;Kruisposten;Geldtransit
+590000;A;A;;1;;;;Dépréciations des valeurs mobilières de placement;Impairment of short-term investments;Waardevermindering kortlopende beleggingen;Wertberichtigung Wertpapiere
+6;H;E;;;;;;Comptes de charges;Expenses;Kosten;Aufwand
+60;H;E;;;;;;Achats;Purchases;Inkopen;Materialaufwand
+601000;A;E;AP_amount:IC_cogs;;;;;Achats stockés - matières premières et fournitures;Purchases of raw materials;Inkoop grondstoffen;Einkauf Rohstoffe
+602000;A;E;AP_amount;;;;;Achats stockés - autres approvisionnements;Purchases of other supplies;Inkoop overige voorraden;Einkauf sonstige Vorräte
+603100;A;E;;;;;;Variation des stocks de matières premières;Change in raw materials;Voorraadmutatie grondstoffen;Bestandsveränderung Rohstoffe
+603700;A;E;;;;;;Variation des stocks de marchandises;Change in goods for resale;Voorraadmutatie handelsgoederen;Bestandsveränderung Handelswaren
+604000;A;E;AP_amount:IC_expense;;;;;Achats d'études et prestations de services;Purchased services;Ingekochte diensten;Fremdleistungen
+606000;A;E;AP_amount:IC_expense;;;;;Achats non stockés de matières et fournitures;General expenses;Algemene kosten;Allgemeiner Aufwand
+606100;A;E;AP_amount;;;;;Fournitures non stockables (eau, énergie);Utilities (water, energy);Water en energie;Wasser und Energie
+606300;A;E;AP_amount;;;;;Fournitures d'entretien et de petit équipement;Maintenance supplies and small equipment;Onderhoudsmiddelen en klein materiaal;Kleinmaterial und Wartungsbedarf
+606400;A;E;AP_amount;;;;;Fournitures administratives;Office supplies;Kantoorbenodigdheden;Büromaterial
+607000;A;E;AP_amount:IC_cogs;;;;;Achats de marchandises;Purchases of goods for resale;Inkoop handelsgoederen;Wareneinkauf
+609000;A;E;;;;;;Rabais, remises et ristournes obtenus sur achats;Purchase discounts received;Ontvangen kortingen op inkopen;Erhaltene Nachlässe
+61;H;E;;;;;;Services extérieurs;External services;Diensten van derden;Fremdleistungen
+611000;A;E;AP_amount:IC_expense;;;;;Sous-traitance générale;Subcontracting;Uitbesteed werk;Fremdarbeiten
+613200;A;E;AP_amount;;;;;Locations immobilières;Rent;Huur gebouwen;Miete
+613500;A;E;AP_amount;;;;;Locations mobilières;Equipment hire;Huur apparatuur;Gerätemiete
+614000;A;E;AP_amount;;;;;Charges locatives et de copropriété;Service charges;Servicekosten;Nebenkosten
+615000;A;E;AP_amount;;;;;Entretien et réparations;Maintenance and repairs;Onderhoud en reparaties;Instandhaltung und Reparaturen
+616000;A;E;AP_amount;;;;;Primes d'assurances;Insurance;Verzekeringen;Versicherungen
+618000;A;E;AP_amount;;;;;Divers (documentation, séminaires);Sundries (documentation, seminars);Diversen (documentatie, seminars);Sonstiges (Fachliteratur, Seminare)
+62;H;E;;;;;;Autres services extérieurs;Other external services;Overige diensten van derden;Sonstige Fremdleistungen
+621000;A;E;AP_amount;;;;;Personnel extérieur à l'entreprise;Temporary staff;Uitzendkrachten;Leiharbeit
+622600;A;E;AP_amount;;;;;Honoraires;Professional fees;Honoraria;Honorare
+623000;A;E;AP_amount;;;;;Publicité, publications, relations publiques;Advertising and public relations;Reclame en pr;Werbung und Öffentlichkeitsarbeit
+624000;A;E;AP_amount;;;;;Transports de biens et transports collectifs du personnel;Freight and staff transport;Vracht en personeelsvervoer;Frachten und Personaltransport
+625100;A;E;AP_amount;;;;;Voyages et déplacements;Travel;Reiskosten;Reisekosten
+625700;A;E;AP_amount;;;;;Réceptions;Entertainment;Representatie;Bewirtung
+626000;A;E;AP_amount;;;;;Frais postaux et de télécommunications;Postage and telecommunications;Porto en telecommunicatie;Porto und Telekommunikation
+627000;A;E;AP_amount;;;;;Services bancaires et assimilés;Bank charges;Bankkosten;Bankgebühren
+628000;A;E;AP_amount;;;;;Divers (cotisations);Subscriptions and memberships;Contributies en abonnementen;Beiträge
+63;H;E;;;;;;Impôts, taxes et versements assimilés;Taxes and duties;Belastingen en heffingen;Steuern und Abgaben
+631000;A;E;;;;;;Impôts et taxes sur rémunérations;Payroll taxes;Loonbelastingen;Lohnabhängige Steuern
+635100;A;E;AP_amount;;;;;Contribution économique territoriale;Local business tax (CET);Lokale bedrijfsbelasting (CET);Gewerbesteuer (CET)
+635400;A;E;AP_amount;;;;;Droits d'enregistrement et de timbre;Registration and stamp duties;Registratie- en zegelrechten;Verkehr- und Stempelsteuern
+637000;A;E;AP_amount;;;;;Autres impôts, taxes et versements assimilés;Other taxes and duties;Overige belastingen en heffingen;Sonstige Steuern und Abgaben
+64;H;E;;;;;;Charges de personnel;Staff costs;Personeelskosten;Personalaufwand
+641000;A;E;AP_amount;;;;;Rémunérations du personnel;Wages and salaries;Lonen en salarissen;Löhne und Gehälter
+644000;A;E;;;;;;Rémunération du travail de l'exploitant;Owner's remuneration;Beloning ondernemer;Unternehmerlohn
+645000;A;E;;;;;;Charges de sécurité sociale et de prévoyance;Social security costs;Sociale lasten;Sozialabgaben
+646000;A;E;;;;;;Cotisations sociales personnelles de l'exploitant;Owner's social contributions;Sociale premies ondernemer;Sozialabgaben Unternehmer
+647000;A;E;;;;;;Autres charges sociales;Other social costs;Overige sociale lasten;Sonstige Sozialaufwendungen
+648000;A;E;AP_amount;;;;;Autres charges de personnel;Other staff costs;Overige personeelskosten;Sonstiger Personalaufwand
+65;H;E;;;;;;Autres charges de gestion courante;Other operating expenses;Overige bedrijfslasten;Sonstige betriebliche Aufwendungen
+651000;A;E;AP_amount;;;;;Redevances pour concessions, brevets, licences, logiciels;Royalties and licence fees;Royalty's en licentiekosten;Lizenzgebühren
+654000;A;E;;;;;;Pertes sur créances irrécouvrables;Bad debts written off;Afgeboekte debiteuren;Forderungsverluste
+656000;A;E;;;;;;Pertes et gains de change sur créances et dettes commerciales;Exchange differences on trade receivables and payables;Koersverschillen op debiteuren en crediteuren;Kursdifferenzen aus Lieferungen und Leistungen
+657000;A;E;;;;;;Valeurs comptables des immobilisations incorporelles et corporelles cédées;Carrying amount of intangible and tangible fixed assets disposed of;Boekwaarde verkochte immateriële en materiële vaste activa;Buchwert abgegangener immaterieller Anlagen und Sachanlagen
+658000;A;E;;;;;;Écarts d'arrondi;Rounding differences;Afrondingsverschillen;Rundungsdifferenzen
+66;H;E;;;;;;Charges financières;Financial expenses;Financiële lasten;Finanzaufwand
+661100;A;E;;;;;;Intérêts des emprunts et dettes;Interest on borrowings;Rente op leningen;Darlehenszinsen
+661600;A;E;;;;;;Intérêts bancaires et sur opérations de financement;Bank interest;Bankrente;Bankzinsen
+665000;A;E;;;;;;Escomptes accordés;Cash discounts allowed;Verleende betalingskortingen;Gewährte Skonti
+668000;A;E;;;;;;Autres charges financières;Other financial expenses;Overige financiële lasten;Sonstiger Finanzaufwand
+67;H;E;;;;;;Charges exceptionnelles;Exceptional expenses;Buitengewone lasten;Außerordentliche Aufwendungen
+678000;A;E;;;;;;Autres charges exceptionnelles;Other exceptional expenses;Overige buitengewone lasten;Sonstiger außerordentlicher Aufwand
+68;H;E;;;;;;Dotations aux amortissements, dépréciations et provisions;Depreciation, impairment and provisions;Afschrijvingen, waardeverminderingen en voorzieningen;Abschreibungen, Wertberichtigungen und Rückstellungen
+681100;A;E;;;;;;Dotations aux amortissements des immobilisations;Depreciation of fixed assets;Afschrijvingen vaste activa;Abschreibungen auf Anlagevermögen
+681500;A;E;;;;;;Dotations aux provisions d'exploitation;Operating provisions;Dotaties voorzieningen;Zuführung zu Rückstellungen
+681700;A;E;;;;;;Dotations aux dépréciations des actifs circulants;Impairment of current assets;Waardeverminderingen vlottende activa;Wertberichtigungen Umlaufvermögen
+686000;A;E;;;;;;Dotations aux amortissements, dépréciations et provisions - charges financières;Financial depreciation and provisions;Financiële waardeverminderingen en voorzieningen;Finanzielle Abschreibungen und Rückstellungen
+687000;A;E;;;;;;Dotations aux amortissements, dépréciations et provisions - charges exceptionnelles;Exceptional depreciation and provisions;Buitengewone afschrijvingen en voorzieningen;Außerordentliche Abschreibungen und Rückstellungen
+69;H;E;;;;;;Participation des salariés, impôts sur les bénéfices;Employee profit sharing, income tax;Werknemersparticipatie, winstbelasting;Mitarbeiterbeteiligung, Ertragsteuern
+691000;A;E;;;;;;Participation des salariés aux résultats;Employee profit sharing;Winstdeling werknemers;Mitarbeitergewinnbeteiligung
+695000;A;E;;;;;;Impôts sur les bénéfices;Income tax;Winstbelasting;Ertragsteuern
+7;H;I;;;;;;Comptes de produits;Income;Opbrengsten;Erträge
+70;H;I;;;;;;Ventes de produits fabriqués, prestations de services, marchandises;Sales;Omzet;Umsatzerlöse
+701000;A;I;AR_amount:IC_sale;;;;;Ventes de produits finis;Sales of finished goods;Omzet gereed product;Verkauf Fertigerzeugnisse
+704000;A;I;AR_amount:IC_income;;;;;Travaux;Contract work;Aanneming van werk;Bauleistungen
+706000;A;I;AR_amount:IC_income;;;;;Prestations de services;Services;Omzet diensten;Dienstleistungserlöse
+707000;A;I;AR_amount:IC_sale;;;;;Ventes de marchandises;Sales of goods;Omzet handelsgoederen;Warenverkauf
+708500;A;I;AR_amount;;;;;Ports et frais accessoires facturés;Carriage and charges invoiced;Doorberekende verzend- en bijkomende kosten;Weiterberechnete Versand- und Nebenkosten
+709000;A;I;;;;;;Rabais, remises et ristournes accordés;Sales discounts allowed;Verleende kortingen;Gewährte Nachlässe
+71;H;I;;;;;;Production stockée;Change in inventories of products;Voorraadmutatie eigen productie;Bestandsveränderungen
+713000;A;I;;;;;;Variation des stocks (en-cours de production, produits);Change in work in progress and finished goods;Voorraadmutatie onderhanden werk en gereed product;Bestandsveränderung unfertige und fertige Erzeugnisse
+72;H;I;;;;;;Production immobilisée;Own work capitalised;Geactiveerde eigen productie;Aktivierte Eigenleistungen
+722000;A;I;;;;;;Production immobilisée - immobilisations corporelles;Own work capitalised - tangible assets;Geactiveerde eigen productie materiële vaste activa;Aktivierte Eigenleistungen Sachanlagen
+74;H;I;;;;;;Subventions;Grants;Subsidies;Zuschüsse
+741000;A;I;;;;;;Subventions d'exploitation;Operating grants;Exploitatiesubsidies;Betriebszuschüsse
+747000;A;I;;;;;;Quote-part des subventions d'investissement virée au résultat de l'exercice;Investment grants released to profit;Vrijval investeringssubsidies;Auflösung von Investitionszuschüssen
+75;H;I;;;;;;Autres produits de gestion courante;Other operating income;Overige bedrijfsopbrengsten;Sonstige betriebliche Erträge
+751000;A;I;AR_amount;;;;;Redevances pour concessions, brevets, licences, logiciels;Royalty income;Ontvangen royalty's;Lizenzerträge
+757000;A;I;;;;;;Produits des cessions d'immobilisations incorporelles et corporelles;Proceeds from disposal of intangible and tangible fixed assets;Opbrengst verkoop immateriële en materiële vaste activa;Erlöse aus Abgängen immaterieller Anlagen und Sachanlagen
+758000;A;I;AR_amount;;;;;Indemnités et autres produits;Compensation and other operating income;Schadevergoedingen en overige bedrijfsopbrengsten;Entschädigungen und sonstige betriebliche Erträge
+76;H;I;;;;;;Produits financiers;Financial income;Financiële baten;Finanzerträge
+761000;A;I;;;;;;Produits de participations;Income from participations;Opbrengst deelnemingen;Beteiligungserträge
+764000;A;I;;;;;;Revenus des valeurs mobilières de placement;Income from short-term investments;Opbrengst beleggingen;Erträge aus Wertpapieren
+765000;A;I;;;;;;Escomptes obtenus;Cash discounts received;Ontvangen betalingskortingen;Erhaltene Skonti
+768000;A;I;;;;;;Autres produits financiers;Other financial income;Overige financiële baten;Sonstige Finanzerträge
+77;H;I;;;;;;Produits exceptionnels;Exceptional income;Buitengewone baten;Außerordentliche Erträge
+778000;A;I;;;;;;Autres produits exceptionnels;Other exceptional income;Overige buitengewone baten;Sonstige außerordentliche Erträge
+78;H;I;;;;;;Reprises sur amortissements, dépréciations et provisions;Reversals of depreciation, impairment and provisions;Terugnemingen afschrijvingen en voorzieningen;Auflösungen von Wertberichtigungen und Rückstellungen
+781500;A;I;;;;;;Reprises sur provisions d'exploitation;Reversal of operating provisions;Vrijval voorzieningen;Auflösung von Rückstellungen
+781700;A;I;;;;;;Reprises sur dépréciations des actifs circulants;Reversal of impairment of current assets;Terugneming waardeverminderingen vlottende activa;Auflösung Wertberichtigungen Umlaufvermögen
+786000;A;I;;;;;;Reprises sur dépréciations et provisions - produits financiers;Financial reversals;Financiële terugnemingen;Finanzielle Auflösungen
+787000;A;I;;;;;;Reprises sur dépréciations et provisions - produits exceptionnels;Exceptional reversals;Buitengewone terugnemingen;Außerordentliche Auflösungen

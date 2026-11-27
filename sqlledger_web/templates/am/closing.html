@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Afsluiten") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Boekperiode afsluiten") }}</h2>
+{% include "help/am_closing.html" %}
+<form method="post" action="/beheer/afsluiten" class="stack">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Boeken afgesloten tot en met") }}
+    <input type="date" name="closedto" value="{{ shown }}">
+    <input type="hidden" name="closedto_shown" value="{{ shown }}"></label>
+  {% if c.closedto and not c.closedto_date %}
+  <p class="warn small">{{ _("Opgeslagen waarde {value} is geen geldige datum; hij werkt als getal (jjjjmmdd) en blijft staan zolang u het veld leeg laat.").format(value=c.closedto) }}</p>
+  {% endif %}
+  <label class="check"><input type="checkbox" name="revtrans" value="1"{% if c.revtrans %} checked{% endif %}> {{ _("Boekingen nooit wijzigen, alleen tegenboeken (alle datums)") }}</label>
+  <label class="check"><input type="checkbox" name="audittrail" value="1"{% if c.audittrail %} checked{% endif %}> {{ _("Audittrail bijhouden") }}</label>
+  <p class="muted small">{{ _("Het audittrail wordt nooit gewist.") }} <a href="/beheer/audittrail">{{ _("Audittrail bekijken") }}</a></p>
+  <div><button name="action" value="save">{{ _("Opslaan") }}</button></div>
+</form>
+
+<h3>{{ _("Administratie op slot") }}</h3>
+<form method="post" action="/beheer/afsluiten" class="stack">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% if lock and lock.locked %}
+  <p class="warn">{{ _("Deze administratie staat op slot: alleen beheerders kunnen erin.") }}{% if lock.lock_message %} {{ _("Melding:") }} {{ lock.lock_message }}{% endif %}</p>
+  <div><button name="action" value="unlock">{{ _("Van slot halen") }}</button></div>
+  {% else %}
+  <p class="muted small">{{ _("Op slot zetten (bv. tijdens een controle of overstap): gebruikers die geen beheerder zijn kunnen de administratie dan niet openen.") }}</p>
+  <label>{{ _("Melding voor gebruikers") }} <input name="lock_message" maxlength="500"></label>
+  <div><button name="action" value="lock" class="secondary">{{ _("Op slot zetten") }}</button></div>
+  {% endif %}
+</form>
+{% endblock %}

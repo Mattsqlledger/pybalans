@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Back-up inlezen") }}{% endblock %}
+{% block content %}
+{% if wizard %}{% include "start/_steps.html" %}{% endif %}
+<div class="head"><h2>{{ _("Inlezen mislukt") }}</h2></div>
+{% include "help/sys_restore_result.html" %}
+<p class="error" role="alert">{{ failure }}</p>
+{% if rma %}{% include "system/_rma_report.html" %}{% endif %}
+<p>{{ _("Er is niets aangemaakt: de nieuwe database is weer verwijderd.") }}</p>
+<p class="actions">{% if retry %}<a class="button" href="{{ retry }}">{{ _("Opnieuw proberen") }}</a> {% endif %}<a class="button secondary" href="{{ base }}">{{ _("Ander bestand kiezen") }}</a></p>
+{% endblock %}

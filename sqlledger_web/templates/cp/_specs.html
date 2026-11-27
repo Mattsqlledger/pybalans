@@ -1,0 +1,28 @@
+{#- Knoppen voor de betalingsspecificatie na het boeken (fase 4 stap 4b, SB8). ``specs``: lijst met key, name,
+    source, amount; ``k``: soort (ontvangsten/betalingen). Eén betaling: direct de knoppen; meerdere: per relatie
+    een vinkje (standaard alle) en dezelfde knoppen (alles samen in één PDF, per relatie een eigen mail). -#}
+{% if specs %}
+<form method="post" action="/betalingsregister" class="specs noprint">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="soort" value="{{ k.many }}">
+  {% if specs|length == 1 %}
+  <input type="hidden" name="sel" value="{{ specs[0].key }}">
+  {% else %}
+  <details>
+    <summary>{{ _("Betalingsspecificaties ({n})").format(n=specs|length) }}</summary>
+    <ul class="plain">
+    {% for s in specs %}
+      <li><label><input type="checkbox" name="sel" value="{{ s.key }}" checked> {{ s.name }}
+        <span class="muted">{{ s.source }} · {{ amount(s.amount, "0") }}</span></label></li>
+    {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+  <p class="actions">
+    <span>{{ _("Betalingsspecificatie") if specs|length == 1 else _("Specificaties van de aangevinkte relaties") }}:</span>
+    <button name="action" value="preview" class="secondary" formtarget="_blank">{{ _("Voorbeeld") }}</button>
+    <button name="action" value="pdf" formtarget="_blank">{{ _("PDF") }}</button>
+    <button name="action" value="mail">{{ _("Mailen") }}</button>
+  </p>
+</form>
+{% endif %}

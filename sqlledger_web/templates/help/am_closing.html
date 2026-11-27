@@ -1,0 +1,24 @@
+{# Beheer > Afsluiten (HELP_ANALYSE golf 2, tekst 12) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een periode op slot zetten, bijvoorbeeld na de btw-aangifte of de jaarrekening, zodat daarin niets meer verandert. Alleen een beheerder kan dit.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul bij {f} de laatste dag van de afgesloten periode in.", f=hl("Boeken afgesloten tot en met")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Opslaan")) }}</li>
+  <li>{{ ht("Wilt u de periode weer openen? Zet een eerdere datum, of maak het veld leeg, en klik op {b}.", b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: tot en met deze datum kan niemand nog boeken, wijzigen of verwijderen. Dat geldt voor boekingen, facturen, betalingen, orders en uren. U kunt ze nog wel bekijken en kopiëren. Leeg = geen afgesloten periode.", f=hl("Boeken afgesloten tot en met")) }}</li>
+  <li>{{ ht("{f}: geen enkele opgeslagen boeking kan nog worden gewijzigd of verwijderd, ook niet in een open periode. Een fout herstelt u dan met een nieuwe boeking.", f=hl("Boekingen nooit wijzigen, alleen tegenboeken (alle datums)")) }}</li>
+  <li>{{ ht("{f}: legt per boeking vast wie wat heeft gedaan. U bekijkt dat bij {b}.", f=hl("Audittrail bijhouden"), b=hl("Audittrail bekijken")) }}</li>
+  <li>{{ ht("{f}: gebruikers die geen beheerder zijn kunnen de administratie niet meer openen, bijvoorbeeld tijdens een controle. Bij {m} zet u de reden. {u} heft dit op.", f=hl("Op slot zetten"), m=hl("Melding voor gebruikers"), u=hl("Van slot halen")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Boek eerst de jaarafsluiting ({m}) en sluit daarna de periode af. In een afgesloten periode kan de jaarafsluiting niet meer worden geboekt.", m=hm("Beheer", "Jaarafsluiting")) }}</li>
+  <li>{{ _("Rapporten blijven gewoon werken voor een afgesloten periode.") }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: u kunt een boeking uit een afgesloten periode ook niet meer naar een open datum verplaatsen.") }}</li>
+</ul>
+</details>

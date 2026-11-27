@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% import "_attach.html" as att with context %}
+{% block title %}{{ _(title) }}{% endblock %}
+{% macro text(name, label, max=None, cls="", req=False, type="text") -%}
+<label{% if cls %} class="{{ cls }}"{% endif %}>{{ _(label) }}{% if req %} *{% endif %}
+  <input{% if type != "text" %} type="{{ type }}"{% endif %} name="{{ name }}" value="{{ f[name] }}"{% if max %} maxlength="{{ max }}"{% endif %}{{ dis }}></label>
+{%- endmacro %}
+{% macro accounts(name, label, list) -%}
+<label>{{ _(label) }}
+  <select name="{{ name }}"{{ dis }}><option value=""></option>
+    {% for a in list %}<option value="{{ a.accno }}"{% if a.accno == f[name] %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+  </select></label>
+{%- endmacro %}
+{% block content %}
+{% set person = f.typeofcontact == "person" %}
+<div class="head">
+  <h2>{{ _(title) if not readonly else _(k.label) }}
+    {% if f.id %}<span class="muted">{{ f.number }}</span>{% endif %}
+    {% if rel and not rel.active %}<span class="tag">{{ _("inactief") }}</span>{% endif %}
+    {% if readonly %}<span class="tag">{{ _("alleen lezen") }}</span>{% endif %}</h2>
+  <p class="actions noprint">
+    <a href="/{{ k.prefix }}">{{ _(k.search_label) }}</a>
+    {% if not readonly %}<a href="/{{ k.prefix }}/nieuw">{{ _(k.title_add) }}</a>{% endif %}
+    {% for url, label in links %}<a href="{{ url }}">{{ _(label) }}</a>{% endfor %}
+  </p>
+</div>
+{% include "help/ct_form.html" %}
+{% if actions %}
+<p class="actions noprint">{% for url, label in actions %}<a class="button secondary" href="{{ url }}">{{ _(label) }}</a>{% endfor %}</p>
+{% endif %}
+
+<form method="post" action="/{{ k.prefix }}" class="ctform">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="id" value="{{ f.id or '' }}">
+  <input type="hidden" name="number_preview" value="{{ f.number_preview }}">
+
+  <fieldset class="glhead"{{ dis }}>
+    <legend>{{ _("Algemeen") }}</legend>
+    <div class="wide">
+      <label class="check inline"><input type="radio" name="typeofcontact" value="company"{% if not person %} checked{% endif %} data-refresh> {{ _("Bedrijf") }}</label>
+      <label class="check inline"><input type="radio" name="typeofcontact" value="person"{% if person %} checked{% endif %} data-refresh> {{ _("Persoon") }}</label>
+    </div>
+    <label>{{ _(k.number_label) }}
+      {% if f.id and ch.lock_number %}
+      <input value="{{ f.number }}" readonly><input type="hidden" name="number" value="{{ f.number }}">
+      {% else %}
+      <input name="number" value="{{ f.number }}" maxlength="32" placeholder="{{ _('automatisch bij opslaan') }}"{{ dis }}>
+      {% endif %}
+      {% if number_note %}<span class="muted small">{{ _("wordt pas vastgelegd bij opslaan") }}</span>{% endif %}
+    </label>
+    {% if person %}
+    <input type="hidden" name="name" value="{{ f.name }}">
+    <p class="muted small">{{ _("Naam") }}: {{ f.name or "—" }}<br>{{ _("wordt achternaam + voornaam van de contactpersoon") }}</p>
+    {% else %}
+    {{ text("name", N_("Naam"), 64, "wide", req=True) }}
+    {% endif %}
+    {{ text("taxnumber", N_("Btw-nummer"), 32) }}
+    {% if ch.business %}
+    <label>{{ _("Branche") }}
+      <select name="business_id"{{ dis }}><option value=""></option>
+        {% for b in ch.business %}<option value="{{ b.id }}"{% if b.id|string == f.business_id %} selected{% endif %}>{{ b.description }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="business_id" value="{{ f.business_id }}">{% endif %}
+    {% if ch.employees %}
+    <label>{{ _(k.employee_label) }}
+      <select name="employee_id"{{ dis }}><option value=""></option>
+        {% for e in ch.employees %}<option value="{{ e.id }}"{% if e.id|string == f.employee_id %} selected{% endif %}>{{ e.name }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="employee_id" value="{{ f.employee_id }}">{% endif %}
+    {% if ch.languages %}
+    <label>{{ _("Taal documenten") }}
+      <select name="language_code"{{ dis }}><option value=""></option>
+        {% for l in ch.languages %}<option value="{{ l.code }}"{% if l.code == f.language_code %} selected{% endif %}>{{ l.description or l.code }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="language_code" value="{{ f.language_code }}">{% endif %}
+    {% if ch.currencies|length > 1 or (f.curr and f.curr not in ch.currencies) %}
+    <label>{{ _("Valuta") }}
+      <select name="curr"{{ dis }}>
+        {% if f.curr and f.curr not in ch.currencies %}<option selected>{{ f.curr }}</option>{% endif %}
+        {% if not f.curr %}<option value="" selected>{{ _("standaardvaluta") }}</option>{% endif %}
+        {% for c in ch.currencies %}<option{% if c == f.curr %} selected{% endif %}>{{ c }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="curr" value="{{ f.curr }}">{% endif %}
+    {{ text("startdate", N_("Startdatum"), type="date") }}
+    {{ text("enddate", N_("Einddatum (inactief vanaf)"), type="date") }}
+  </fieldset>
+
+  <fieldset class="glhead"{{ dis }}>
+    <legend>{{ _("Adres") }}</legend>
+    {{ text("address1", N_("Adres"), 32) }}
+    {{ text("address2", N_("Adres (2e regel)"), 32) }}
+    {{ text("zipcode", N_("Postcode"), 10) }}
+    {{ text("city", N_("Plaats"), 32) }}
+    {{ text("state", N_("Provincie/staat"), 32) }}
+    {{ text("country", N_("Land"), 32) }}
+  </fieldset>
+
+  <fieldset class="glhead"{{ dis }}>
+    <legend>{{ _("Persoon") if person else _("Contactpersoon") }}</legend>
+    {{ text("salutation", N_("Aanhef"), 32) }}
+    {{ text("firstname", N_("Voornaam"), 32, req=person) }}
+    {{ text("lastname", N_("Achternaam"), 32, req=person) }}
+    {{ text("contacttitle", N_("Titel"), 32) }}
+    {{ text("occupation", N_("Functie"), 32) }}
+    <div>
+      <span class="label">{{ _("Geslacht") }}</span>
+      <label class="check inline"><input type="radio" name="gender" value="M"{% if f.gender == "M" %} checked{% endif %}{{ dis }}> {{ _("man") }}</label>
+      <label class="check inline"><input type="radio" name="gender" value="F"{% if f.gender == "F" %} checked{% endif %}{{ dis }}> {{ _("vrouw") }}</label>
+    </div>
+    {{ text("phone", N_("Telefoon"), 20) }}
+    {{ text("fax", N_("Fax"), 20) }}
+    {{ text("mobile", N_("Mobiel"), 20) }}
+    {{ text("email", N_("E-mail")) }}
+    {{ text("cc", N_("Cc")) }}
+    {{ text("bcc", N_("Bcc")) }}
+  </fieldset>
+
+  <fieldset class="glhead"{{ dis }}>
+    <legend>{{ _("Voorwaarden en rekeningen") }}</legend>
+    <label>{{ _("Betalingstermijn (dagen)") }} <input name="terms" value="{{ f.terms }}" class="num short" inputmode="numeric"{{ dis }}></label>
+    <label>{{ _("Korting %") }} <input name="discount" value="{{ f.discount }}" class="num short" inputmode="decimal"{{ dis }}></label>
+    <label>{{ _("Kredietlimiet") }} <input name="creditlimit" value="{{ f.creditlimit }}" class="num" inputmode="decimal"{{ dis }}></label>
+    {% if ch.discount or f.cashdiscount or f.discount_accno %}
+    <label>{{ _("Contante korting % / dagen") }}
+      <span class="pair"><input name="cashdiscount" value="{{ f.cashdiscount }}" class="num short" inputmode="decimal"{{ dis }}>
+      <input name="discountterms" value="{{ f.discountterms }}" class="num short" inputmode="numeric"{{ dis }}></span></label>
+    {{ accounts("discount_accno", N_("Kortingsrekening"), ch.discount) }}
+    {% else %}
+    <input type="hidden" name="cashdiscount" value="{{ f.cashdiscount }}"><input type="hidden" name="discountterms" value="{{ f.discountterms }}">
+    <input type="hidden" name="discount_accno" value="{{ f.discount_accno }}">
+    {% endif %}
+    {{ accounts("arap_accno", k.arap_label, ch.arap) }}
+    {{ accounts("prepayment_accno", N_("Vooruitbetalingen"), ch.arap) }}
+    {{ accounts("payment_accno", k.payment_label, ch.payment) }}
+    {% if f.vc == "vendor" %}{{ accounts("expense_accno", N_("Vaste kostenrekening"), ch.expense) }}{% endif %}
+    <label>{{ _("Drempelbedrag") }} <input name="threshold" value="{{ f.threshold }}" class="num" inputmode="decimal"{{ dis }}></label>
+    {% if ch.paymentmethods %}
+    <label>{{ _("Betaalmethode") }}
+      <select name="paymentmethod_id"{{ dis }}><option value=""></option>
+        {% for pm in ch.paymentmethods %}<option value="{{ pm.id }}"{% if pm.id|string == f.paymentmethod_id %} selected{% endif %}>{{ pm.description }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="paymentmethod_id" value="{{ f.paymentmethod_id }}">{% endif %}
+    {{ text("sic_code", N_("SIC-code"), 6) }}
+    {% if f.vc == "vendor" %}{{ text("gifi_accno", N_("GIFI onderaanneming"), 30) }}{% endif %}
+    <label class="check"><input type="checkbox" name="remittancevoucher" value="1"{% if f.remittancevoucher %} checked{% endif %}{{ dis }}> {{ _("Betaalbewijs (remittance voucher)") }}</label>
+    <div class="wide">
+      <span class="label">{{ _("Btw") }}</span>
+      {% for t in ch.tax %}
+      <label class="check inline"><input type="checkbox" name="tax" value="{{ t.accno }}"{% if t.accno in f.taxaccounts %} checked{% endif %}{{ dis }}> {{ t.accno }} {{ t.description }}</label>
+      {% else %}<span class="muted">{{ _("geen btw-rekeningen") }}</span>{% endfor %}
+      <label class="check inline"><input type="checkbox" name="taxincluded" value="1"{% if f.taxincluded %} checked{% endif %}{{ dis }}> {{ _("Btw inbegrepen") }}</label>
+    </div>
+    {% if ch.vat_boxes %}
+    <label>{{ _("Btw-rubriek omzet zonder btw") }}
+      <select name="vat_box"{{ dis }}><option value="">{% if ch.vat_default == "1E" %}{{ _("1E (standaard)") }}{% else %}{{ _(vat_box_labels[ch.vat_default]) }}{% endif %}</option>
+        {% for b in ch.vat_boxes if b != ch.vat_default %}<option value="{{ b }}"{% if b == f.vat_box %} selected{% endif %}>{{ b }} {{ _(vat_box_labels[b]) }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="vat_box" value="{{ f.vat_box }}">{% endif %}
+    {% if ch.icp_kinds %}
+    <label>{{ _("ICP-soort") }}
+      <select name="icp_kind"{{ dis }}>{% for code, label in ch.icp_kinds %}<option value="{{ code }}"{% if code == f.icp_kind %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}</select>
+      <span class="muted small">{{ _("Voor de ICP-opgaaf bij boekingen zonder artikelen. Klant in rubriek 3B: btw-nummer met landcode verplicht.") }}</span></label>
+    {% else %}<input type="hidden" name="icp_kind" value="{{ f.icp_kind }}">{% endif %}
+  </fieldset>
+
+  <fieldset class="glhead"{{ dis }}>
+    <legend>{{ _("Bank") }}</legend>
+    {{ text("bankname", N_("Bank"), 64) }}
+    {{ text("iban", N_("IBAN"), 42) }}
+    {{ text("bic", N_("BIC"), 11) }}
+    {{ text("membernumber", N_("Lidnummer")) }}
+    {{ text("clearingnumber", N_("Clearingnummer")) }}
+    <details class="more wide"{% if f.bankaddress1 or f.bankcity %} open{% endif %}>
+      <summary>{{ _("Adres bank") }}</summary>
+      <div class="glhead">
+        {{ text("bankaddress1", N_("Adres"), 32) }}
+        {{ text("bankaddress2", N_("Adres (2e regel)"), 32) }}
+        {{ text("bankzipcode", N_("Postcode"), 10) }}
+        {{ text("bankcity", N_("Plaats"), 32) }}
+        {{ text("bankstate", N_("Provincie/staat"), 32) }}
+        {{ text("bankcountry", N_("Land"), 32) }}
+      </div>
+    </details>
+  </fieldset>
+
+  <details class="more"{% if f.shiptoname or f.shiptoaddress1 or f.shiptocity %} open{% endif %}>
+    <summary>{{ _("Afwijkend verzendadres") }}</summary>
+    <fieldset class="glhead"{{ dis }}>
+      {{ text("shiptoname", N_("Naam"), 64) }}
+      {{ text("shiptoaddress1", N_("Adres"), 32) }}
+      {{ text("shiptoaddress2", N_("Adres (2e regel)"), 32) }}
+      {{ text("shiptozipcode", N_("Postcode"), 10) }}
+      {{ text("shiptocity", N_("Plaats"), 32) }}
+      {{ text("shiptostate", N_("Provincie/staat"), 32) }}
+      {{ text("shiptocountry", N_("Land"), 32) }}
+      {{ text("shiptocontact", N_("Contactpersoon"), 64) }}
+      {{ text("shiptophone", N_("Telefoon"), 20) }}
+      {{ text("shiptofax", N_("Fax"), 20) }}
+      {{ text("shiptoemail", N_("E-mail")) }}
+      <p class="muted small wide">{{ _("Wordt alleen bewaard als het afwijkt van het adres hierboven.") }}</p>
+    </fieldset>
+  </details>
+
+  <label class="wide notes">{{ _("Notities") }}
+    <textarea name="notes" rows="{{ [f.notes.count('\n') + 2, 6]|min }}"{{ dis }}>
+{{ f.notes }}</textarea></label>
+
+  {{ att.refs(f, readonly) }}
+
+  {% if confirm == "delete" %}
+  <div class="confirm" role="alert">
+    <p><strong>{{ _(k.delete_question).format(name=f.name) }}</strong>
+      {{ _("Adres, contactpersonen, bankgegevens en verzendadres verdwijnen ook. Dit kan niet ongedaan gemaakt worden.") }}</p>
+    <button name="action" value="delete_confirmed" class="danger">{{ _("Ja, verwijderen") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Terug") }}</button>
+  </div>
+  {% elif not readonly %}
+  <p class="actions glbuttons">
+    <button name="action" value="save">{{ _("Opslaan") }}</button>
+    {% if f.id %}<button name="action" value="save_as_new" class="secondary">{{ _("Opslaan als nieuw") }}</button>{% endif %}
+    {% if not (f.id and ch.lock_number) %}<button name="action" value="new_number" class="secondary" formnovalidate>{{ _("Nieuw nummer") }}</button>{% endif %}
+    <button name="action" value="update" class="secondary" formnovalidate data-update>{{ _("Bijwerken") }}</button>
+    {% if rel and not rel.in_use %}
+    <button name="action" value="delete" class="secondary danger" formnovalidate>{{ _("Verwijderen") }}</button>
+    {% elif rel and rel.active %}
+    <button name="action" value="inactive" class="secondary" formnovalidate
+            title="{{ _('Wordt gebruikt in boekingen en kan daarom niet verwijderd worden') }}">{{ _("Inactief maken") }}</button>
+    {% endif %}
+  </p>
+  {% endif %}
+</form>
+{% if f.id %}{{ att.saved(attachments, f.id, f.vc, can_edit) }}{% elif not readonly %}{{ att.later() }}{% endif %}
+<script src="/static/ct.js" defer></script>
+<script src="/static/attach.js" defer></script>
+{% endblock %}

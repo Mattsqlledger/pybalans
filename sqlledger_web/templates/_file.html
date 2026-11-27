@@ -1,0 +1,7 @@
+{# Bestandsknop in de taal van de gebruiker: de knop en "Geen bestand gekozen" van de browser zelf volgen de taal
+   van de browser, niet die van de app. Het echte veld blijft bestaan (verborgen maar bereikbaar); het moet binnen een
+   <label> staan, zodat klikken op de knop het kiesvenster opent. static/filepick.js toont de gekozen naam. #}
+{% macro filepick(name, accept="", required=False) -%}
+<span class="filepick"><input type="file" name="{{ name }}"{% if accept %} accept="{{ accept }}"{% endif %}{% if required %} required{% endif %} class="vh"><span class="button secondary" aria-hidden="true">{{ _("Bestand kiezen") }}</span>
+<span class="muted" data-filename>{{ _("Geen bestand gekozen") }}</span></span>
+{%- endmacro %}

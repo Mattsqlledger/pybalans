@@ -1,0 +1,210 @@
+{
+ "config": {
+  "name": "Test Treuhand",
+  "login": "test"
+ },
+ "ops": [
+  {
+   "op": "sql",
+   "label": "basis: valuta, extra rekeningen, btw CH 8,1/2,6, magazijnen, bedrijfsgegevens",
+   "sql": [
+    "INSERT INTO curr (rn, curr, precision) VALUES (1,'CHF',2),(2,'EUR',2),(3,'USD',2) ON CONFLICT DO NOTHING",
+    "INSERT INTO chart (accno,description,charttype,category,link) VALUES ('11001','Debitoren','A','A','AR'),('11701','Vorsteuer','A','A','AP_tax:IC_taxpart:IC_taxservice'),('22100','MWST 8,1%','A','L','AR_tax:AP_tax:IC_taxpart:IC_taxservice'),('22101','MWST 2,6%','A','L','AR_tax:AP_tax:IC_taxpart:IC_taxservice'),('11103','Bank EUR','A','A','AR_paid:AP_paid')",
+    "UPDATE tax SET validto = '2023-12-31'",
+    "INSERT INTO tax (chart_id, rate, taxnumber, validfrom) SELECT id, 0.081, 'CHE-123.456.789 MWST', '2024-01-01' FROM chart WHERE accno='22100'",
+    "INSERT INTO tax (chart_id, rate, taxnumber, validfrom) SELECT id, 0.026, 'CHE-123.456.789 MWST', '2024-01-01' FROM chart WHERE accno='22101'",
+    "INSERT INTO defaults (fldname, fldvalue) VALUES ('company','Test Treuhand GmbH'),('address','Musterstrasse 1\n8000 Zürich'),('businessnumber','CHE-123.456.789'),('sinumber','1000'),('vinumber','5000'),('sonumber','S-1000'),('ponumber','P-1000'),('glnumber','G-1000'),('partnumber','A-100'),('customernumber','K-100'),('vendornumber','L-100'),('employeenumber','M-1')",
+    "INSERT INTO warehouse (description) VALUES ('Lager Zürich'), ('Lager Bern')",
+    "INSERT INTO exchangerate (curr, transdate, buy, sell) VALUES ('EUR','2025-01-15',0.9400,0.9500),('EUR','2025-02-10',0.9350,0.9450),('EUR','2025-03-05',0.9300,0.9400),('USD','2025-01-15',0.9000,0.9100),('EUR','2025-02-20',0,0.9420)"
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "klant Muster AG",
+   "script": "ct.pl",
+   "start": "add",
+   "fields": {
+    "db": "customer"
+   },
+   "steps": [
+    {
+     "set": {
+      "name": "Muster AG",
+      "address1": "Bahnhofstrasse 10",
+      "city": "Zürich",
+      "zipcode": "8001",
+      "country": "CH",
+      "email": "info@muster.invalid",
+      "terms": "30",
+      "iban": "CH9300762011623852957",
+      "bic": "POFICHBEXXX",
+      "income_accno": "#31005",
+      "reminderstop": "1",
+      "curr": "CHF",
+      "startdate": "2024-01-01",
+      "tax_22100": "1",
+      "tax_22101": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "klant1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "leverancier Lieferant GmbH",
+   "script": "ct.pl",
+   "start": "add",
+   "fields": {
+    "db": "vendor"
+   },
+   "steps": [
+    {
+     "set": {
+      "name": "Lieferant GmbH",
+      "address1": "Industriestrasse 3",
+      "city": "Basel",
+      "zipcode": "4051",
+      "country": "CH",
+      "curr": "CHF",
+      "terms": "30",
+      "expense_accno": "#41001",
+      "payment_clearing_accno": "#11102",
+      "early_payment_discount": "2",
+      "iban": "CH4431999123000889012",
+      "bic": "UBSWCHZH80A",
+      "reminderstop": "1",
+      "startdate": "2024-01-01",
+      "tax_22100": "1",
+      "tax_22101": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "lev1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "artikel A-100 Laptop",
+   "script": "ic.pl",
+   "start": "add",
+   "fields": {
+    "item": "part"
+   },
+   "steps": [
+    {
+     "set": {
+      "partnumber": "A-100",
+      "description": "Laptop",
+      "sellprice": "1200",
+      "lastcost": "800",
+      "listprice": "1300",
+      "unit": "Stk",
+      "weight": "2",
+      "IC_inventory": "#11121",
+      "IC_income": "#31001",
+      "IC_expense": "#41001",
+      "rop": "2",
+      "bin": "R1",
+      "IC_tax_22100": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "art1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "artikel A-101 Maus",
+   "script": "ic.pl",
+   "start": "add",
+   "fields": {
+    "item": "part"
+   },
+   "steps": [
+    {
+     "set": {
+      "partnumber": "A-101",
+      "description": "Maus",
+      "sellprice": "40",
+      "lastcost": "15",
+      "unit": "Stk",
+      "weight": "0.1",
+      "IC_inventory": "#11121",
+      "IC_income": "#31005",
+      "IC_expense": "#41005",
+      "IC_tax_22100": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "art2": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "verkoopfactuur Muster AG",
+   "script": "is.pl",
+   "start": "add",
+   "fields": {
+    "type": "invoice"
+   },
+   "steps": [
+    {
+     "set": {
+      "customer": "Muster AG",
+      "transdate": "2025-02-10"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "invnumber": "RE-OLD-1",
+      "warehouse": "~~warehouse:description=Lager Zürich"
+     },
+     "do": "update"
+    },
+    {
+     "lines": [
+      {
+       "partnumber": "A-101",
+       "qty": "3"
+      }
+     ],
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "memoriaal",
+   "script": "gl.pl",
+   "start": "add",
+   "fields": {},
+   "steps": [
+    {
+     "set": {
+      "transdate": "2025-03-31",
+      "reference": "G-OLD-1",
+      "description": "Unterhalt",
+      "accno_1": "#61901",
+      "debit_1": "100",
+      "accno_2": "#11102",
+      "credit_2": "100"
+     },
+     "do": "post"
+    }
+   ]
+  }
+ ]
+}

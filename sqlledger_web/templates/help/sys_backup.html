@@ -1,0 +1,28 @@
+{# Systeem > Back-up maken (HELP_ANALYSE golf 3, tekst C8; Mac/cron-voorbeeld uit system/_help_backup.html, codevoorbeelden uit routes_backup.py) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Per administratie een volledige back-up downloaden: alle gegevens en de bijlagen. Een back-up is ook de manier om een administratie naar een andere server te verhuizen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Klik bij de administratie op {b}. Uw browser downloadt één bestand.", b=hl("Database (.sql.gz)")) }}</li>
+  <li>{{ _("Staat er ook een knop \"{button}\"? Download die ook: eigen sjablonen en het logo zitten niet in de database.").format(button=_("Sjablonen en logo (.zip)")) }}</li>
+  <li>{{ _("Zet beide bestanden op een andere plek dan deze computer, bijvoorbeeld een USB-schijf, een NAS of een cloudmap.") }}</li>
+  <li>{{ ht("Terugzetten doet u met {b} (link bovenaan).", b=hl("Back-up inlezen")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: wanneer er voor het laatst een back-up is gemaakt, hier of met de opdracht op de server. Ouder dan 7 dagen of {n}: dan ziet de beheerder van de administratie een herinnering op het dashboard.", f=hl("Laatste back-up"), n=hl("nog nooit")) }}</li>
+</ul>
+<h4>{{ _("Automatisch elke nacht (Mac)") }}</h4>
+<p>{{ _("Maak het bestand {file} met deze inhoud (pas de twee paden aan) en zet het aan met {command}:").format(file=PLIST_FILE, command=PLIST_LOAD) }}</p>
+<pre class="cmd">{{ PLIST }}</pre>
+<p>{{ _("Op een Linux-server doet u hetzelfde met cron:") }}</p>
+<pre class="cmd">{{ CRON }}</pre>
+<p>{{ _("Een automatische back-up telt ook mee voor de herinnering op het dashboard.") }}</p>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Niet in de back-up, dus zelf één keer bewaren: het configbestand van de app (bijvoorbeeld app.toml), het bestand secret.key in de datamap (zonder dat bestand vult u na het terugzetten het wachtwoord van de mailserver opnieuw in), eigen woorden (map vertalingen in de datamap) en de RGS-lijst (opnieuw in te lezen bij {m}).", m=hm("Systeem", "RGS-lijst")) }}</li>
+  <li>{{ ht("Gebruikers, rechten en het logboek zitten niet in deze back-up. Die gaan mee met de opdracht op de server (onder {s}).", s=hl("Automatisch, op een vast tijdstip")) }}</li>
+  <li>{{ _("Deze back-up is niet bedoeld voor Restore in SQL-Ledger. SQL-Ledger weigert hem ook (\"Not a SQL-Ledger backup!\"). Terug naar SQL-Ledger kan wel via de beheerder van de server; zie de installatiehandleiding.") }}</li>
+</ul>
+</details>

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Bankregel") }}{% endblock %}
+{% block content %}
+{% set l = line %}
+<div class="head">
+  <h2>{{ _("Bankregel") }} {{ l.bookdate }} · {{ amount(l.amount) }}{% if l.curr %} {{ l.curr }}{% endif %}</h2>
+  <p class="actions noprint"><a href="/bank/afschriften/{{ l.statement_id }}">{{ _("Afschrift") }}</a></p>
+</div>
+{% include "help/bank_lines.html" %}
+<dl class="facts">
+  <dt>{{ _("Bankrekening") }}</dt><dd>{{ l.accno }}</dd>
+  <dt>{{ _("Tegenpartij") }}</dt><dd>{{ l.name or "" }} {% if l.iban %}<span class="muted">{{ l.iban }}</span>{% endif %}</dd>
+  <dt>{{ _("Omschrijving") }}</dt><dd>{{ l.description or "" }}</dd>
+  {% if l.reference %}<dt>{{ _("Betalingskenmerk") }}</dt><dd>{{ l.reference }}</dd>{% endif %}
+  {% if l.end_to_end %}<dt>{{ _("End-to-end-id") }}</dt><dd>{{ l.end_to_end }}</dd>{% endif %}
+  {% if l.bank_ref %}<dt>{{ _("Bankreferentie") }}</dt><dd>{{ l.bank_ref }}</dd>{% endif %}
+  <dt>{{ _("Status") }}</dt><dd>{{ _(statuses[l.status]) }}{% if l.is_reversal %} · <span class="warn">{{ _("storno") }}</span>{% endif %}
+    {% for b in booked %} · <a href="/boekingen/{{ b.id }}">{{ _(b.module) }} {{ b.ref or b.id }}</a>{% endfor %}
+    {% if l.source %} · {{ _("kenmerk") }} {{ l.source }}{% endif %}{% if l.note %} · {{ l.note }}{% endif %}</dd>
+</dl>
+
+{% if l.status == "ignored" %}
+<form method="post" action="/bank/regel/{{ l.id }}">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <button name="action" value="reopen" class="secondary">{{ _("Weer open zetten") }}</button>
+</form>
+{% elif l.status == "open" %}
+{% if p and p.kind %}
+<form method="post" action="/bank/regel/{{ l.id }}" class="notice">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="sig" value="{{ sig(p) }}">
+  <p>{{ _("Voorstel") }}{% if p.category %} ({{ p.category }} · {{ _(cats[p.category]) }}){% endif %}: {{ libmsg(p.reason) }}{% for w in p.warnings %} <span class="warn">{{ libmsg(w) }}</span>{% endfor %}</p>
+  {% if p.kind == "match" and (p.together or p.matches|length > 1) %}
+  <p class="small">{% for g in p.matches %}{{ g.transdate }} {{ g.reference or g.trans_id }} {{ amount(g.amount) }}{{ "; " if not loop.last }}{% endfor %}
+    {% if p.together %}<br>{{ _("Samen met:") }} {% for o in p.together %}<a href="/bank/regel/{{ o.id }}">{{ o.bookdate }} {{ amount(o.amount) }}</a>{{ ", " if not loop.last }}{% endfor %}{% endif %}</p>
+  {% endif %}
+  <p class="actions"><button name="action" value="accept">{{ _("Voorstel boeken") if p.kind != "match" else _("Koppelen") }}</button></p>
+</form>
+{% elif p %}
+<p class="notice warning">{{ libmsg(p.reason) }}{% if p.candidates and p.category == "g" %} <a href="{{ new_invoice_url(p.candidates[0]) }}">{{ _("Factuur invoeren voor {name}").format(name=p.candidates[0].name) }}</a>{% endif %}</p>
+{% endif %}
+
+<form method="post" action="/bank/regel/{{ l.id }}" class="banklineform">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+
+  <h3>{{ _("Betaling op facturen") }}</h3>
+  <fieldset class="glhead">
+    <label>{{ _("Soort") }}
+      <select name="vc">{% for k, v in vcs.items() %}<option value="{{ k }}"{% if k == f.vc %} selected{% endif %}>{{ _(v) }}</option>{% endfor %}</select></label>
+    <input type="hidden" name="vc_old" value="{{ f.vc }}">
+    <label class="vc">{{ _("Relatie (nummer of naam)") }}
+      <input name="vc_text" value="{{ f.vc_text }}" autocomplete="off"{% if p and p.candidates %} list="bank-cands"{% endif %}></label>
+    {% if p and p.candidates %}<datalist id="bank-cands">{% for c in p.candidates %}<option value="#{{ c.vc_id }}">{{ c.name }}</option>{% endfor %}</datalist>{% endif %}
+    <input type="hidden" name="vc_id" value="{{ f.vc_id or '' }}">
+    <input type="hidden" name="vc_shown" value="{{ f.vc_text if f.vc_id else '' }}">
+    <p class="wide"><button name="action" value="update" class="secondary">{{ _("Bijwerken") }}</button></p>
+  </fieldset>
+  {% if f.vc_id %}
+  <div class="table-wrap">
+  <table class="list gllines">
+    <thead><tr><th></th><th>{{ _("Factuur") }}</th><th>{{ _("Datum") }}</th><th class="num">{{ _("Openstaand") }}</th><th class="num">{{ _("Betaald") }}</th></tr></thead>
+    <tbody>
+    {% for r in f.rows %}{% set i = r.inv.id %}
+      <tr{% if r.checked %} class="checked"{% endif %}>
+        <td><input type="checkbox" name="inv_{{ i }}" value="1"{% if r.checked %} checked{% endif %} aria-label="{{ _('Betalen') }} {{ r.inv.invnumber }}">
+          <input type="hidden" name="due_{{ i }}" value="{{ amount(r.inv.due) }}"></td>
+        <td><a href="/boekingen/{{ i }}" target="_blank">{{ r.inv.invnumber or i }}</a> <span class="muted small">{{ r.inv.description or "" }}</span></td>
+        <td>{{ r.inv.transdate }}</td>
+        <td class="num">{{ amount(r.inv.due) }}</td>
+        <td><input name="paid_{{ i }}" value="{{ r.paid }}" class="num" inputmode="decimal" aria-label="{{ _('Betaald') }} {{ r.inv.invnumber }}"></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5" class="muted">{{ _("Geen openstaande posten in deze valuta.") }}</td></tr>
+    {% endfor %}
+    </tbody>
+    <tfoot><tr><th colspan="4">{{ _("Totaal / bankbedrag") }}</th><th class="num">{{ amount(f.total) }} / {{ amount(f.bank) }}</th></tr>
+      {% if f.rest %}<tr class="diff"><th colspan="4">{{ _("Verschil") }}</th><th class="num">{{ amount(f.rest) }}</th></tr>{% endif %}</tfoot>
+  </table>
+  </div>
+  <p class="actions glbuttons">
+    {% if f.bank > 0 %}<label class="check"><input type="checkbox" name="prepay" value="1"{% if f.prepay %} checked{% endif %}> {{ _("Wat overblijft als vooruitbetaling boeken") }}</label>{% endif %}
+    <button name="action" value="pay">{{ _("Betaling boeken") }}</button>
+    <button name="action" value="update" class="secondary">{{ _("Bijwerken") }}</button>
+  </p>
+  {% endif %}
+
+  <h3>{{ _("Memoriaal") }}</h3>
+  {# tegenrekening (PB26): eerst "Eerder gebruikt", dan alle rekeningen; de zoeklijst toont de groepen als kop #}
+<datalist id="bank-accounts">{% for a in contra %}<option value="{{ a.accno }} {{ a.description }}" data-n="{{ a.accno }}" data-name="{{ a.description }}" data-group="{{ a.group }}"></option>{% endfor %}</datalist>
+  <fieldset class="glhead">
+    <label class="vc">{{ _("Tegenrekening") }} <input name="gl_accno" list="bank-accounts" value="{{ values.get('gl_accno', '') }}" autocomplete="off"></label>
+    <label>{{ _("Btw (bedrag is inclusief)") }}
+      <select name="gl_tax"><option value="">{{ _("geen") }}</option>
+        {% for t in ch.taxes %}<option value="{{ t.accno }}"{% if values.get('gl_tax') == t.accno %} selected{% endif %}>{{ t.accno }} {{ t.description }}</option>{% endfor %}
+      </select></label>
+    {% if ch.departments %}
+    <label>{{ _("Afdeling") }}
+      <select name="gl_dept"><option value=""></option>
+        {% for d in ch.departments %}<option value="{{ d.id }}"{% if values.get('gl_dept') == d.id|string %} selected{% endif %}>{{ d.description }}</option>{% endfor %}
+      </select></label>
+    {% endif %}
+    <label class="vc">{{ _("Omschrijving") }} <input name="gl_desc" value="{{ values.get('gl_desc', '') }}" maxlength="250"
+           placeholder="{{ [l.name, l.description] | select | join(' ') }}"></label>
+    <label class="check"><input type="checkbox" name="gl_rule" value="1"{% if values.get('gl_rule') %} checked{% endif %}> {{ _("Opslaan als vaste regel") }}</label>
+    <label>{{ _("Herkennen aan") }}
+      <select name="gl_by">
+        {% if l.iban %}<option value="iban">{{ _("rekeningnummer") }} {{ l.iban }}</option>{% endif %}
+        <option value="keyword"{% if values.get('gl_by') == 'keyword' or not l.iban %} selected{% endif %}>{{ _("trefwoord") }}</option>
+      </select></label>
+    <label>{{ _("Trefwoord") }} <input name="gl_keyword" value="{{ values.get('gl_keyword', '') }}" maxlength="60"></label>
+    <p class="wide"><button name="action" value="gl">{{ _("Memoriaal boeken") }}</button></p>
+  </fieldset>
+
+  <h3>{{ _("Koppelen aan een bestaande boeking") }}</h3>
+  {% if matches %}
+  <ul class="choices">
+    {% for m in matches %}{% set key = m.trans_id ~ "|" ~ m.transdate ~ "|" ~ (m.source or "") %}
+    <li><label class="check"><input type="radio" name="match" value="{{ key }}"{% if loop.first and p and p.kind == "match" %} checked{% endif %}>
+      {{ m.transdate }} · {{ m.reference or m.trans_id }} {{ m.description or "" }}{% if m.source %} · {{ _("kenmerk") }} {{ m.source }}{% endif %}</label></li>
+    {% endfor %}
+  </ul>
+  <p><button name="action" value="match" class="secondary">{{ _("Koppelen (afletteren)") }}</button></p>
+  {% else %}
+  <p class="muted small">{{ _("Geen niet-afgeletterde boeking met hetzelfde bedrag binnen 31 dagen.") }}</p>
+  {% endif %}
+  {% if near %}
+  <details>
+    <summary>{{ _("Meerdere boekingen samen afletteren") }}</summary>
+    <p class="muted small">{{ _("Kies de boekingen die samen het bankbedrag zijn (bijvoorbeeld een factuur en een creditnota).") }}</p>
+    <ul class="choices">
+      {% for m in near %}{% set key = m.trans_id ~ "|" ~ m.transdate ~ "|" ~ (m.source or "") %}
+      <li><label class="check"><input type="checkbox" name="multi" value="{{ key }}">
+        {{ m.transdate }} · {{ amount(m.amount) }} · {{ m.reference or m.trans_id }} {{ m.description or "" }}</label></li>
+      {% endfor %}
+    </ul>
+    <p><button name="action" value="match_multi" class="secondary">{{ _("Samen afletteren") }}</button></p>
+  </details>
+  {% endif %}
+
+  <h3>{{ _("Negeren") }}</h3>
+  <p class="actions"><label>{{ _("Notitie") }} <input name="note" maxlength="200"></label>
+    <button name="action" value="ignore" class="secondary">{{ _("Negeren") }}</button></p>
+</form>
+{% endif %}
+<p class="actions noprint"><a class="button secondary" href="/bank/regels?rekening={{ l.accno }}">{{ _("Terug naar de bankregels") }}</a></p>
+{% endblock %}

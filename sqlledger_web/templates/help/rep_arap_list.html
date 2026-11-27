@@ -1,0 +1,25 @@
+{# Verkoop > Overzicht en Inkoop > Overzicht (HELP_ANALYSE golf 2, tekst 1) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een lijst van uw verkoop- of inkoopboekingen in een periode, met netto, btw, totaal, betaald en openstaand. Hier zoekt u een factuur terug.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de {p}. Standaard is dat dit jaar tot en met vandaag.", p=hl("Periode")) }}</li>
+  <li>{{ ht("Vul zo nodig een deel van de naam bij {k} of {l} in, of een {f}.", k=hl("Klant"), l=hl("Leverancier"), f=hl("Factuurnummer")) }}</li>
+  <li>{{ ht("Kies bij {s}: {a}, {o} of {b}.", s=hl("Status"), a=hl("Alle"), o=hl("Open"), b=hl("Betaald")) }}</li>
+  <li>{{ ht("Klik op {b}. Klik op een factuurnummer om de boeking te openen.", b=hl("Toon")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{w} (onder {m}): {b} geeft één regel per factuur. {j} toont elke regel met rekening, debet en credit.", w=hl("Weergave"), m=hl("Meer opties"), b=hl("Per boeking"), j=hl("Per journaalregel")) }}</li>
+  <li>{{ ht("{f}: alleen facturen die op {g} staan.", f=hl("Alleen geblokkeerd"), g=hl("Geblokkeerd (niet betalen)")) }}</li>
+  <li>{{ ht("{f}: extra kolommen met de bedragen in de vreemde valuta. De gewone kolommen zijn altijd in uw standaardvaluta.", f=hl("Bedragen per valuta")) }}</li>
+  <li>{{ ht("{s} en {t}: bijvoorbeeld sorteren op relatie met een subtotaal per relatie.", s=hl("Sorteren op"), t=hl("Subtotaal per sorteerwaarde")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{o} en {b} kijken naar de stand van vandaag. Wilt u weten wat er op een bepaalde datum openstond, gebruik dan {v} of {i}.", o=hl("Open"), b=hl("Betaald"), v=hm("Verkoop", "Openstaand"), i=hm("Inkoop", "Openstaand")) }}</li>
+  <li>{{ ht("Op het scherm van een klant of leverancier opent de knop {b} dit overzicht voor alleen die relatie, over alle jaren. De naam staat dan boven de tabel.", b=hl("Boekingen")) }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>

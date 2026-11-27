@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Aangifteformulier") }}{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="/static/vatform.css">
+<div class="report-head">
+  <h2>{{ _("Aangifteformulier") }}</h2>
+  <div class="actions noprint">
+    <a class="button secondary" href="/btw/aangifte?tijdvak={{ period.key }}">{{ _("Terug naar het overzicht") }}</a>
+    {% if is_gb %}<a class="button" href="/btw/aangifte?tijdvak={{ period.key }}&amp;export=csv">{{ _("CSV voor bridging software") }}</a>{% endif %}
+    <a class="button secondary" href="/btw/aangifte/formulier?tijdvak={{ period.key }}&amp;export=pdf" target="_blank" rel="noopener">PDF</a>
+    <button type="button" class="secondary" data-print>{{ _("Afdrukken") }}</button>
+  </div>
+</div>
+{% if is_be %}
+<p class="muted small noprint">{{ _("Neem deze bedragen over in Intervat (of MyMinfin). Klik op een bedrag voor de boekingen.") }}</p>
+{% elif is_gb %}
+<p class="muted small noprint">{{ _("Making Tax Digital: overtypen of kopiëren naar HMRC is niet toegestaan. Lees het CSV-bestand in uw bridging software in en dien de aangifte daarmee in. Klik op een bedrag voor de boekingen.") }}</p>
+{% else %}
+<p class="muted small noprint">{{ _("Neem deze bedragen over in de aangifte bij de Belastingdienst. Klik op een bedrag voor de boekingen.") }}</p>
+{% endif %}
+{% include part %}
+<script src="/static/reports.js" defer></script>
+{% endblock %}

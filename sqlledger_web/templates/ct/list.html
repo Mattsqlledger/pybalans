@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}{{ _(k.plural) }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _(k.plural) }}</h2>
+  {% if can_edit %}<p class="actions noprint"><a href="/{{ k.prefix }}/nieuw">{{ _(k.title_add) }}</a></p>{% endif %}
+</div>
+{% include "help/ct_list.html" %}
+<form method="get" action="/{{ k.prefix }}" class="report-form noprint">
+  <input type="hidden" name="run" value="1">
+  <div class="filters">
+    <label>{{ _("Naam") }} <input name="name" value="{{ v.name }}"></label>
+    <label>{{ _("Nummer") }} <input name="number" value="{{ v.number }}" class="short"></label>
+    <label>{{ _("Contactpersoon") }} <input name="contact" value="{{ v.contact }}"></label>
+    <label>{{ _("Plaats") }} <input name="city" value="{{ v.city }}"></label>
+    <fieldset><legend>{{ _("Status") }}</legend>
+      {% for value, label in statuses %}
+      <label class="check"><input type="radio" name="status" value="{{ value }}"{% if v.status == value %} checked{% endif %}> {{ _(label) }}</label>
+      {% endfor %}
+    </fieldset>
+  </div>
+  <details class="more">
+    <summary>{{ _("Meer opties") }}</summary>
+    <div class="filters">
+      <label>{{ _("E-mail") }} <input name="email" value="{{ v.email }}"></label>
+      <label>{{ _("Telefoon") }} <input name="phone" value="{{ v.phone }}"></label>
+      <label>{{ _("Adres") }} <input name="address" value="{{ v.address }}"></label>
+      <label>{{ _("Postcode") }} <input name="zipcode" value="{{ v.zipcode }}" class="short"></label>
+      <label>{{ _("Provincie/staat") }} <input name="state" value="{{ v.state }}"></label>
+      {% if countries %}
+      <label>{{ _("Land") }} <select name="country"><option value=""></option>
+        {% for c in countries %}<option{% if c == v.country %} selected{% endif %}>{{ c }}</option>{% endfor %}</select></label>
+      {% endif %}
+      <label>{{ _("Notities") }} <input name="notes" value="{{ v.notes }}"></label>
+      {% if ch.employees %}
+      <label>{{ _(k.employee_label) }} <select name="employee_id"><option value=""></option>
+        {% for e in ch.employees %}<option value="{{ e.id }}"{% if e.id|string == v.employee_id %} selected{% endif %}>{{ e.name }}</option>{% endfor %}</select></label>
+      {% endif %}
+      {% if ch.business %}
+      <label>{{ _("Branche") }} <select name="business_id"><option value=""></option>
+        {% for b in ch.business %}<option value="{{ b.id }}"{% if b.id|string == v.business_id %} selected{% endif %}>{{ b.description }}</option>{% endfor %}</select></label>
+      {% endif %}
+      <label>{{ _("Startdatum van") }} <input type="date" name="startdatefrom" value="{{ v.startdatefrom }}"></label>
+      <label>{{ _("tot en met") }} <input type="date" name="startdateto" value="{{ v.startdateto }}"></label>
+      <label>{{ _("Sorteren op") }} <select name="sort">
+        {% for value, label in sorts %}<option value="{{ value }}"{% if value == v.sort %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}</select></label>
+      <label>{{ _("Volgorde") }} <select name="direction">
+        <option value="ASC"{% if v.direction|lower == "asc" %} selected{% endif %}>{{ _("oplopend") }}</option>
+        <option value="DESC"{% if v.direction|lower == "desc" %} selected{% endif %}>{{ _("aflopend") }}</option></select></label>
+    </div>
+    <fieldset><legend>{{ _("Kolommen") }}</legend>
+      {% for key, label, kind in columns %}
+      <label class="check"><input type="checkbox" name="cols" value="{{ key }}"{% if key in v.cols %} checked{% endif %}> {{ _(label) }}</label>
+      {% endfor %}
+    </fieldset>
+  </details>
+  <div class="actions"><button>{{ _("Zoeken") }}</button></div>
+</form>
+
+<div class="report-head">
+  <div class="muted">{{ _("{count} gevonden").format(count=count) }}</div>
+  <div class="actions noprint">
+    <a class="button secondary" href="/{{ k.prefix }}?{{ export_query }}&amp;export=csv">CSV</a>
+    <a class="button secondary" href="/{{ k.prefix }}?{{ export_query }}&amp;export=xlsx">Excel</a>
+    <a class="button secondary" href="/{{ k.prefix }}?{{ export_query }}&amp;export=pdf" target="_blank" rel="noopener">PDF</a>
+  </div>
+</div>
+
+{% set deletable = can_edit and v.status == "orphaned" %}
+<form method="post" action="/{{ k.prefix }}/verwijderen">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="back" value="/{{ k.prefix }}?{{ export_query }}">
+  <div class="table-wrap">
+  <table class="list report">
+    <thead><tr>
+      {% if deletable %}<th><input type="checkbox" data-check-all aria-label="{{ _('alles selecteren') }}"></th>{% endif %}
+      {% for c in table.columns %}<th{% if c.kind == 'amount' %} class="num"{% endif %}>{{ _(c.label) }}</th>{% endfor %}
+    </tr></thead>
+    <tbody>
+    {% for r in table.rows %}
+    <tr>
+      {% if deletable %}<td>{% if not in_use.get(r.cells.id) %}<input type="checkbox" name="ids" value="{{ r.cells.id }}" aria-label="{{ _('selecteren') }}">{% endif %}</td>{% endif %}
+      {% for c in table.columns %}{% set txt = cell(c, r) %}{% set url = r.links.get(c.key) %}
+      <td class="{{ 'num' if c.kind == 'amount' }}{{ ' nowrap' if c.kind == 'date' }}">{% if url %}<a href="{{ url }}">{{ txt or "—" }}</a>{% else %}{{ txt }}{% endif %}</td>
+      {% endfor %}
+    </tr>
+    {% else %}
+    <tr><td colspan="{{ table.columns|length + (1 if deletable else 0) }}" class="muted">{{ _("Niets gevonden.") }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% if deletable and table.rows %}
+  <p class="actions"><button class="secondary danger">{{ _("Geselecteerde verwijderen") }}</button></p>
+  {% endif %}
+</form>
+{% if pages > 1 %}
+<p class="pager noprint">
+  {% if page > 1 %}<a href="?{{ ctx.request.query_params | pageparams(page - 1) }}">« {{ _("vorige") }}</a>{% endif %}
+  <span class="muted">{{ _("pagina {page} / {pages}").format(page=page, pages=pages) }}</span>
+  {% if page < pages %}<a href="?{{ ctx.request.query_params | pageparams(page + 1) }}">{{ _("volgende") }} »</a>{% endif %}
+</p>
+{% endif %}
+<script src="/static/ct.js" defer></script>
+{% endblock %}

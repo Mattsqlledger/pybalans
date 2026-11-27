@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% import "reports/_macros.html" as m with context %}
+{% import "reports/_plchart.html" as pl %}
+{% block title %}{{ _(rep.title) }}{% endblock %}
+{% block content %}
+<h2>{{ _(rep.title) }}</h2>
+{% if rep.help %}{% include "help/" ~ rep.help ~ ".html" %}{% endif %}
+{% if rep.fields %}
+{% set main = rep.fields | rejectattr('more') | list %}
+{% set more = rep.fields | selectattr('more') | list %}
+<form method="get" action="/rapporten/{{ rep.key }}" class="report-form noprint"
+      hx-get="/rapporten/{{ rep.key }}" hx-target="#result" hx-select="#result" hx-swap="outerHTML"
+      hx-push-url="true" hx-indicator="#busy">
+  <input type="hidden" name="run" value="1">
+  <div class="filters">
+    {% for f in main if f.type != "check" and f.name != "grafiek" %}{{ m.field(f, values, choices, years) }}{% endfor %}
+    {# losse vinkjes in een eigen kader, zodat alle kaders op één lijn staan (v1.0.1 PB12) #}
+    {% for group, checks in main | selectattr("type", "equalto", "check") | groupby("group") %}
+    <fieldset class="checks"><legend>{{ _(group or N_("Opties")) }}</legend>
+      {% for f in checks %}{{ m.field(f, values, choices, years) }}{% endfor %}
+    </fieldset>
+    {% endfor %}
+  </div>
+  {% if more %}
+  <details class="more">
+    <summary>{{ _("Meer opties") }}</summary>
+    <div class="filters">
+      {% for f in more %}{{ m.field(f, values, choices, years) }}{% endfor %}
+    </div>
+  </details>
+  {% endif %}
+  <div class="actions">
+    <button>{{ _("Toon") }}</button>
+    <span id="busy" class="busy muted">{{ _("bezig…") }}</span>
+  </div>
+</form>
+{% endif %}
+<div id="result">
+  {% if report_error %}<p class="error" role="alert">{{ report_error }}</p>{% endif %}
+  {% if result %}
+  <div class="report-head">
+    <div>
+      <strong>{{ company_name or ctx.company.name }}</strong>
+      {% if result.subtitle %}<div>{{ result.subtitle }}</div>{% endif %}
+      {% for line in result.info %}<div class="muted">{{ line }}</div>{% endfor %}
+    </div>
+    <div class="actions noprint">
+      <a class="button secondary" href="/rapporten/{{ rep.key }}?{{ export_query }}&amp;export=csv">CSV</a>
+      <a class="button secondary" href="/rapporten/{{ rep.key }}?{{ export_query }}&amp;export=xlsx">Excel</a>
+      <a class="button secondary" href="/rapporten/{{ rep.key }}?{{ export_query }}&amp;export=pdf" target="_blank" rel="noopener">PDF</a>
+      <button type="button" class="secondary" data-print>{{ _("Afdrukken") }}</button>
+    </div>
+  </div>
+  {% if rep.chart %}
+  <nav class="pl-views noprint" aria-label="{{ _('Weergave') }}">
+    {% for v in ("tabel", "grafiek", "beide") %}{% set href = "/rapporten/" ~ rep.key ~ "?" ~ view_query ~ ("&" if view_query) ~ "weergave=" ~ v %}
+    <a href="{{ href }}" hx-get="{{ href }}" hx-target="#result" hx-select="#result" hx-swap="outerHTML" hx-push-url="true"{% if v == view %} aria-current="true"{% endif %}>{{ _(view_labels[v]) }}</a>
+    {% endfor %}
+  </nav>
+  {% endif %}
+  {% if chart %}
+  <section class="plchart" id="grafiek" aria-label="{{ _('Grafiek') }}">
+    <div class="pl-head">
+      <strong>{{ chart.title }}</strong>
+      {% if chart.selected %}{% set back = "/rapporten/" ~ rep.key ~ "?" ~ chart_query %}
+      <a class="pl-back noprint" href="{{ back }}#grafiek" hx-get="{{ back }}" hx-target="#result" hx-select="#result" hx-swap="outerHTML" hx-push-url="true">« {{ _("terug naar opbrengsten en kosten") }}</a>
+      {% endif %}
+      <form method="get" action="/rapporten/{{ rep.key }}#grafiek" class="pl-pick noprint"
+            hx-get="/rapporten/{{ rep.key }}" hx-target="#result" hx-select="#result" hx-swap="outerHTML" hx-push-url="true">
+        {% for k, v in chart_hidden %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+        <label>{{ _("Toon in grafiek") }}
+          <select name="grafiek" data-autosubmit>{% for value, label in chart.options %}<option value="{{ value }}"{% if value == (chart.selected or '') %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+        </label>
+        <button class="secondary">{{ _("Toon") }}</button>
+      </form>
+    </div>
+    {% if chart.empty %}
+    <p class="muted">{{ _("Geen bedragen om te tonen in deze periode.") }}</p>
+    {% else %}
+    <div class="pl-scroll">{{ pl.svg(chart) }}</div>
+    {{ pl.legend(chart) }}
+    {% if not chart.selected and view == "beide" %}<p class="muted small noprint">{{ _("Klik in de tabel op het grafiekteken bij een rekening of groep om die in de grafiek te zien.") }}</p>{% endif %}
+    <div class="noprint">{{ pl.data(chart) }}</div>
+    {% endif %}
+  </section>
+  {% endif %}
+  {% if view != "grafiek" %}{% for t in tables %}{{ m.table(t, cell) }}{% endfor %}{% endif %}
+  {% if pages > 1 %}
+  <p class="pager noprint">
+    {% if page > 1 %}<a href="?{{ ctx.request.query_params | pageparams(page - 1) }}">« {{ _("vorige") }}</a>{% endif %}
+    <span class="muted">{{ _("pagina {page} / {pages}").format(page=page, pages=pages) }}</span>
+    {% if page < pages %}<a href="?{{ ctx.request.query_params | pageparams(page + 1) }}">{{ _("volgende") }} »</a>{% endif %}
+  </p>
+  {% endif %}
+  {% elif not report_error and rep.fields %}
+  <p class="muted noprint">{{ _("Kies de opties en klik op Toon.") }}</p>
+  {% endif %}
+</div>
+<script src="/static/reports.js" defer></script>
+{% if rep.chart %}<script src="/static/plchart.js" defer></script>{% endif %}
+{% endblock %}

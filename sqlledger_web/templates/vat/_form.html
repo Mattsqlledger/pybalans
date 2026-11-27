@@ -1,0 +1,27 @@
+{#- Btw-aangifteformulier (opmaak Belastingdienst), voor het scherm en de PDF. form: zie routes_vat.form_data -#}
+{% macro cell(v, label, link) -%}
+{%- if v is none -%}<span class="cell empty"></span>
+{%- else -%}<span class="cell" data-label="{{ label }}">{% if link %}<a href="{{ link }}" class="field">{{ v }}</a>{% else %}<span class="field">{{ v }}</span>{% endif %}</span>{%- endif -%}
+{%- endmacro %}
+<div class="vatform">
+  {% if form.draft %}<div class="watermark">{{ _("Proefafdruk") }}</div>{% endif %}
+  <div class="bar">{{ _("Gegevens omzet en omzetbelasting") }}</div>
+  <p class="intro">{{ form.title }}<br>{{ form.company }}{% if form.taxnumber %} · {{ _("Btw-nummer: {number}").format(number=form.taxnumber) }}{% endif %}</p>
+  {% for sec in form.sections %}
+  <div class="sec"><h4><span class="n">{{ sec.code }}</span> {{ sec.title }}</h4>
+    {% if loop.first %}<span class="hint">{{ _("Rond alle bedragen af op hele euro's") }}</span>{% endif %}</div>
+  {% if loop.first %}<div class="cols"><span></span><span>{{ _("Bedrag waarover omzetbelasting wordt berekend") }}</span><span>{{ _("Omzetbelasting") }}</span></div>{% endif %}
+  {% for r in sec.rows %}
+  <div class="row{% if r.code == '5g' %} total{% endif %}">
+    <span class="nr">{{ r.code }}</span>
+    <span>{{ r.label }}{% if r.note %}<br><span class="note">{{ r.note }}</span>{% endif %}
+      {% if r.code == '5g' %}<span class="boxes5g">
+        <span><span class="tick">{{ "×" if form.pay else "" }}</span>{{ _("te betalen") }}</span>
+        <span><span class="tick">{{ "" if form.pay else "×" }}</span>{{ _("terug te vragen") }}</span></span>{% endif %}</span>
+    {{ cell(r.base, _("Grondslag"), r.link) }}
+    {{ cell(r.tax, _("Btw"), r.link) }}
+  </div>
+  {% endfor %}
+  {% endfor %}
+  <p class="status">{{ form.status }}</p>
+</div>

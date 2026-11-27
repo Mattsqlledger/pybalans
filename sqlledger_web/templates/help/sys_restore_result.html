@@ -1,0 +1,17 @@
+{# Systeem > Back-up inlezen: resultaat, gelukt of mislukt (HELP_ANALYSE golf 3, tekst C11) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De stand van het inlezen en daarna wat er is ingelezen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Gelukt: lees de meldingen en klik op {b}.", b=hl("Naar de administratie")) }}</li>
+  <li>{{ ht("Open de administratie en kijk op het dashboard en bij {path}. Vergelijk met het controleblad de cijfers met wat u verwacht: proefbalans, openstaande posten en saldo's van kas en bank.", path=hm("Beheer", "Ingebruikname")) }}</li>
+  <li>{{ ht("Klopt alles en was dit een vervanging? Zet dan de oude administratie uit (vinkje {f} uit).", f=hl("Actief")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Mislukt: er is niets aangemaakt. Klik op {o} (zelfde bestand) of {a}.", o=hl("Opnieuw proberen"), a=hl("Ander bestand kiezen")) }}</li>
+  <li>{{ _("Staan er overgeslagen opdrachten bij het bijwerken, dan slaat SQL-Ledger die ook over. Controleer de administratie dan extra goed.") }}</li>
+  <li>{{ _("Run my Accounts / ledger123: lees het controlerapport, vooral de waarschuwingen en wat zonder plek in PyBalans is bewaard. Mislukt de controle, dan ziet u per rekening of document het verschil.") }}</li>
+</ul>
+</details>

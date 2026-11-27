@@ -1,0 +1,168 @@
+# Rekeningschema Zwitserland, Kontenrahmen KMU (huidige nummering), met rekeningnamen in de, fr, it, en, nl.
+# Selectie en Duitse/Franse/Italiaanse namen: Tekki 2012 (GPL), hernummerd; nummers gecontroleerd met RMACH (Run my Accounts, GPL).
+# id: ch-kmu
+# land: CH
+# talen: de fr it en nl
+# valuta: CHF
+# naam.de: KMU
+# naam.fr: PME
+# naam.it: PMI
+# naam.en: SME
+# naam.nl: MKB
+# bron: Tekki, sql-ledger Swiss-{German-KMU,French-PME,Italian-PMI}-chart.sql (2012, GPL), hernummerd naar de Kontenrahmen KMU; btw 2024
+# licentie: GPL-2.0-or-later
+# voorraad: 1200
+# omzet: 3200
+# kosten: 4200
+# koersverschil: 6940
+# btw-afdracht: 2209
+# btw-afronding: 6990
+# volgorde: 1
+rekening;soort;categorie;koppeling;contra;tarief;rubriek;rgs;de;fr;it;en;nl
+1;H;A;;;;;;AKTIVEN;ACTIFS;ATTIVI;ASSETS;ACTIVA
+10;H;A;;;;;;Umlaufvermögen;Actifs circulants;Attivo circolante;Current assets;Vlottende activa
+100;H;A;;;;;;Flüssige Mittel und Wertschriften;Liquidités et titres;Mezzi liquidi;Cash and securities;Liquide middelen en effecten
+1000;A;A;AR_paid:AP_paid;;;;;Kasse;Caisse;Cassa;Cash;Kas
+1010;A;A;AR_paid:AP_paid;;;;;Post;Poste;Posta;Postal account;Postrekening
+1020;A;A;AR_paid:AP_paid;;;;;Bank;Banque;Banca;Bank;Bank
+1040;A;A;;;;;;Checks, Besitzwechsel;Chèques, effets à recevoir;Assegni, cambiali attive;Cheques, bills receivable;Cheques en te ontvangen wissels
+1050;A;A;;;;;;Kurzfristige Geldanlagen;Placement d'argent à court terme;Investimento di fondi a breve scadenza;Short-term deposits;Kortlopende deposito's
+1060;A;A;;;;;;Wertschriften;Titres à court terme;Titoli a breve scadenza;Short-term securities;Effecten (kortlopend)
+110;H;A;;;;;;Forderungen;Créances;Crediti;Receivables;Vorderingen
+1100;A;A;AR;;;;;Debitoren;Débiteurs;Debitori;Trade debtors;Debiteuren
+1109;A;A;;;;;;Delkredere;Ducroire;Delcredere;Allowance for doubtful debts;Voorziening dubieuze debiteuren
+1130;A;A;;;;;;Kurzfristige Aktivdarlehen;Prêts actifs à court terme;Prestiti attivi a breve scadenza;Short-term loans granted;Kortlopende verstrekte leningen
+1140;A;A;;;;;;Vorauszahlungen an Lieferanten;Paiement anticipé fournisseurs;Pagamenti anticipati a fornitori;Prepayments to suppliers;Vooruitbetalingen aan leveranciers
+1170;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.081;400;;MWST Vorsteuer auf Aufwand 8,1 %;TVA impôt préalable charges 8,1 %;IVA imposta precedente spese 8,1 %;Input VAT on expenses 8.1%;Voorbelasting op kosten 8,1 %
+1171;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.026;400;;MWST Vorsteuer auf Aufwand 2,6 %;TVA impôt préalable charges 2,6 %;IVA imposta precedente spese 2,6 %;Input VAT on expenses 2.6%;Voorbelasting op kosten 2,6 %
+1172;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.038;400;;MWST Vorsteuer auf Aufwand 3,8 %;TVA impôt préalable charges 3,8 %;IVA imposta precedente spese 3,8 %;Input VAT on expenses 3.8%;Voorbelasting op kosten 3,8 %
+1173;A;A;;;;;;MWST Vorsteuer auf Investitionen;TVA impôt préalable investissements;IVA imposta precedente investimenti;Input VAT on investments;Voorbelasting op investeringen
+1176;A;A;;;;;;Verrechnungssteuer;Impôt anticipé;Imposta preventiva;Withholding tax receivable;Te vorderen bronbelasting (Verrechnungssteuer)
+120;H;A;;;;;;Vorräte;Stocks;Scorte;Inventories;Voorraden
+1200;A;A;IC;;;;;Handelswaren;Marchandises commerciales;Merci commerciali;Goods for resale;Handelsgoederen
+1210;A;A;IC;;;;;Rohmaterial;Matières premières;Materie prime;Raw materials;Grondstoffen
+1260;A;A;;;;;;Fertigfabrikate;Produits finis;Prodotti finiti;Finished goods;Gereed product
+1270;A;A;;;;;;Angefangene Arbeiten;Travaux commencés;Lavori avviati;Work in progress;Onderhanden werk
+130;H;A;;;;;;Aktive Rechnungsabgrenzung;Actifs transitoires;Attivi transitori;Prepayments and accrued income;Overlopende activa
+1300;A;A;;;;;;Transitorische Aktiven;Actifs transitoires;Attivi transitori;Prepaid expenses and accrued income;Vooruitbetaalde kosten en nog te ontvangen opbrengsten
+14;H;A;;;;;;Anlagevermögen;Fortune de placement;Patrimonio investito;Fixed assets;Vaste activa
+140;H;A;;;;;;Finanzanlagen;Placement de capitaux;Investimenti finanziari;Financial assets;Financiële vaste activa
+1400;A;A;;;;;;Wertpapiere;Titres à long terme;Titoli di credito a lunga scadenza;Long-term securities;Effecten (langlopend)
+1440;A;A;;;;;;Langfristige Aktivdarlehen;Prêts actifs à long terme;Prestiti attivi a lunga scadenza;Long-term loans granted;Langlopende verstrekte leningen
+1441;A;A;;;;;;Aktivhypotheken;Hypothèques actives;Ipoteche attive;Mortgage loans granted;Verstrekte hypothecaire leningen
+1460;A;A;;;;;;Andere Finanzanlagen;Autres placements de capitaux;Altri investimenti finanziari;Other financial assets;Overige financiële vaste activa
+1480;A;A;;;;;;Beteiligungen;Participations;Partecipazioni;Participations;Deelnemingen
+150;H;A;;;;;;Mobile Sachanlagen;Immobilisations corporelles mobiles;Investimenti materiali mobili;Movable tangible assets;Roerende materiële vaste activa
+1500;A;A;IC;;;;;Maschinen, Produktionsanlagen;Machines, unités de productions;Macchinari, impianti di produzione;Machinery and production equipment;Machines en productie-installaties
+1509;A;A;;1;;;;WB Maschinen Produktion;Provision applicable pour perte de machines;Rettifiche di valore macchinari;Accumulated depreciation machinery;Cumulatieve afschrijving machines
+1510;A;A;IC;;;;;Mobiliar und Einrichtungen;Mobilier, installations;Mobilio, installazioni;Furniture and fittings;Inventaris en inrichting
+1519;A;A;;1;;;;WB Mobiliar und Einrichtungen;Provision applicable pour perte de mobilier;Rettifiche di valore mobilio;Accumulated depreciation furniture and fittings;Cumulatieve afschrijving inventaris
+1520;A;A;IC;;;;;Büromaschinen, EDV;Machines de bureau, installations informatiques;Informatici;Office equipment, IT;Kantoormachines en computers
+1529;A;A;;1;;;;WB Büromaschinen, EDV;Provision applicable pour perte de machines de bureau;Rettifiche di valore informatici;Accumulated depreciation office equipment, IT;Cumulatieve afschrijving kantoormachines en computers
+1530;A;A;IC;;;;;Fahrzeuge;Véhicules;Veicoli;Vehicles;Vervoermiddelen
+1539;A;A;;1;;;;WB Fahrzeuge;Provision applicable pour perte de véhicules;Rettifiche di valore veicoli;Accumulated depreciation vehicles;Cumulatieve afschrijving vervoermiddelen
+1540;A;A;IC;;;;;Werkzeuge und Geräte;Outils;Utensili;Tools and equipment;Gereedschappen
+1549;A;A;;1;;;;WB Werkzeuge und Geräte;Provision applicable pour perte d'outils;Rettifiche di valore utensili;Accumulated depreciation tools and equipment;Cumulatieve afschrijving gereedschappen
+1550;A;A;IC;;;;;Lagereinrichtungen;Installations d'entrepôt;Installazioni di magazzino;Storage facilities;Magazijninrichting
+1559;A;A;;1;;;;WB Lagereinrichtungen;Provision applicable pour perte d'installations d'entrepôt;Rettifiche di valore installazioni di magazzino;Accumulated depreciation storage facilities;Cumulatieve afschrijving magazijninrichting
+160;H;A;;;;;;Immobile Sachanlagen;Immobilisations corporelles immobiles;Investimenti materiali immobili;Immovable tangible assets;Onroerende zaken
+1600;A;A;;;;;;Immobilien;Immobilier;Immobili;Real estate;Onroerend goed
+1609;A;A;;1;;;;WB Immobilien;Provision applicable pour perte d'immobilier;Rettifiche di valore immobili;Accumulated depreciation real estate;Cumulatieve afschrijving onroerend goed
+170;H;A;;;;;;Immaterielle Sachanlagen;Valeurs immatérielles;Investimenti non materiali;Intangible assets;Immateriële vaste activa
+1700;A;A;;;;;;Patente;Brevets;Brevetti;Patents;Octrooien
+1709;A;A;;1;;;;WB Patente;Provision applicable pour perte de brevets;Rettifiche di valore brevetti;Accumulated amortisation patents;Cumulatieve afschrijving octrooien
+1710;A;A;;;;;;Marken;Marques;Marchi;Trademarks;Merken
+1719;A;A;;1;;;;WB Marken;Provision applicable pour perte de marques;Rettifiche di valore marchi;Accumulated amortisation trademarks;Cumulatieve afschrijving merken
+1720;A;A;;;;;;Lizenzen;Licences;Licenze;Licences;Licenties
+1729;A;A;;1;;;;WB Lizenzen;Provision applicable pour perte de licences;Rettifiche di valore licenze;Accumulated amortisation licences;Cumulatieve afschrijving licenties
+2;H;L;;;;;;PASSIVEN;PASSIFS;PASSIVI;LIABILITIES AND EQUITY;PASSIVA
+20;H;L;;;;;;Kurzfristiges Fremdkapital;Fonds étrangers à court terme;Capitale di terzi a breve scadenza;Current liabilities;Kortlopende schulden
+200;H;L;;;;;;Kf. Verbindlichkeiten aus Lieferungen und Leistungen;Dettes à court terme résultant d'achats et de prestations de services;Debiti a breve scadenza per forniture e prestazioni;Trade creditors;Schulden uit leveringen en diensten
+2000;A;L;AP;;;;;Kreditoren;Créanciers;Creditori;Trade creditors;Crediteuren
+2020;A;L;AP;;;;;Kreditoren Sozialversicherungen;Créanciers assurances sociales;Creditori assicurazioni sociali;Social security creditors;Crediteuren sociale verzekeringen
+2030;A;L;;;;;;Vorauszahlungen von Kunden;Paiements anticipés des clients;Pagamenti in anticipo di clienti;Advance payments from customers;Vooruitontvangen van klanten
+210;H;L;;;;;;Kf. Finanzverbindlichkeiten;Dettes financières à court terme;Debiti finanziari a breve scadenza;Short-term financial liabilities;Kortlopende financiële schulden
+2100;A;L;;;;;;Bank Kontokorrent;Banque compte courant;Banca conto corrente;Bank overdraft;Bank rekening-courant
+2110;A;L;;;;;;Schuldwechsel;Effets à payer;Cambiali passive;Bills payable;Te betalen wissels
+2140;A;L;;;;;;Kurzfristige Darlehen;Emprunts à court terme;Prestiti a breve scadenza;Short-term loans;Kortlopende leningen
+220;H;L;;;;;;Andere kf. Verbindlichkeiten;Autres dettes à court terme;Altri debiti a breve scadenza;Other current liabilities;Overige kortlopende schulden
+2200;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.081;303;;Geschuldete MWST 8,1 %;TVA due 8,1 %;IVA dovuta 8,1 %;VAT payable 8.1%;Te betalen btw 8,1 %
+2201;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.026;313;;Geschuldete MWST 2,6 %;TVA due 2,6 %;IVA dovuta 2,6 %;VAT payable 2.6%;Te betalen btw 2,6 %
+2202;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.038;343;;Geschuldete MWST 3,8 %;TVA due 3,8 %;IVA dovuta 3,8 %;VAT payable 3.8%;Te betalen btw 3,8 %
+2209;A;L;;;;;;Abrechnungskonto MWST;Compte de décompte TVA;Conto di conteggio IVA;VAT settlement;Af te dragen btw
+2261;A;L;;;;;;Dividenden, Tantiemen;Dividendes, tantièmes;Dividendi, tantièmes;Dividends, directors' fees;Dividenden, tantièmes
+230;H;L;;;;;;Passive Rechnungsabgrenzung;Passifs de régularisation;Ratei e risconti passivi;Accruals and deferred income;Overlopende passiva
+2300;A;L;;;;;;Transitorische Passiven;Passifs transitoires;Passivi transitori;Accrued expenses and deferred income;Nog te betalen kosten en vooruitontvangen opbrengsten
+2330;A;L;;;;;;Kurzfristige Rückstellungen;Provisions à court terme;Accantonamenti a breve scadenza;Short-term provisions;Kortlopende voorzieningen
+24;H;L;;;;;;Langfristiges Fremdkapital;Fonds étrangers à long terme;Capitale di terzi a lunga scadenza;Long-term liabilities;Langlopende schulden
+240;H;L;;;;;;Langfristige Finanzverbindlichkeiten;Dettes financières à long terme;Debiti finanziari a lunga scadenza;Long-term financial liabilities;Langlopende financiële schulden
+2430;A;L;;;;;;Obligationenanleihen;Emprunt par obligations;Prestiti obbligazionari;Bond issues;Obligatieleningen
+2450;A;L;;;;;;Langfristige Darlehen;Emprunts à long terme;Prestiti a lunga scadenza;Long-term loans;Langlopende leningen
+2451;A;L;;;;;;Hypotheken;Hypothèques;Ipoteche;Mortgages;Hypotheken
+260;H;L;;;;;;Langfristige Rückstellungen;Provisions à long terme;Accantonamenti a lunga scadenza;Long-term provisions;Langlopende voorzieningen
+2600;A;L;;;;;;Langfristige Rückstellungen;Provisions à long terme;Accantonamenti a lunga scadenza;Long-term provisions;Langlopende voorzieningen
+28;H;Q;;;;;;Eigenkapital;Fonds propres;Capitale proprio;Equity;Eigen vermogen
+280;H;Q;;;;;;Grundkapital;Capital de base;Capitale di base;Share capital;Geplaatst kapitaal
+2800;A;Q;;;;;;Stammkapital;Capital-actions;Capitale azionario/sociale;Share capital;Aandelenkapitaal
+2810;A;Q;;;;;;Partizipationskapital;Capital-participation;Capitale di partecipazione;Participation capital;Participatiekapitaal
+290;H;Q;;;;;;Reserven, Bilanzgewinn;Réserves, bénéfices au bilan;Riserve, utile di bilancio;Reserves, retained earnings;Reserves en winst
+2900;A;Q;;;;;;Gesetzliche Reserven;Réserves légales;Riserve legali;Legal reserves;Wettelijke reserves
+2910;A;Q;;;;;;Andere Reserven;Autres réserves;Altre riserve;Other reserves;Overige reserves
+2970;A;Q;;;;;;Gewinn-/Verlustvortrag;Report du bénéfice/des pertes;Utile riportato / perdita riportata;Profit or loss brought forward;Overgebrachte winst of verlies
+2979;A;Q;;;;;;Jahresgewinn;Bénéfice annuel;Utile annuo;Profit for the year;Winst van het boekjaar
+3;H;I;;;;;;BETRIEBSERTRAG AUS LIEFERUNGEN UND LEISTUNGEN;RENDEMENT PROVENANT DES LIVRAISONS ET DES PRESTATIONS;PROFITTO AZIENDALE DA CONSEGNE E PRESTAZIONI;OPERATING INCOME FROM SALES AND SERVICES;BEDRIJFSOPBRENGSTEN UIT LEVERINGEN EN DIENSTEN
+3000;A;I;AR_amount:IC_sale;;;;;Produktertrag;Rendement des ventes de produits;Profitto da vendita di prodotti;Sales of products;Omzet producten
+3200;A;I;AR_amount:IC_sale;;;;;Handelsertrag;Rendement de la marchandise;Profitto da merci;Sales of goods;Omzet handelsgoederen
+3400;A;I;AR_amount:IC_income;;;;;Dienstleistungsertrag;Rendement des services;Profitto da servizi;Revenue from services;Omzet diensten
+3600;A;I;AR_amount;;;;;Übriger Betriebsertrag;Autres rendements;Altri profitti;Other operating income;Overige bedrijfsopbrengsten
+3805;A;I;;;;;;Debitorenverluste;Pertes sur débiteurs;Perdite sui crediti;Bad debts;Oninbare debiteuren
+3900;A;I;;;;;;Bestandesänderung angefangene und fertige Arbeiten;Changements de position pour produits finis et semi-fabriqués;Modifiche delle scorte di prodotti finiti e semifabbricati;Change in finished goods and work in progress;Voorraadmutatie gereed product en onderhanden werk
+4;H;E;;;;;;AUFWAND FÜR MATERIAL, WAREN UND DIENSTLEISTUNGEN;CHARGES DE MARCHANDISES ET DE MATÉRIEL;SPESE DI MATERIALE E MERCI;COST OF MATERIALS, GOODS AND SERVICES;KOSTEN VAN MATERIAAL, GOEDEREN EN DIENSTEN
+4000;A;E;IC_cogs;;;;;Materialaufwand;Charges de matériel;Spese di materiale;Cost of materials;Materiaalkosten
+4200;A;E;IC_cogs;;;;;Handelswarenaufwand;Charges de marchandises;Spese di merci;Cost of goods sold;Inkoopwaarde handelsgoederen
+4400;A;E;IC_expense;;;;;Aufwand für Dienstleistungen;Dépenses pour services;Spese per servizi;Cost of services purchased;Ingekochte diensten
+5;H;E;;;;;;PERSONALAUFWAND;CHARGES DU PERSONNEL;SPESE DI PERSONALE;PERSONNEL EXPENSES;PERSONEELSKOSTEN
+5000;A;E;AP_amount;;;;;Lohnaufwand;Salaires;Spese salariali;Wages and salaries;Lonen en salarissen
+5700;A;E;AP_amount;;;;;Sozialversicherungsaufwand;Prestations sociales;Prestazioni sociali;Social security costs;Sociale lasten
+5800;A;E;AP_amount;;;;;Übriger Personalaufwand;Charges restantes;Altre spese di personale;Other personnel expenses;Overige personeelskosten
+6;H;E;;;;;;SONSTIGER BETRIEBSAUFWAND;AUTRES CHARGES;ALTRE SPESE AZIENDALI;OTHER OPERATING EXPENSES;OVERIGE BEDRIJFSKOSTEN
+6000;A;E;AP_amount;;;;;Raumaufwand;Locaux;Spese per l'uso di immobili;Premises costs;Huisvestingskosten
+6100;A;E;AP_amount;;;;;Unterhalt, Reparaturen, Ersatz;Entretien et réparations;Manutenzione e riparazioni;Maintenance, repairs, replacement;Onderhoud, reparaties, vervanging
+6200;A;E;AP_amount;;;;;Fahrzeugaufwand;Frais de véhicules;Spese per l'uso di veicoli;Vehicle expenses;Autokosten
+6300;A;E;AP_amount;;;;;Versicherungsaufwand;Frais d'assurances;Spese assicurative;Insurance;Verzekeringen
+6400;A;E;AP_amount;;;;;Energie- und Entsorgungsaufwand;Frais d'énergie et d'élimination;Spese di energia e di smaltimento dei rifiuti;Energy and waste disposal;Energie en afvalverwerking
+6500;A;E;AP_amount;;;;;Verwaltungs- und Informatikaufwand;Frais de gestion;Spese amministrative e IT;Administration and IT expenses;Kantoor- en automatiseringskosten
+6600;A;E;AP_amount;;;;;Werbeaufwand;Frais publicitaires;Spese pubblicitarie;Advertising;Reclamekosten
+6700;A;E;AP_amount;;;;;Übriger Betriebsaufwand;Autres charges d'entreprise;Altre spese aziendali;Other operating expenses;Overige bedrijfskosten
+68;H;E;;;;;;Abschreibungen;Amortissements;Ammortamenti;Depreciation;Afschrijvingen
+6800;A;E;;;;;;Abschreibungen;Amortissements;Ammortamenti;Depreciation;Afschrijvingen
+69;H;E;;;;;;Finanzerfolg;Résultat financier;Risultato finanziario;Financial result;Financiële baten en lasten
+6900;A;E;;;;;;Zinsaufwand;Charges d'intérêts financiers;Spese per interessi o oneri finanziari;Interest expense;Rentelasten
+6940;A;E;;;;;;Kursdifferenzen;Différences de change;Differenze di cambio;Exchange differences;Koersverschillen
+6950;A;E;;;;;;Zinsertrag;Produit des intérêts financiers;Profitto da interessi o proventi finanziari;Interest income;Rentebaten
+6990;A;E;;;;;;Rundungsdifferenzen;Différences d'arrondi;Differenze di arrotondamento;Rounding differences;Afrondingsverschillen
+7;H;I;;;;;;BETRIEBLICHE NEBENERFOLGE;AUTRES RÉSULTATS D'ENTREPRISE;PROFITTI AZIENDALI ACCESSORI;ANCILLARY OPERATING RESULT;NEVENBEDRIJFSRESULTAAT
+74;H;I;;;;;;Erfolg aus Finanzanlagen;Résultat financier;Provento finanziario;Result from financial assets;Resultaat financiële vaste activa
+7400;A;I;;;;;;Nebenbetrieblicher Zinsertrag;Produit des intérêts;Profitto da interessi;Non-operating interest income;Rentebaten nevenbedrijf
+7410;A;I;;;;;;Nebenbetrieblicher Zinsaufwand;Charges d'intérêts;Spese per interessi;Non-operating interest expense;Rentelasten nevenbedrijf
+7420;A;I;;;;;;Wertschriftenertrag;Produit des titres;Profitto da titoli;Income from securities;Opbrengst effecten
+7430;A;I;;;;;;Wertschriftenaufwand;Coût des titres;Spese per titoli;Securities expenses;Kosten effecten
+7440;A;I;;;;;;Beteiligungsertrag;Produit des participations;Profitto da partecipazione;Income from participations;Opbrengst deelnemingen
+7450;A;I;;;;;;Beteiligungsaufwand;Coût des participations;Spese di partecipazione;Participation expenses;Kosten deelnemingen
+75;H;I;;;;;;Liegenschaftenerfolg;Résultat immobilier;Ricavi da immobili;Result from real estate;Resultaat onroerend goed
+7500;A;I;;;;;;Liegenschaftenertrag;Produit des immeubles;Profitto da immobili;Real estate income;Opbrengst onroerend goed
+7510;A;I;;;;;;Liegenschaftenaufwand;Charges immobilières;Spese immobiliari;Real estate expenses;Kosten onroerend goed
+79;H;I;;;;;;Gewinne aus Veräusserung von Anlagevermögen;Bénéfices sur aliénation d'immobilisations;Utili da alienazione di immobilizzazioni;Gains on disposal of fixed assets;Boekwinst verkoop vaste activa
+7900;A;I;;;;;;Gewinne aus Veräusserung von Anlagevermögen;Bénéfices sur aliénation d'immobilisations;Utili da alienazione di immobilizzazioni;Gains on disposal of fixed assets;Boekwinst verkoop vaste activa
+8;H;I;;;;;;AUSSERORDENTLICHER ERFOLG, STEUERN;RÉSULTAT NEUTRE, IMPÔTS;PROFITTO STRAORDINARIO, IMPOSTE;EXTRAORDINARY AND NON-OPERATING RESULT, TAXES;BUITENGEWOON EN NIET-BEDRIJFSMATIG RESULTAAT, BELASTINGEN
+80;H;I;;;;;;Betriebsfremder Erfolg;Résultat hors exploitation;Provento estraneo alla ditta;Non-operating result;Niet-bedrijfsmatig resultaat
+8000;A;I;;;;;;Betriebsfremder Aufwand;Charges hors exploitation;Spese estranee alla ditta;Non-operating expenses;Niet-bedrijfsmatige kosten
+8100;A;I;;;;;;Betriebsfremder Ertrag;Produit hors exploitation;Profitto estraneo alla ditta;Non-operating income;Niet-bedrijfsmatige opbrengsten
+85;H;I;;;;;;Ausserordentlicher Erfolg;Résultat extraordinaire;Provento straordinario;Extraordinary result;Buitengewoon resultaat
+8500;A;I;;;;;;Ausserordentlicher Aufwand;Charges extraordinaires;Spese straordinarie;Extraordinary expenses;Buitengewone lasten
+8510;A;I;;;;;;Ausserordentlicher Ertrag;Bénéfices extraordinaires;Profitto straordinario;Extraordinary income;Buitengewone baten
+89;H;I;;;;;;Steuern;Impôts;Imposte;Taxes;Belastingen
+8900;A;I;AP_amount;;;;;Steuern;Impôts;Imposte;Taxes;Belastingen
+9;H;I;;;;;;ABSCHLUSS;CLÔTURE;CHIUSURA;CLOSING;AFSLUITING
+9000;A;I;;;;;;Erfolgsrechnung;Compte de résultat;Conto economico;Income statement;Resultatenrekening
+9100;A;I;;;;;;Bilanz;Bilan;Bilancio;Balance sheet;Balans

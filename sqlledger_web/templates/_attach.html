@@ -1,0 +1,145 @@
+{# Referenties en bijlagen op de boekingsschermen (fase 4 stap 4e, IU6/D17).
+
+   refs(f, ro): de referentiedocumenten zoals SQL-Ledger (omschrijving, code, vertrouwelijk) en,
+   verborgen, de verwijzingen met een bestand, zodat Opslaan ze laat staan.
+   pending(f): binnen het formulier van een nieuwe boeking: nog niet opgeslagen bijlagen en het
+   sleepvak; het bestand gaat met Opslaan mee.
+   saved(atts, trans_id, formname, can_edit): onder een opgeslagen boeking, order, relatie of artikel:
+   bekijken, downloaden, verwijderen en toevoegen, meteen (eigen formulieren); "ook bij" als hetzelfde
+   archiefstuk aan een ander record hangt (omzetten, stap 6a RB2).
+   later(): nog niet opgeslagen relatie/artikel. #}
+
+{% from "_file.html" import filepick with context %}
+
+{% macro refs(f, ro) -%}
+{% set plain = f.refs | rejectattr("is_file") | list %}
+{% for r in f.refs %}{% set i = loop.index %}{% if r.is_file %}
+<input type="hidden" name="ref_description_{{ i }}" value="{{ r.description }}">
+<input type="hidden" name="ref_code_{{ i }}" value="{{ r.code }}">
+{% if r.confidential %}<input type="hidden" name="ref_confidential_{{ i }}" value="1">{% endif %}
+<input type="hidden" name="ref_archive_{{ i }}" value="{{ r.archive_id }}">
+<input type="hidden" name="ref_folder_{{ i }}" value="{{ r.folder }}">
+<input type="hidden" name="ref_token_{{ i }}" value="{{ r.token }}">
+{% endif %}{% endfor %}
+{% if plain and (not ro or plain[0].description) %}
+<details class="more"{% if plain[0].description %} open{% endif %}>
+  <summary>{{ _("Referentiedocumenten") }}</summary>
+  <div class="table-wrap">
+  <table class="list refs">
+    <thead><tr><th>{{ _("Omschrijving") }}</th><th>{{ _("Code") }}</th><th title="{{ _("Alleen voor medewerker {login}").format(login=(ctx.employee_login or "").split("@")[0]) }}">{{ _("Vertrouwelijk") }}</th></tr></thead>
+    <tbody>
+    {% for r in f.refs %}{% set i = loop.index %}
+    {% if not r.is_file and (not ro or r.description) %}
+    <tr><td><input name="ref_description_{{ i }}" value="{{ r.description }}"{% if ro %} disabled{% endif %}></td>
+        <td><input name="ref_code_{{ i }}" value="{{ r.code }}" class="short"{% if ro %} disabled{% endif %}></td>
+        <td><input type="checkbox" name="ref_confidential_{{ i }}" value="1"{% if r.confidential %} checked{% endif %}{% if ro %} disabled{% endif %}>
+            <input type="hidden" name="ref_archive_{{ i }}" value="">
+            <input type="hidden" name="ref_folder_{{ i }}" value="{{ r.folder }}"></td></tr>
+    {% endif %}
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <p class="muted small">{{ _("Een omschrijving zonder bestand, zoals in SQL-Ledger. Bestanden staan onder Bijlagen.") }}</p>
+</details>
+{% endif %}
+<input type="hidden" name="refcount" value="{{ f.refs|length }}">
+{%- endmacro %}
+
+{% macro dropzone(name, submit) -%}
+{% set mb = upload_mb(ctx) %}
+<label class="dropzone noprint" data-dropzone data-submit="{{ submit }}" data-max-bytes="{{ mb * 1048576 }}"
+       data-too-large="{{ _('Het bestand is groter dan {mb} MB.').format(mb=mb) }}">
+  {{ filepick(name, "application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png") }}
+  <span>{{ _("Sleep een PDF of foto hierheen, of kies een bestand (hoogstens {mb} MB).").format(mb=mb) }}</span>
+  <strong class="error" data-size-error role="alert" hidden></strong>
+</label>
+{%- endmacro %}
+
+{% macro dupwarn(d, token=None, checked=False) -%}
+{# hetzelfde bestand hangt al elders (stap 6b, RB5); token: vinkje "toch toevoegen" bij een nog niet opgeslagen bestand #}
+<div class="dupwarn" role="alert">
+  <strong>{{ _("Dit bestand hangt al bij:") }}</strong>
+  <ul>
+    {% for h in d.holders %}{% set url = attach_url(h.formname, h.trans_id) %}
+    <li>{% if url %}<a href="{{ url }}" target="_blank" rel="noopener">{{ attach_holder(ctx, h) }}</a>{% else %}{{ attach_holder(ctx, h) }}{% endif %}</li>
+    {% endfor %}
+    {% if d.hidden %}<li>{{ _("een vertrouwelijke bijlage van een andere gebruiker") }}</li>{% endif %}
+    {% if d.loose %}<li>{{ _("een los document (zonder koppeling)") }}</li>{% endif %}
+  </ul>
+  <span class="muted small">{{ _("Vaak is de factuur dan al eens geboekt.") }}</span>
+  {% if token %}<label class="check"><input type="checkbox" name="dup_ok_{{ token }}" value="1"{% if checked %} checked{% endif %}> {{ _("toch toevoegen") }}</label>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro pending(f) -%}
+<section class="attachments">
+  <h3>{{ _("Bijlagen") }}</h3>
+  {% set files = f.refs | selectattr("is_file") | list %}
+  {% if files %}
+  <ul class="attlist">
+    {% for r in files %}
+    {% if r.token %}
+    <li><a href="/bijlage/tijdelijk/{{ r.token }}" target="_blank" rel="noopener">{{ r.filename }}</a>
+      <span class="muted small">{{ _("wordt bewaard bij Opslaan") }}</span>
+      <button name="detach" value="{{ r.token }}" class="link danger" formnovalidate>{{ _("weghalen") }}</button>
+      {% if r.dups %}{{ dupwarn(r.dups, r.token, r.dup_ok) }}{% endif %}</li>
+    {% else %}
+    <li><a href="/bijlage/{{ r.archive_id }}" target="_blank" rel="noopener">{{ r.filename or r.description }}</a>
+      <span class="muted small">{{ _("gaat mee bij Opslaan") }}</span>
+      <button name="detach" value="a{{ r.archive_id }}" class="link danger" formnovalidate>{{ _("weghalen") }}</button></li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {{ dropzone("bijlage", "[data-update]") }}
+</section>
+{%- endmacro %}
+
+{% macro saved(atts, trans_id, formname, can_edit) -%}
+<section class="attachments" id="bijlagen">
+  <h3>{{ _("Bijlagen") }}</h3>
+  {% if atts %}
+  <ul class="attlist">
+    {% for a in atts %}
+    <li><a href="/bijlage/{{ a.archive_id }}" target="_blank" rel="noopener">{{ a.filename }}</a>
+      {% if a.description and a.description != a.filename %}<span>{{ a.description }}</span>{% endif %}
+      {% if a.confidential %}<span class="tag">{{ _("vertrouwelijk") }}</span>{% endif %}
+      <a href="/bijlage/{{ a.archive_id }}?download=1" class="small">{{ _("downloaden") }}</a>
+      {% for h in a.elsewhere %}{% set url = attach_url(h.formname, h.trans_id) %}
+      <span class="muted small">{{ _("ook bij") }} {% if url %}<a href="{{ url }}">{% endif %}{{ attach_label(h.formname) }} {{ h.number }}{% if url %}</a>{% endif %}{% if h.name and h.name != h.number %} ({{ h.name }}){% endif %}</span>
+      {% endfor %}
+      {% if can_edit %}
+      <form method="post" action="/bijlagen/{{ a.id }}/verwijderen" class="inline"
+            data-confirm="{{ _('Bijlage {name} verwijderen?').format(name=a.filename) }}">
+        <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+        <button class="link danger small">{{ _("verwijderen") }}</button>
+      </form>
+      {% endif %}</li>
+    {% endfor %}
+  </ul>
+  {% elif not can_edit %}
+  <p class="muted">{{ _("Geen bijlagen.") }}</p>
+  {% endif %}
+  {% if can_edit %}
+  <form method="post" action="/bijlagen/toevoegen" enctype="multipart/form-data" class="attadd">
+    <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+    <input type="hidden" name="trans_id" value="{{ trans_id }}">
+    <input type="hidden" name="formname" value="{{ formname }}">
+    {{ dropzone("bestand", "[data-attach-add]") }}
+    <div class="attfields">
+      <label>{{ _("Omschrijving (optioneel)") }} <input name="description" maxlength="200"></label>
+      <label class="check"><input type="checkbox" name="confidential" value="1"> {{ _("Vertrouwelijk (alleen voor medewerker {login})").format(login=(ctx.employee_login or "").split("@")[0]) }}</label>
+      <button data-attach-add>{{ _("Bijlage toevoegen") }}</button>
+    </div>
+  </form>
+  {% endif %}
+</section>
+{%- endmacro %}
+
+{% macro later() -%}
+<section class="attachments" id="bijlagen">
+  <h3>{{ _("Bijlagen") }}</h3>
+  <p class="muted">{{ _("Bijlagen kunt u toevoegen nadat u hebt opgeslagen.") }}</p>
+</section>
+{%- endmacro %}

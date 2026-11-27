@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Artikelen") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Artikelen") }}</h2>
+  <p class="actions noprint">
+    {% if can_edit %}<a href="/artikelen/nieuw">{{ _("Artikel toevoegen") }}</a>
+    <a href="/artikelen/nieuw?soort=dienst">{{ _("Dienst toevoegen") }}</a>
+    {% if ctx.production() %}<a href="/artikelen/nieuw?soort=samengesteld">{{ _("Samengesteld artikel toevoegen") }}</a>{% endif %}{% endif %}
+    {% if ctx.production() %}<a href="/artikelen-assembleren">{{ _("Assembleren") }}</a>{% endif %}
+    <a href="/artikelen-groepen">{{ _("Artikelgroepen") }}</a>
+  </p>
+</div>
+{% include "help/ic_list.html" %}
+<form method="get" action="/artikelen" class="report-form noprint">
+  <input type="hidden" name="run" value="1">
+  <input type="hidden" name="colmode" value="{{ 'regels' if v.transactions else 'artikelen' }}">
+  <div class="filters">
+    <label>{{ _("Nummer") }} <input name="partnumber" value="{{ v.partnumber }}" class="short"></label>
+    <label>{{ _("Omschrijving") }} <input name="description" value="{{ v.description }}"></label>
+    <label>{{ _("Soort") }} <select name="kind">
+      {% for value, label in kinds %}<option value="{{ value }}"{% if v.kind == value %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}</select></label>
+    {% if groups %}
+    <label>{{ _("Groep") }} <select name="partsgroup_id"><option value=""></option>
+      {% for g in groups %}<option value="{{ g.id }}"{% if g.id|string == v.partsgroup_id %} selected{% endif %}>{{ g.partsgroup }}</option>{% endfor %}</select></label>
+    {% endif %}
+    <fieldset><legend>{{ _("Status") }}</legend>
+      {% for value, label in statuses %}
+      <label class="check"><input type="radio" name="status" value="{{ value }}"{% if v.status == value %} checked{% endif %}> {{ _(label) }}</label>
+      {% endfor %}
+    </fieldset>
+  </div>
+  <details class="more"{% if v.transactions %} open{% endif %}>
+    <summary>{{ _("Meer opties") }}</summary>
+    <div class="filters">
+      <label>{{ _("Barcode") }} <input name="barcode" value="{{ v.barcode }}"></label>
+      <fieldset><legend>{{ _("Regels uit") }}</legend>
+        {% for value, label in transactions %}
+        <label class="check"><input type="checkbox" name="transactions" value="{{ value }}"{% if value in v.transactions %} checked{% endif %}> {{ _(label) }}</label>
+        {% endfor %}
+        <label class="check"><input type="checkbox" name="open" value="1"{% if v.open %} checked{% endif %}> {{ _("open") }}</label>
+        <label class="check"><input type="checkbox" name="closed" value="1"{% if v.closed %} checked{% endif %}> {{ _("gesloten/betaald") }}</label>
+      </fieldset>
+      <label>{{ _("Datum van") }} <input type="date" name="datefrom" value="{{ v.datefrom }}"></label>
+      <label>{{ _("tot en met") }} <input type="date" name="dateto" value="{{ v.dateto }}"></label>
+      <label>{{ _("Sorteren op") }} <select name="sort">
+        {% for value, label in sorts %}<option value="{{ value }}"{% if value == v.sort %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}</select></label>
+      <label>{{ _("Volgorde") }} <select name="direction">
+        <option value="ASC"{% if not v.desc %} selected{% endif %}>{{ _("oplopend") }}</option>
+        <option value="DESC"{% if v.desc %} selected{% endif %}>{{ _("aflopend") }}</option></select></label>
+    </div>
+    <fieldset><legend>{{ _("Kolommen") }}</legend>
+      {% for key, label, kind in columns %}
+      <label class="check"><input type="checkbox" name="cols" value="{{ key }}"{% if key in v.cols %} checked{% endif %}> {{ _(label) }}</label>
+      {% endfor %}
+    </fieldset>
+  </details>
+  <div class="actions"><button>{{ _("Zoeken") }}</button></div>
+</form>
+
+<div class="report-head">
+  <div class="muted">{{ _("{count} gevonden").format(count=count) }}</div>
+  <div class="actions noprint">
+    <a class="button secondary" href="/artikelen?{{ export_query }}&amp;export=csv">CSV</a>
+    <a class="button secondary" href="/artikelen?{{ export_query }}&amp;export=xlsx">Excel</a>
+    <a class="button secondary" href="/artikelen?{{ export_query }}&amp;export=pdf" target="_blank" rel="noopener">PDF</a>
+  </div>
+</div>
+<div class="table-wrap">
+<table class="list report">
+  <thead><tr>{% for c in table.columns %}<th{% if c.kind == 'amount' %} class="num"{% endif %}>{{ _(c.label) }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for r in table.rows %}
+  <tr>{% for c in table.columns %}{% set txt = cell(c, r) %}{% set url = r.links.get(c.key) %}
+    <td class="{{ 'num' if c.kind == 'amount' }}{{ ' nowrap' if c.kind == 'date' }}">{% if url %}<a href="{{ url }}">{{ txt or "—" }}</a>{% else %}{{ txt }}{% endif %}</td>
+  {% endfor %}</tr>
+  {% else %}
+  <tr><td colspan="{{ table.columns|length }}" class="muted">{{ _("Niets gevonden.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if pages > 1 %}
+<p class="pager noprint">
+  {% if page > 1 %}<a href="?{{ ctx.request.query_params | pageparams(page - 1) }}">« {{ _("vorige") }}</a>{% endif %}
+  <span class="muted">{{ _("pagina {page} / {pages}").format(page=page, pages=pages) }}</span>
+  {% if page < pages %}<a href="?{{ ctx.request.query_params | pageparams(page + 1) }}">{{ _("volgende") }} »</a>{% endif %}
+</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Bankregels verwerken") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Bankregels verwerken") }}</h2>
+  <p class="actions noprint">
+    <a href="/bank/inlezen">{{ _("Bankafschrift inlezen") }}</a>
+    <a href="/bank/afschriften">{{ _("Ingelezen afschriften") }}</a>
+    <a href="/bank/vaste-regels">{{ _("Vaste regels") }}</a>
+  </p>
+</div>
+{% include "help/bank_lines.html" %}
+
+<form method="get" action="/bank/regels" class="filters">
+  <label>{{ _("Bankrekening") }}
+    <select name="rekening">
+      {% for a in accounts %}<option value="{{ a.accno }}"{% if a.accno == accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}{% if counts.get(a.accno) %} ({{ counts[a.accno] }} {{ _("open") }}){% endif %}</option>{% endfor %}
+    </select></label>
+  <button class="secondary">{{ _("Tonen") }}</button>
+</form>
+
+{% if suggestion %}{% set sl = suggestion.line %}
+{# PB27: na het boeken een vaste regel voorstellen (bestaande Vaste regels; die geven alleen een voorstel) #}
+<form method="post" action="/bank/vaste-regels" class="notice rulehint">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="rekening" value="{{ sl.accno }}">
+  <input type="hidden" name="description" value="{{ suggestion.description or '' }}">
+  <p><strong>{{ _("Voortaan zo boeken?") }}</strong>
+    {{ _("Maak een vaste regel; volgende bankregels die erbij passen krijgen dan dit voorstel.") }}
+    <span class="muted small">({{ sl.name or sl.description or "" }} · {{ amount(sl.amount) }})</span></p>
+  <fieldset class="glhead">
+    <span class="choices">
+      {% if suggestion.iban %}
+      <label class="check"><input type="radio" name="by" value="iban" checked> {{ _("Op rekeningnummer {iban}").format(iban=suggestion.iban) }}</label>
+      <label class="check"><input type="radio" name="by" value="both"> {{ _("Op rekeningnummer én trefwoord") }}</label>
+      {% endif %}
+      <label class="check"><input type="radio" name="by" value="keyword"{% if not suggestion.iban %} checked{% endif %}> {{ _("Op trefwoord") }}</label>
+    </span>
+    <label>{{ _("Trefwoord") }} <input name="keyword" value="{{ suggestion.keyword }}" maxlength="60"></label>
+    <label class="vc">{{ _("Tegenrekening") }} * <input name="accno" value="{{ suggestion.accno_label }}"{% if props %} list="bank-accounts"{% endif %} required autocomplete="off"></label>
+    <label>{{ _("Btw") }}
+      <select name="tax_accno"><option value="">{{ _("geen") }}</option>
+        {% for t in ch.taxes %}<option value="{{ t.accno }}"{% if suggestion.tax_accno == t.accno %} selected{% endif %}>{{ t.accno }} {{ t.description }}</option>{% endfor %}
+      </select></label>
+    <p class="wide actions"><button name="action" value="from_line:{{ sl.id }}">{{ _("Vaste regel maken") }}</button>
+      <a href="/bank/regels?rekening={{ sl.accno|urlencode }}" class="button secondary">{{ _("Nee") }}</a></p>
+  </fieldset>
+  <p class="muted small">{{ _("Een vaste regel boekt niets vanzelf: open regels die erbij passen krijgen hem als voorstel, dat u met Voorstel boeken bevestigt.") }}</p>
+</form>
+{% elif iban_offer %}
+<form method="post" action="/bank/vaste-regels" class="notice rulehint">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="rekening" value="{{ iban_offer.line.accno }}">
+  {% if iban_offer.current %}
+  <input type="hidden" name="replace" value="1">
+  <p><strong>{{ _("Rekeningnummer vervangen?") }}</strong>
+    {{ _("{name} heeft rekeningnummer {current}; deze bankregel komt van {iban}. Vervangen door {iban} als standaardrekeningnummer van {name}?").format(name=iban_offer.name, current=iban_offer.current, iban=iban_offer.iban) }}</p>
+  <p class="actions"><button name="action" value="iban_from_line:{{ iban_offer.line.id }}">{{ _("Vervangen") }}</button>
+  {% else %}
+  <p><strong>{{ _("Rekeningnummer opslaan?") }}</strong>
+    {{ _("Sla rekeningnummer {iban} op als standaardrekeningnummer van {name}; volgende bankregels van dit rekeningnummer worden dan op rekeningnummer gekoppeld.").format(iban=iban_offer.iban, name=iban_offer.name) }}</p>
+  <p class="actions"><button name="action" value="iban_from_line:{{ iban_offer.line.id }}">{{ _("Rekeningnummer opslaan") }}</button>
+  {% endif %}
+    <a href="/bank/regels?rekening={{ iban_offer.line.accno|urlencode }}" class="button secondary">{{ _("Nee") }}</a></p>
+</form>
+{% endif %}
+
+{% if rule_props %}
+{# BT3: vaste regels die volgen uit wat al geboekt of afgeletterd is; met één klik aanmaken #}
+<details class="rulesuggest">
+  <summary>{{ _("Voorgestelde vaste regels") }} ({{ rule_props|length }})</summary>
+  <p class="muted small">{{ _("Uit de geboekte en afgeletterde memoriaalregels van deze bankrekening: per rekeningnummer van de tegenpartij steeds dezelfde tegenrekening. Pinbetalingen en regels zonder rekeningnummer tellen niet mee.") }}</p>
+  <div class="table-wrap">
+  <table class="list">
+    <thead><tr><th>{{ _("Tegenpartij") }}</th><th>{{ _("Rekeningnummer") }}</th><th>{{ _("Richting") }}</th><th>{{ _("Tegenrekening") }}</th><th class="num">{{ _("Aantal") }}</th><th></th></tr></thead>
+    <tbody>
+    {% for r in rule_props %}
+      <tr><td>{{ r.name }}</td><td class="small">{{ r.iban }}</td><td>{{ _("bij") if r.direction == "+" else _("af") }}</td>
+        <td>{% if r.varies %}<span class="warn small">{{ _("verschilt per keer:") }}</span> {% for c in r.choices %}{{ c.accno }}{% if c.tax_accno %} ({{ _("Btw") }} {{ c.tax_accno }}){% endif %} ×{{ c.n }}{{ ", " if not loop.last }}{% endfor %}
+            {% else %}{{ r.accno }}{% if r.tax_accno %} ({{ _("Btw") }} {{ r.tax_accno }}){% endif %}{% endif %}</td>
+        <td class="num">{{ r.count }}</td>
+        <td>{% if not r.varies %}
+          <form method="post" action="/bank/vaste-regels">
+            <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+            <input type="hidden" name="rekening" value="{{ accno }}">
+            <input type="hidden" name="iban" value="{{ r.iban }}"><input type="hidden" name="direction" value="{{ r.direction }}">
+            <input type="hidden" name="accno" value="{{ r.accno }}"><input type="hidden" name="tax_accno" value="{{ r.tax_accno or '' }}">
+            <button name="action" value="suggested:{{ r.line_id }}" class="secondary">{{ _("Regel maken") }}</button>
+          </form>{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</details>
+{% endif %}
+
+{% if not props %}
+<p class="muted">{{ _("Geen open bankregels voor deze rekening.") }} <a href="/bank/inlezen">{{ _("Bankafschrift inlezen") }}</a></p>
+{% else %}
+{# tegenrekening (PB26): eerst "Eerder gebruikt", dan alle rekeningen; de zoeklijst toont de groepen als kop #}
+<datalist id="bank-accounts">{% for a in contra %}<option value="{{ a.accno }} {{ a.description }}" data-n="{{ a.accno }}" data-name="{{ a.description }}" data-group="{{ a.group }}"></option>{% endfor %}</datalist>
+<form method="post" action="/bank/regels" class="banklines">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="rekening" value="{{ accno }}">
+
+  {% if confirm == "bulk" %}
+  <div class="confirm" role="alert">
+    <p><strong>{{ _("{n} zekere voorstellen verwerken").format(n=sure|length) }}</strong> ({{ _("kenmerk of factuurnummer met precies het bedrag, of afletteren tegen de enige bestaande boeking met hetzelfde bedrag en (bijna) dezelfde datum; nooit pinbetalingen of regels zonder rekeningnummer") }}):</p>
+    <ul class="small">
+      {% for p in sure %}<li>{{ p.line.bookdate }} {{ amount(p.line.amount) }} — {% if p.kind == "match" %}{{ _("afletteren") }}: {{ p.match.reference or p.match.trans_id }} {{ p.match.description or "" }}{% else %}{{ p.vc_name }}: {% for a in p.allocations %}{{ a.invnumber }}{{ ", " if not loop.last }}{% endfor %}{% endif %}
+        <input type="hidden" name="bulk" value="{{ p.line.id }}={{ sig(p) }}"></li>{% endfor %}
+    </ul>
+    <button name="action" value="bulk_confirmed">{{ _("Ja, verwerken") }}</button>
+    <a href="/bank/regels?rekening={{ accno }}" class="button secondary">{{ _("Terug") }}</a>
+  </div>
+  {% elif sure %}
+  <p class="actions"><button name="action" value="bulk">{{ _("Alle zekere voorstellen verwerken") }} ({{ sure|length }})</button></p>
+  {% endif %}
+
+  <div class="table-wrap">
+  <table class="list banktable">
+    <thead><tr><th>{{ _("Datum") }}</th><th class="num">{{ _("Bedrag") }}</th><th>{{ _("Tegenpartij / omschrijving") }}</th><th>{{ _("Voorstel") }}</th></tr></thead>
+    <tbody>
+    {% for p in props %}{% set l = p.line %}{% set s = "_" ~ l.id %}
+      <tr{% if p.sure %} class="checked"{% endif %}>
+        <td class="nowrap">{{ l.bookdate }}</td>
+        <td class="num{% if l.amount < 0 %} neg{% endif %}">{{ amount(l.amount) }}{% if l.curr %} <span class="muted small">{{ l.curr }}</span>{% endif %}</td>
+        <td><strong>{{ l.name or "" }}</strong>{% if l.iban %} <span class="muted small">{{ l.iban }}</span>{% endif %}
+          <div class="small">{{ l.description or "" }}{% if l.reference %} <span class="tag">{{ l.reference }}</span>{% endif %}</div></td>
+        <td>
+          <details>
+            <summary>{% if p.category %}<span class="tag">{{ p.category }} · {{ _(cats[p.category]) }}</span> {% endif %}{% if p.card and p.kind and not p.sure %}<span class="tag">{{ _("met de hand") }}</span> {% endif %}{{ libmsg(p.reason) }}
+              {% for w in p.warnings %}<span class="warn small"> {{ libmsg(w) }}</span>{% endfor %}</summary>
+            <div class="bankdetail">
+            {% if p.kind == "payment" %}
+              <p class="small">{{ _(vcs[p.vc]) }} {{ p.vc_name }}:
+                {% for a in p.allocations %}<a href="/boekingen/{{ a.trans_id }}" target="_blank">{{ a.invnumber }}</a> {{ amount(a.paid) }}{{ ", " if not loop.last }}{% endfor %}
+                {% if p.prepayment %} + {{ _("vooruitbetaling") }} {{ amount(p.prepayment) }}{% endif %}</p>
+            {% elif p.kind == "match" %}
+              <p class="small">{% for g in (p.matches or [p.match]) %}<a href="/boekingen/{{ g.trans_id }}" target="_blank">{{ g.reference or g.trans_id }}</a> {{ g.description or "" }} {{ amount(g.amount) }}{{ "; " if not loop.last }}{% endfor %}
+                {% if p.together %}<br>{{ _("Samen met:") }} {% for o in p.together %}{{ o.bookdate }} {{ amount(o.amount) }}{{ ", " if not loop.last }}{% endfor %}{% endif %}</p>
+            {% elif p.kind == "gl" and p.category == "g" %}
+              <p class="small">{{ _("Memoriaal op {accno}").format(accno=p.rule.accno) }}{% if p.rule.tax_accno %} ({{ _("Btw") }} {{ p.rule.tax_accno }}){% endif %}</p>
+            {% elif p.candidates and p.category == "g" %}
+              <p class="small"><a href="{{ new_invoice_url(p.candidates[0]) }}">{{ _("Factuur invoeren voor {name}").format(name=p.candidates[0].name) }}</a></p>
+            {% endif %}
+            {% if p.kind %}
+              <input type="hidden" name="sig{{ s }}" value="{{ sig(p) }}">
+              <p class="actions"><button name="action" value="accept:{{ l.id }}">{{ _("Voorstel boeken") if p.kind != "match" else _("Koppelen") }}</button></p>
+            {% endif %}
+            <fieldset class="glhead">
+              <label class="vc">{{ _("Memoriaal tegen rekening") }}
+                <input name="gl_accno{{ s }}" list="bank-accounts" value="{{ values.get('gl_accno' ~ s, '') }}" autocomplete="off"></label>
+              <label>{{ _("Btw (bedrag is inclusief)") }}
+                <select name="gl_tax{{ s }}"><option value="">{{ _("geen") }}</option>
+                  {% for t in ch.taxes %}<option value="{{ t.accno }}"{% if values.get('gl_tax' ~ s) == t.accno %} selected{% endif %}>{{ t.accno }} {{ t.description }}</option>{% endfor %}
+                </select></label>
+              <label>{{ _("Omschrijving") }} <input name="gl_desc{{ s }}" value="{{ values.get('gl_desc' ~ s, '') }}" maxlength="250"></label>
+              <label class="check"><input type="checkbox" name="gl_rule{{ s }}" value="1"{% if values.get('gl_rule' ~ s) %} checked{% endif %}> {{ _("Opslaan als vaste regel") }}
+                ({{ _("rekeningnummer") if l.iban else _("trefwoord") }})</label>
+              {% if not l.iban %}<input type="hidden" name="gl_by{{ s }}" value="keyword">
+              <label>{{ _("Trefwoord") }} <input name="gl_keyword{{ s }}" value="{{ values.get('gl_keyword' ~ s, '') }}" maxlength="60"></label>{% endif %}
+              <p class="wide actions"><button name="action" value="gl:{{ l.id }}" class="secondary">{{ _("Memoriaal boeken") }}</button>
+                <button name="action" value="ignore:{{ l.id }}" class="secondary">{{ _("Negeren") }}</button>
+                <a href="/bank/regel/{{ l.id }}">{{ _("Facturen kiezen, koppelen of meer…") }}</a></p>
+            </fieldset>
+            </div>
+          </details>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</form>
+{% endif %}
+{% endblock %}

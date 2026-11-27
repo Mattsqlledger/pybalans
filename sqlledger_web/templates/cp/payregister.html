@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Betalingsregister") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Betalingsregister") }}</h2>
+  <p class="actions noprint">
+    <a href="/{{ k.many }}/corrigeren{% if query %}?{{ query }}&amp;weergave=exclude{% endif %}">{{ _(k.register_title) }}</a>
+  </p>
+</div>
+{% include "help/cp_payregister.html" %}
+<p class="muted small">{{ _("Geboekte betalingen per relatie. Vink betalingen aan voor de betalingsspecificatie: Voorbeeld legt niets vast, PDF en Mailen leggen het printen/mailen vast in het logboek. Een betaling is relatie + betaalrekening + datum + kenmerk; oude betalingen zonder kenmerk op dezelfde dag staan samen op één specificatie.") }}</p>
+
+<form method="get" action="/betalingsregister" class="report-form">
+  <div class="filters">
+    <label>{{ _("Soort") }}
+      <select name="soort">
+        <option value="ontvangsten"{% if vc == 'customer' %} selected{% endif %}>{{ _("Ontvangsten (klanten)") }}</option>
+        <option value="betalingen"{% if vc == 'vendor' %} selected{% endif %}>{{ _("Betalingen (leveranciers)") }}</option>
+      </select></label>
+    <label>{{ _("Betaalrekening") }}
+      <select name="rekening"><option value="">{{ _("alle") }}</option>
+        {% for a in ch.paid_accounts %}<option value="{{ a.accno }}"{% if a.accno == flt.rekening %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+      </select></label>
+    <label>{{ _("Relatie") }} <input name="relatie" value="{{ flt.relatie }}" placeholder="{{ _('naam of nummer') }}"></label>
+    <label>{{ _("Kenmerk van") }} <input name="kenmerk_van" value="{{ flt.kenmerk_van }}" class="short"></label>
+    <label>{{ _("Kenmerk tot en met") }} <input name="kenmerk_tot" value="{{ flt.kenmerk_tot }}" class="short"></label>
+    <label>{{ _("Datum van") }} <input type="date" name="van" value="{{ flt.van }}"></label>
+    <label>{{ _("Datum tot en met") }} <input type="date" name="tot" value="{{ flt.tot }}"></label>
+  </div>
+  <div class="actions"><button>{{ _("Toon") }}</button></div>
+</form>
+
+{% include "dunning/_results.html" %}
+
+<form method="post" action="/betalingsregister">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="soort" value="{{ soort }}">
+  {% for key, v in flt.items() if key != "weergave" %}<input type="hidden" name="{{ key }}" value="{{ v }}">{% endfor %}
+  <div class="table-wrap">
+  <table class="list">
+    <thead><tr><th></th><th>{{ _("Datum") }}</th><th>{{ _("Kenmerk") }}</th><th>{{ _(k.vc_label) }}</th>
+      <th class="num">{{ _("Bedrag") }}</th><th class="num">{{ _("Posten") }}</th><th>{{ _("E-mail") }}</th></tr></thead>
+    <tbody>
+    {% set ns = namespace(acc=None, total=0) %}
+    {% for r in rows %}
+      {% if r.accno != ns.acc %}{% set ns.acc = r.accno %}
+      <tr class="group"><th colspan="7">{{ r.accno }} {{ r.account }}</th></tr>
+      {% endif %}
+      <tr>
+        <td><input type="checkbox" name="sel" value="{{ r.key }}"{% if r.key in checked %} checked{% endif %}
+               aria-label="{{ _('Selecteren') }} {{ r.name }} {{ r.source }}"></td>
+        <td class="nowrap">{{ fmtdate(r.datepaid) }}</td>
+        <td class="nowrap">{% if r.source %}{{ r.source }}{% else %}<span class="muted">{{ _("zonder kenmerk") }}</span>{% endif %}</td>
+        <td>{{ r.vcnumber or "" }} {{ r.name }}</td>
+        <td class="num">{{ amount(r.amount, "0") }}</td>
+        <td class="num">{{ r.invoices|length }}</td>
+        <td>{% if r.email %}<span class="muted small addr">{{ r.email }}</span>{% else %}<span class="tag">{{ _("geen e-mailadres") }}</span>{% endif %}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7" class="muted">{{ _("Geen betalingen gevonden.") }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% if rows %}
+  <p class="actions glbuttons">
+    <button name="action" value="preview" class="secondary" formtarget="_blank">{{ _("Voorbeeld") }}</button>
+    {% if can_send %}
+    <button name="action" value="pdf" formtarget="_blank">{{ _("PDF") }}</button>
+    <button name="action" value="mail">{{ _("Mailen") }}</button>
+    {% endif %}
+  </p>
+  {% endif %}
+</form>
+{% endblock %}

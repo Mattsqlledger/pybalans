@@ -1,0 +1,41 @@
+{# Keuzemenu administratie wisselen in de kopregel (ADMINISTRATIE_WISSELEN_ANALYSE.md, AW1–AW6); zonder JavaScript
+   bruikbaar: <details> opent het menu, de knoppen posten naar /administratie, het zoekveld gaat naar de keuzepagina #}
+{% set sw = ctx.switcher() %}
+{% macro choice(c) -%}
+  {% if c.closed -%}
+  <button name="company_id" value="{{ c.id }}" class="closed" disabled title="{{ c.lock_message or _('Deze administratie is op slot gezet door de beheerder.') }}">
+    {%- if c.code %}<span class="admcode">{{ c.code }}</span> {% endif %}{{ c.name }} <span class="tag">{{ _("op slot") }}</span></button>
+  {%- else -%}
+  <button name="company_id" value="{{ c.id }}">{% if c.code %}<span class="admcode">{{ c.code }}</span> {% endif %}{{ c.name }}{% if c.locked %} <span class="tag">{{ _("op slot") }}</span>{% endif %}</button>
+  {%- endif %}
+{% endmacro %}
+<details class="switcher" data-leave="{{ _('Wijzigingen verlaten? Wat u hebt ingevuld en nog niet hebt opgeslagen, gaat verloren.') }}">
+  <summary aria-label="{{ _('Administratie wisselen') }}">{% if ctx.company.code %}<span class="admcode">{{ ctx.company.code }}</span> {% endif %}{{ ctx.company.name }} <span class="caret" aria-hidden="true">▾</span></summary>
+  <div class="switchmenu">
+    <p class="switchcur"><strong>{{ ctx.company.name }}</strong><br>
+      <span class="muted small">{% if ctx.company.code %}{{ ctx.company.code }} · {% endif %}{{ ctx.company.dbname }} · {{ _(ROLES[ctx.role]) }}</span></p>
+    {% if sw.search %}
+    <form method="get" action="/administratie" class="switchsearch" role="search">
+      <input type="search" name="q" placeholder="{{ _('Andere administratie openen') }}" aria-label="{{ _('Andere administratie openen') }}" autocomplete="off">
+    </form>
+    {% endif %}
+    <form method="post" action="/administratie" class="switchform">
+      <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+      {% if sw.recent %}
+      <div class="switchrecent">
+        <p class="heading">{{ _("Recent gebruikt") }}</p>
+        <ul>{% for c in sw.recent %}<li>{{ choice(c) }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+      {% if sw.search %}
+      <div class="switchfound" hidden>
+        <p class="heading">{{ _("Gevonden") }}</p>
+        <ul>{% for c in sw.all if c.id != ctx.company.id %}<li hidden data-find="{{ [c.name, c.code, c.dbname]|join(' ')|lower }}">{{ choice(c) }}</li>{% endfor %}</ul>
+        <p class="muted small switchnone" hidden>{{ _("Niets gevonden.") }}</p>
+      </div>
+      {% endif %}
+    </form>
+    <p class="switchall"><a href="/administratie">{{ _("Alle tonen") }}</a>{% if sw.all|length > 1 %} <span class="muted small">({{ sw.all|length }})</span>{% endif %}</p>
+  </div>
+</details>
+<span class="muted">· {{ _(ROLES[ctx.role]) }}</span>

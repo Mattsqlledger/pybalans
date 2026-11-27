@@ -1,0 +1,23 @@
+{# Btw > Btw-tarieven (HELP_ANALYSE golf 3, tekst A7) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Het percentage van elke btw-rekening, met de periode waarin het geldt. Facturen en boekingen rekenen de btw met het tarief dat op de factuurdatum geldt.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul bij een nieuwe btw-rekening het {f} in.", f=hl("Tarief (%)")) }}</li>
+  <li>{{ ht("Verandert een tarief? Vul bij {f} het nieuwe percentage en de ingangsdatum in. Het huidige tarief krijgt dan vanzelf de einddatum.", f=hl("Nieuw tarief per datum")) }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: de laatste dag van het tarief. Leeg betekent: het huidige tarief. Alleen de laatste regel van een rekening mag leeg zijn, en de datums lopen op.", f=hl("Geldig tot")) }}</li>
+  <li>{{ ht("{f}: een negatief tarief mag, voor verlegde btw.", f=hl("Tarief (%)")) }}</li>
+  <li>{{ ht("{f}: de btw-rekening staat niet meer in de keuzelijsten. Dit is hetzelfde vinkje als bij de rekening in {m}.", f=hl("Gesloten"), m=hm("Beheer", "Rekeningschema")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Een tarief waarmee al geboekt is, kunt u niet meer veranderen of weghalen. Zo houden oude facturen hun tarief. Gebruik {f}.", f=hl("Nieuw tarief per datum")) }}</li>
+  <li>{{ ht("Een rekening komt hier pas te staan als u bij de rekening in {m} de koppeling {b} aanzet.", m=hm("Beheer", "Rekeningschema"), b=hl("Btw")) }}</li>
+  <li>{{ ht("Bij welke rubriek van de aangifte een rekening hoort, stelt u in bij {m}.", m=hm("Btw", "Btw-rubrieken")) }}</li>
+</ul>
+</details>

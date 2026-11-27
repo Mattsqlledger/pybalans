@@ -1,0 +1,29 @@
+{# Systeem > Administraties > Nieuwe administratie (HELP_ANALYSE golf 3, tekst C6) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een nieuwe, lege administratie in een eigen database, met een rekeningschema, btw-tarieven en (in Nederland) de rubrieken van de btw-aangifte en RGS-codes.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul de {n} in. De {d} wordt daaruit voorgesteld.", n=hl("Naam"), d=hl("Databasenaam")) }}</li>
+  <li>{{ ht("Kies bij {f} het rekeningschema. Onder de keuze staat wat erin zit.", f=hl("Land en schema")) }}</li>
+  <li>{{ ht("Kies zo nodig {t}, {v} en {b}.", t=hl("Taal van de rekeningnamen"), v=hl("Standaardvaluta"), b=hl("Boekjaar eindigt in")) }}</li>
+  <li>{{ ht("Zet de {f} uit die u niet gebruikt.", f=hl("Modules")) }}</li>
+  <li>{{ ht("Klik op {b}. Daarna ziet u de administratie met haar instellingen.", b=hl("Administratie aanmaken")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: ook de bedrijfsnaam op documenten; later te wijzigen bij {m}.", f=hl("Naam"), m=hm("Beheer", "Instellingen")) }}</li>
+  <li>{{ ht("{f}: kort nummer of letters vóór de naam in de kopregel en bij het wisselen van administratie. Mag leeg.", f=hl("Code")) }}</li>
+  <li>{{ ht("{f}: kleine letters, cijfers en _, beginnend met een letter. Een bestaande database wordt nooit overschreven.", f=hl("Databasenaam")) }}</li>
+  <li>{{ ht("{f}: ook de taal van facturen en andere documenten. {l} volgt het schema.", f=hl("Taal van de rekeningnamen"), l=hl("Taal van het land")) }}</li>
+  <li>{{ ht("{f}: de valuta van de boekhouding. Standaard die van het land.", f=hl("Standaardvaluta")) }}</li>
+  <li>{{ ht("{f}: wat uit staat, verdwijnt uit het menu (bijvoorbeeld {o} of {a}). {b} en {h} staan er altijd. Later te wijzigen bij de administratie.", f=hl("Modules"), o=hm("Orders"), a=hm("Artikelen"), b=hm("Btw"), h=hm("Beheer")) }}</li>
+  <li>{{ ht("{f}: u krijgt meteen de rol {r}. Zonder dit vinkje heeft nog niemand toegang.", f=hl("Mij als beheerder van deze administratie toevoegen"), r=hl("Beheerder")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Naam en code moeten uniek zijn binnen de installatie.") }}</li>
+  <li>{{ _("Werkt het aanmaken niet met een melding over CREATEDB, dan mag de databasegebruiker van de app geen databases aanmaken. Dat regelt de beheerder van de server.") }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: er is één schema per land met de huidige btw-tarieven; de oude SQL-Ledger-schema's worden niet aangeboden.") }}</li>
+</ul>
+</details>

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ _("GIFI-indeling") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("GIFI-indeling") }}</h2>
+  <span><a href="/beheer/rekeningschema">{{ _("Rekeningschema") }}</a>
+  {% if f is none %} <a class="button" href="/beheer/gifi/nieuw">{{ _("GIFI-code toevoegen") }}</a>{% endif %}</span></div>
+{% include "help/am_gifi.html" %}
+
+{% if f is not none %}
+<form method="post" action="/beheer/gifi" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="key" value="{{ f.key }}">
+  <h3>{{ _("GIFI-code wijzigen") if f.key else _("GIFI-code toevoegen") }}</h3>
+  <div class="grid">
+    <label>{{ _("Code") }} * <input name="accno" value="{{ f.accno }}" required autocomplete="off" spellcheck="false"></label>
+    <label>{{ _("Omschrijving") }} * <input name="description" value="{{ f.description }}" required></label>
+  </div>
+  {% if current and current.accounts %}
+  <p class="muted small">{{ _("Gebruikt bij:") }} {% for a in current.accounts %}<a href="/beheer/rekeningschema/{{ a.id }}">{{ a.accno }}</a>{{ ", " if not loop.last }}{% endfor %}.
+    {{ _("Wijzigt u de code, dan krijgen deze rekeningen de nieuwe code.") }}</p>
+  {% endif %}
+  {% if confirm == "delete" %}
+  <div class="confirm" role="alert">
+    <p>{{ _("GIFI-code verwijderen?") }}</p>
+    <p><button name="action" value="delete_confirmed" class="danger" formnovalidate>{{ _("Ja, verwijderen") }}</button>
+      <a href="/beheer/gifi/{{ f.key | urlencode }}">{{ _("Annuleren") }}</a></p>
+  </div>
+  {% else %}
+  <p class="actions"><button name="action" value="save">{{ _("Opslaan") }}</button>
+    {% if f.key and current and not current.accounts %}<button name="action" value="delete" class="danger secondary" formnovalidate>{{ _("Verwijderen") }}</button>{% endif %}
+    <a href="/beheer/gifi">{{ _("Annuleren") }}</a></p>
+  {% endif %}
+</form>
+{% endif %}
+
+{% if orphans %}
+<div class="notice warning" role="status">
+  <p>{{ _("Deze rekeningen verwijzen naar een GIFI-code die hieronder niet bestaat. In de rapporten op GIFI staan ze zonder omschrijving. Voeg de code toe, of kies bij de rekening een bestaande code.") }}</p>
+  <div class="table-wrap"><table class="list">
+    <thead><tr><th>{{ _("Rekening") }}</th><th>{{ _("Omschrijving") }}</th><th>{{ _("GIFI") }}</th><th></th></tr></thead>
+    <tbody>
+    {% for o in orphans %}
+    <tr><td><a href="/beheer/rekeningschema/{{ o.id }}">{{ o.accno }}</a></td><td>{{ o.description or "" }}{% if o.charttype == "H" %} <span class="muted small">({{ _("kop") }})</span>{% endif %}</td>
+      <td>{{ o.gifi_accno }}</td>
+      <td><a href="/beheer/gifi/nieuw?code={{ o.gifi_accno | urlencode }}">{{ _("Code toevoegen") }}</a></td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endif %}
+
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("Code") }}</th><th>{{ _("Omschrijving") }}</th><th class="num">{{ _("Aantal rekeningen") }}</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr><td><a href="/beheer/gifi/{{ r.accno | urlencode }}">{{ r.accno }}</a></td><td>{{ r.description or "" }}</td>
+    <td class="num">{{ r.accounts or "—" }}</td></tr>
+  {% else %}
+  <tr><td colspan="3" class="muted">{{ _("Nog niets ingevoerd.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% endblock %}

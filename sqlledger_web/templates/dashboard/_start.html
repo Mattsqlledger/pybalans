@@ -1,0 +1,32 @@
+{#- Startlijst "Aan de slag" (eerste start, keuze 12): alleen voor de beheerder, verdwijnt als alles klaar is. -#}
+{% if switch and items %}
+{#- VP2: inklapbaar; open of dicht onthoudt de browser per administratie (dashboard.js, data-remember) -#}
+<details class="card dash-start dash-switch" open data-remember="switchlist-{{ ctx.company.id }}">
+  <summary><h3>{{ _("Overstap uit SQL-Ledger") }}</h3>
+    <span class="muted small">{{ _("{n} open").format(n=items|rejectattr("done")|rejectattr("skipped")|list|length) }}</span></summary>
+  <p class="small"><a href="/beheer/ingebruikname">{{ _("Uitleg en controleblad") }}</a></p>
+  {% with back="/", help=False %}{% include "dashboard/_switchlist.html" %}{% endwith %}
+</details>
+{% elif items %}
+<section class="card dash-start">
+  <div class="head"><h3>{{ _("Aan de slag") }}</h3>
+    <form method="post" action="/dashboard/startlijst" class="inline">
+      <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+      <button name="item" value="hidden" class="link small">{{ _("Startlijst verbergen") }}</button>
+    </form></div>
+  <ul class="startlist">
+    {% for i in items %}
+    <li class="{{ 'done' if i.done else ('skipped' if i.skipped else '') }}">
+      <span class="mark" aria-hidden="true">{{ "✓" if i.done else ("–" if i.skipped else "") }}</span>
+      <span class="item">{% if i.done %}<span class="txt">{{ i.text }}</span> <span class="muted small">{{ _("klaar") }}</span>
+      {% elif i.skipped %}<span class="txt">{{ i.text }}</span> <span class="muted small">{{ _("niet nodig") }}</span>
+      {% else %}<a href="{{ i.href }}">{{ i.text }}</a>{% if i.hint %} <span class="muted small">{{ i.hint }}</span>{% endif %}
+        <form method="post" action="/dashboard/startlijst" class="inline">
+          <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+          <button name="item" value="{{ i.key }}" class="link small">{{ _("niet nodig") }}</button>
+        </form>{% endif %}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}

@@ -1,0 +1,45 @@
+# Leerer Kontenplan Deutschland (Nummern nach dem SKR03): nur die Konten, die das Programm braucht.
+# Die Kontonummern folgen dem verbreiteten Standardkontenrahmen 03; Kopfzeilen und 4990 Rundungsdifferenzen sind
+# eigene Nummern (nicht "0": SQL-Ledger/Perl lässt ein Konto "0" in Berichten weg). Ein vollständiger deutscher
+# Kontenplan folgt später (REKENINGSCHEMA_ANALYSE.md).
+# id: leeg-de
+# land: DE
+# talen: de en nl fr
+# valuta: EUR
+# naam.nl: Leeg schema
+# naam.en: Empty chart
+# naam.de: Leerer Kontenplan
+# naam.fr: Plan vide
+# bron: sqlledger-py, eigen werk
+# licentie: GPL-2.0-or-later
+# voorraad: 3980
+# omzet: 8400
+# kosten: 3400
+# koersverschil: 2150
+# btw-afdracht: 1789
+# btw-afronding: 4990
+rekening;soort;categorie;koppeling;contra;tarief;rubriek;rgs;de;en;nl;fr
+08;H;Q;;;;;;Eigenkapital;Equity;Eigen vermogen;Capitaux propres
+0860;A;Q;;;;;;Gewinnvortrag vor Verwendung;Retained earnings;Onverdeelde winst;Report à nouveau
+0880;A;Q;;;;;;Variables Kapital;Capital;Kapitaal;Capital
+1;H;A;;;;;;Umlaufvermögen;Current assets;Vlottende activa;Actif circulant
+1000;A;A;AR_paid:AP_paid;;;;;Kasse;Cash;Kas;Caisse
+1200;A;A;AR_paid:AP_paid;;;;;Bank;Bank;Bank;Banque
+1400;A;A;AR;;;;;Forderungen aus Lieferungen und Leistungen;Trade debtors;Debiteuren;Clients
+1571;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.07;;;Abziehbare Vorsteuer 7 %;Input VAT 7%;Voorbelasting 7 %;TVA déductible 7 %
+1576;A;A;AP_tax:IC_taxpart:IC_taxservice;;0.19;;;Abziehbare Vorsteuer 19 %;Input VAT 19%;Voorbelasting 19 %;TVA déductible 19 %
+16;H;L;;;;;;Verbindlichkeiten;Liabilities;Schulden;Dettes
+1600;A;L;AP;;;;;Verbindlichkeiten aus Lieferungen und Leistungen;Trade creditors;Crediteuren;Fournisseurs
+1771;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.07;;;Umsatzsteuer 7 %;VAT payable 7%;Te betalen btw 7 %;TVA collectée 7 %
+1776;A;L;AR_tax:IC_taxpart:IC_taxservice;;0.19;;;Umsatzsteuer 19 %;VAT payable 19%;Te betalen btw 19 %;TVA collectée 19 %
+1789;A;L;;;;;;Umsatzsteuer laufendes Jahr;VAT liability;Af te dragen btw;TVA à décaisser
+2;H;E;;;;;;Neutrale Aufwendungen;Non-operating expenses;Neutrale kosten;Charges hors exploitation
+2150;A;E;;;;;;Aufwendungen aus Kursdifferenzen;Exchange differences;Koersverschillen;Écarts de change
+3;H;E;;;;;;Wareneingang;Purchases;Inkopen;Achats
+3400;A;E;AP_amount:IC_cogs;;;;;Wareneingang;Cost of sales;Inkoopwaarde van de omzet;Achats de marchandises vendues
+3980;A;A;IC;;;;;Bestand Waren;Stock;Voorraad;Stocks de marchandises
+4;H;E;;;;;;Betriebliche Aufwendungen;Operating expenses;Bedrijfskosten;Charges d'exploitation
+4900;A;E;AP_amount:IC_expense;;;;;Sonstige betriebliche Aufwendungen;General expenses;Algemene kosten;Charges diverses
+4990;A;E;;;;;;Rundungsdifferenzen;Rounding differences;Afrondingsverschillen;Écarts d'arrondi
+8;H;I;;;;;;Erlöse;Sales;Omzet;Chiffre d'affaires
+8400;A;I;AR_amount:IC_sale:IC_income;;;;;Erlöse 19 % USt;Sales;Omzet;Ventes

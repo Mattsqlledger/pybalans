@@ -1,0 +1,75 @@
+# Origineel SQL-Ledger 2.8.10 (RMA-commit 6d3c94f sql/Pg-tables.sql); gemaakt met compare/make_ref_2810.sh.
+# table <naam> <kolommen…> | sequence <naam> | function <naam> (ook trigger met die naam)
+table acc_trans amount approved chart_id cleared fx_transaction id memo project_id source trans_id transdate vr_id
+table address address1 address2 city country id state trans_id zipcode
+table ap amount approved bank_id cashdiscount curr datepaid dcn department_id description discountterms duedate employee_id exchangerate id intnotes invnumber invoice language_code netamount notes onhold ordnumber paid paymentmethod_id ponumber quonumber shippingpoint shipvia taxincluded terms till transdate vendor_id warehouse_id waybill
+table ar amount approved bank_id cashdiscount curr customer_id datepaid dcn department_id description discountterms duedate employee_id exchangerate id intnotes invnumber invoice language_code netamount notes onhold ordnumber paid paymentmethod_id ponumber quonumber shippingpoint shipvia taxincluded terms till transdate warehouse_id waybill
+table assembly adj aid bom id parts_id qty
+table audittrail action employee_id formname reference tablename trans_id transdate
+table bank address_id bic dcn iban id membernumber name rvc
+table br amount apprdate batch batchnumber description employee_id id managerid transdate
+table business description discount id
+table cargo grossweight id netweight package trans_id volume
+table chart accno allow_gl category charttype contra description gifi_accno id link
+table contact contacttitle email fax firstname gender id lastname mobile occupation parent_id phone salutation trans_id typeofcontact
+table curr curr precision rn
+table customer arap_accno_id bcc bic business_id cashdiscount cc contact creditlimit curr customernumber discount discount_accno_id discountterms email employee_id enddate fax iban id language_code name notes payment_accno_id paymentmethod_id phone pricegroup_id remittancevoucher sic_code startdate taxincluded taxnumber terms threshold
+table customertax chart_id customer_id
+table defaults fldname fldvalue
+table department description id role
+table dpt_trans department_id trans_id
+table employee address1 address2 bic city country dob email employeenumber enddate homephone iban id login managerid name notes role sales ssn startdate state workfax workmobile workphone zipcode
+table exchangerate buy curr sell transdate
+table gifi accno description
+table gl approved curr department_id description employee_id exchangerate id notes reference transdate
+table inventory employee_id id orderitems_id parts_id qty shippingdate trans_id warehouse_id
+table invoice allocated assemblyitem deliverydate description discount fxsellprice id itemnotes lineitemdetail ordernumber parts_id ponumber project_id qty sellprice serialnumber trans_id unit
+table jcitems allocated checkedin checkedout description employee_id fxsellprice id notes parts_id project_id qty sellprice serialnumber
+table language code description
+table makemodel make model parts_id
+table oe aa_id amount closed curr customer_id department_id description employee_id exchangerate id intnotes language_code netamount notes ordnumber ponumber quonumber quotation reqdate shippingpoint shipvia taxincluded terms transdate vendor_id warehouse_id waybill
+table orderitems description discount id itemnotes lineitemdetail ordernumber parts_id ponumber project_id qty reqdate sellprice serialnumber ship trans_id unit
+table parts alternate assembly avgcost barcode bin bom countryorigin description drawing expense_accno_id id image income_accno_id inventory_accno_id lastcost listprice makemodel microfiche notes obsolete onhand partnumber partsgroup_id priceupdate project_id rop sellprice tariff_hscode toolnumber unit weight
+table partscustomer curr customer_id parts_id pricebreak pricegroup_id sellprice validfrom validto
+table partsgroup id partsgroup pos
+table partstax chart_id parts_id
+table partsvendor curr lastcost leadtime partnumber parts_id vendor_id
+table payment exchangerate id paymentmethod_id trans_id
+table paymentmethod description fee id rn
+table pricegroup id pricegroup
+table project completed customer_id description enddate id parts_id production projectnumber startdate
+table recurring description enddate howmany id nextdate payment reference repeat startdate unit
+table recurringemail format formname id message
+table recurringprint format formname id printer
+table report login reportcode reportdescription reportid
+table reportvars reportid reportvalue reportvariable
+table semaphore expires id login module
+table shipto shiptoaddress1 shiptoaddress2 shiptocity shiptocontact shiptocountry shiptoemail shiptofax shiptoname shiptophone shiptostate shiptozipcode trans_id
+table sic code description sictype
+table status emailed formname printed spoolfile trans_id
+table tax chart_id rate taxnumber validto
+table translation description language_code trans_id
+table vendor arap_accno_id bcc bic business_id cashdiscount cc contact creditlimit curr discount discount_accno_id discountterms email employee_id enddate fax gifi_accno iban id language_code name notes payment_accno_id paymentmethod_id phone pricegroup_id remittancevoucher sic_code startdate taxincluded taxnumber terms threshold vendornumber
+table vendortax chart_id vendor_id
+table vr br_id id trans_id vouchernumber
+table warehouse description id
+table yearend trans_id transdate
+sequence addressid
+sequence assemblyid
+sequence contactid
+sequence id
+sequence inventoryid
+sequence invoiceid
+sequence jcitemsid
+sequence orderitemsid
+function avgcost
+function check_department
+function check_inventory
+function del_customer
+function del_department
+function del_exchangerate
+function del_recurring
+function del_vendor
+function del_yearend
+function lastcost
+function temp

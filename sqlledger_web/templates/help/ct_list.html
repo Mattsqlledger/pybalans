@@ -1,0 +1,24 @@
+{# Verkoop > Klanten zoeken, Inkoop > Leveranciers zoeken (HELP_ANALYSE golf 1, tekst 10) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Een klant of leverancier opzoeken, openen of de lijst exporteren.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul een deel van de {a}, het {b}, de {c} of de {d} in. Alles leeg laten toont iedereen.", a=hl("Naam"), b=hl("Nummer"), c=hl("Contactpersoon"), d=hl("Plaats")) }}</li>
+  <li>{{ ht("Kies bij {s} welke relaties u wilt zien.", s=hl("Status")) }}</li>
+  <li>{{ ht("Wilt u op meer zoeken, andere kolommen zien of anders sorteren? Open {m}.", m=hl("Meer opties")) }}</li>
+  <li>{{ ht("Klik op {z} en daarna op een naam of nummer om de relatie te openen.", z=hl("Zoeken")) }}</li>
+  <li>{{ _("Met CSV, Excel of PDF neemt u de lijst mee zoals hij op het scherm staat.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: relaties die nog nergens in voorkomen. Alleen deze kunt u verwijderen.", f=hl("Ongebruikt")) }}</li>
+  <li>{{ ht("{f}: relaties met een einddatum. Ze blijven bestaan, maar u kiest ze niet meer bij nieuwe boekingen.", f=hl("Inactief")) }}</li>
+  <li>{{ ht("{f} (onder {m}): bijvoorbeeld {a} of {b}.", f=hl("Kolommen"), m=hl("Meer opties"), a=hl("Openstaand"), b=hl("Beschikbaar krediet")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Meerdere relaties tegelijk verwijderen: kies bij {s} {u}, vink ze aan en klik op {d}.", s=hl("Status"), u=hl("Ongebruikt"), d=hl("Geselecteerde verwijderen")) }}</li>
+  <li>{{ ht("De lijst toont 500 relaties per pagina. Blader verder met {n}.", n=hl("volgende")) }}</li>
+</ul>
+</details>

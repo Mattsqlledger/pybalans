@@ -1,0 +1,25 @@
+{# Tijdkaart toevoegen en Tijdkaart bewerken (HELP_ANALYSE golf 4, tekst B8) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Eén blok uren van één medewerker op één project met één dienst.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul de {d} in en kies {p} en {s}. De prijs en omschrijving van de dienst komen er vanzelf in.", d=hl("Datum"), p=hl("Project"), s=hl("Dienst")) }}</li>
+  <li>{{ ht("Kies de {m}. Leeg ({i}) is de medewerker van uw eigen login.", m=hl("Medewerker"), i=hl("— ikzelf —")) }}</li>
+  <li>{{ ht("Vul {b} en {e} in, of alleen het aantal {u}.", b=hl("Begintijd"), e=hl("Eindtijd"), u=hl("Uren")) }}</li>
+  <li>{{ ht("Klik op {w} om de uitkomst te zien, of meteen op {o}.", w=hl("Bijwerken"), o=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: het deel van de geklokte tijd dat u niet rekent. Uren is dan geklokt min dit deel.", f=hl("Niet te declareren")) }}</li>
+  <li>{{ ht("{f}: de verkoopprijs per uur, uit de toewijzing of de dienst. U kunt hem hier aanpassen.", f=hl("Prijs")) }}</li>
+  <li>{{ ht("{f}: verschijnt na opslaan. Het wordt vastgelegd uit de toewijzing, de medewerker of de dienst (wijs het aan voor de bron) en verandert later niet mee.", f=hl("Intern tarief")) }}</li>
+  <li>{{ ht("{f}: zoveel uren zijn al gefactureerd via een order.", f=hl("Al op een verkooporder")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("U kunt alleen projecten en medewerkers kiezen die op de datum actief zijn.") }}</li>
+  <li>{{ _("Staan er al uren op een verkooporder, dan kan het aantal niet lager en kunt u de tijdkaart niet verwijderen.") }}</li>
+  <li>{{ _("Een tijdkaart in een afgesloten periode kunt u niet opslaan, wijzigen of verwijderen.") }}</li>
+</ul>
+</details>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Nieuwe gebruiker") }}{% endblock %}
+{% block content %}
+<h2>{{ _("Nieuwe gebruiker") }}</h2>
+{% include "help/sys_user_new.html" %}
+<form method="post" action="/systeem/gebruikers/nieuw" class="grid">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Login") }} <input name="login" value="{{ values.login or '' }}" required autofocus>
+    <span class="muted small">{{ _("Waarmee de gebruiker inlogt. Kort, zonder spaties, bijvoorbeeld jsmith. Hoofdletters maken niet uit.") }}</span></label>
+  <label>{{ _("Naam") }} <input name="name" value="{{ values.name or '' }}">
+    <span class="muted small">{{ _("De volledige naam, bijvoorbeeld Jane Smith. Die staat in het menu en op documenten, en zo vindt de app de medewerker in een ingelezen administratie.") }}</span></label>
+  <label>{{ _("E-mail") }} <input type="email" name="email" value="{{ values.email or '' }}"></label>
+  <label class="check"><input type="checkbox" name="is_sysadmin" value="1"{% if values.is_sysadmin %} checked{% endif %}> {{ _("Systeembeheerder (gebruikers en administraties beheren)") }}</label>
+  {% if reuse %}<label class="check"><input type="checkbox" name="reuse" value="1" required> {{ _("Ja, deze login opnieuw gebruiken") }}</label>{% endif %}
+  <div><button>{{ _("Aanmaken en code maken") }}</button></div>
+</form>
+<p class="muted small">{{ _("Toegang tot administraties stelt u daarna in bij de gebruiker.") }}</p>
+{% endblock %}

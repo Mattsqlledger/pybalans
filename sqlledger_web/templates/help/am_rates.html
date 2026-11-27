@@ -1,0 +1,17 @@
+{# Beheer > Koersen (HELP_ANALYSE golf 3, tekst A10) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De wisselkoersen per datum. Boekt u in een vreemde valuta, dan vult het programma de koers van de boekdatum uit deze lijst in.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies zo nodig een {v} en een periode met {a} en {t}, en klik op {b}.", v=hl("Valuta"), a=hl("Van"), t=hl("Tot en met"), b=hl("Zoeken")) }}</li>
+  <li>{{ _("Klik op een datum om de koersen van die dag te wijzigen.") }}</li>
+  <li>{{ ht("Klik op {b} voor een nieuwe datum.", b=hl("Koers invoeren")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een koers is wat één eenheid van de vreemde valuta kost in uw standaardvaluta.") }}</li>
+  <li>{{ _("Slaat u een boeking of betaling in vreemde valuta op, dan komt de koers daarvan ook hier te staan, op die datum.") }}</li>
+  <li>{{ ht("Ziet u geen knop {b}? Voeg dan eerst een valuta toe bij {m}.", b=hl("Koers invoeren"), m=hm("Beheer", "Valuta")) }}</li>
+</ul>
+</details>

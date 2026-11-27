@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Back-up controleren") }}{% endblock %}
+{% block content %}
+{% if wizard %}{% include "start/_steps.html" %}{% endif %}
+<div class="head"><h2>{{ _("Back-up controleren") }}</h2></div>
+{% include "help/sys_restore_check.html" %}
+{% if running %}<p class="notice" role="status">{{ running.text }} <a href="{{ running.href }}">{{ _("Bekijken") }}</a></p>{% endif %}
+{% if existing %}<div class="notice warning" role="status"><p>{{ _("Let op: er is al een administratie die hierop lijkt. Inlezen maakt altijd een nieuwe administratie naast de bestaande; wilt u dat, kies dan een andere naam en databasenaam. Anders: Annuleren.") }}</p>
+<ul>{% for w in existing %}<li>{{ w }}</li>{% endfor %}</ul></div>{% endif %}
+<p>{{ _("Dit staat er in de back-up. Kijk of het de goede is, pas zo nodig de naam aan en klik op Inlezen.") }}</p>
+{% if info.family == "rma" %}<p class="notice" role="status">{{ _("Run my Accounts / ledger123, versie {version}. Alles wat SQL-Ledger niet kent, wordt ongewijzigd apart bewaard; daarna wordt de administratie bijgewerkt en gecontroleerd (proefbalans en openstaande posten moeten gelijk blijven, anders wordt er niets aangemaakt).").format(version=info.version or "—") }}</p>{% endif %}
+<dl class="facts">
+  <dt>{{ _("Bestand") }}</dt><dd>{{ meta.filename }} ({{ size }})</dd>
+  <dt>{{ _("Soort") }}</dt><dd>{% if info.family == "rma" %}{{ _("back-up van Run my Accounts / ledger123") }}{% elif info.kind == "sl" %}{{ _("back-up uit SQL-Ledger") }}{% elif info.kind == "app" %}{{ _("back-up van deze app") }}{% else %}{{ _("pg_dump (platte SQL)") }}{% endif %}</dd>
+  <dt>{{ _("Bedrijfsnaam") }}</dt><dd>{{ info.company or "—" }}</dd>
+  <dt>{{ _("Dataset") }}</dt><dd>{{ info.dataset or "—" }}</dd>
+  <dt>{{ _("Versie") }}</dt><dd>{{ info.version or "—" }}</dd>
+  <dt>{{ _("Datum van de back-up") }}</dt><dd>{{ info.date or "—" }}</dd>
+  <dt>{{ _("Laatste boeking") }}</dt><dd>{{ last_date or "—" }}</dd>
+  {% if meta.templates %}<dt>{{ _("Sjablonen en logo") }}</dt><dd>{{ _("zip-bestand meegegeven") }}</dd>{% endif %}
+</dl>
+<form method="post" action="{{ base }}/controle/{{ meta.token }}" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="grid">
+    <label>{{ _("Naam") }} * <input name="name" value="{{ values.name or '' }}" required></label>
+    <label>{{ _("Code") }} <input name="code" value="{{ values.code or '' }}" maxlength="12" size="8"></label>
+    <label>{{ _("Databasenaam") }} * <input name="dbname" value="{{ values.dbname or '' }}" pattern="[a-z][a-z0-9_]*" required aria-describedby="dbname-help">
+      <span class="muted small" id="dbname-help">{{ _("Naam van de database op de server: kleine letters, cijfers en _. Wordt niet getoond in de app.") }}</span></label>
+    <label>{{ _("Documenttaal") }}
+      <select name="language">
+        {% for code, label in languages %}<option value="{{ code }}"{% if code == values.language %} selected{% endif %}>{{ _(label) }}</option>{% endfor %}
+      </select>
+      <span class="muted small">{{ _("Taal van facturen, orders en andere documenten. Later te wijzigen bij Beheer > Instellingen.") }}</span></label>
+    <label class="check"><input type="checkbox" name="add_me" value="1" data-addme{% if values.add_me %} checked{% endif %}> {{ _("Mij als beheerder van deze administratie toevoegen") }}</label>
+  </div>
+  <div class="grid" data-addme-part>
+    <label>{{ _("U bent in deze administratie:") }}
+      <select name="employee">
+        {% for e in info.employees %}
+        <option value="e:{{ e.id }}"{% if values.employee == "e:" ~ e.id %} selected{% endif %}>{{ e.name or "—" }} ({{ e.login or _("geen login") }}){% if e.enddate %} – {{ _("uit dienst") }}{% endif %}</option>
+        {% endfor %}
+        <option value="{{ EMP_NEW }}"{% if values.employee == EMP_NEW %} selected{% endif %}>{{ _("nieuwe medewerker aanmaken: {name} ({login})").format(name=ctx.user.name or ctx.user.login, login=ctx.user.login) }}</option>
+        <option value="{{ EMP_NONE }}"{% if values.employee == EMP_NONE %} selected{% endif %}>{{ _("geen (niet als medewerker)") }}</option>
+      </select>
+      <span class="muted small">{{ _("Nodig voor Mijn uren en om te zien wie iets heeft geboekt. Een medewerker zonder login in SQL-Ledger krijgt uw login.") }}</span></label>
+  </div>
+  <p class="actions"><button name="action" value="restore">{{ _("Inlezen") }}</button> <button name="action" value="cancel" class="secondary" formnovalidate>{{ _("Annuleren") }}</button></p>
+  <p class="muted small">{{ _("Inlezen loopt op de server door, ook als u dit venster sluit; komt u terug op Back-up inlezen, dan ziet u de stand.") }}</p>
+</form>
+<script src="/static/restore.js" defer></script>
+{% endblock %}

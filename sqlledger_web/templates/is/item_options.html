@@ -1,0 +1,3 @@
+{# zoeklijst artikel (static/combo.js, PB17): nummer en omschrijving apart #}
+{% for r in rows %}<option value="{{ label(r) }}" data-n="{{ r.partnumber or '' }}" data-name="{{ r.description or '' }}"></option>
+{% endfor %}{% if more %}<option data-more="{{ more }}" value="" disabled></option>{% endif %}

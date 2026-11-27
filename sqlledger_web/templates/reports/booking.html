@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "reports/_macros.html" as m with context %}
+{% block title %}{{ _(module) }} {{ h.reference or h.id }}{% endblock %}
+{% block content %}
+<h2>{{ _(module) }} {{ h.reference or "" }} <span class="tag">{{ _("alleen lezen") }}</span>
+  <a class="button secondary noprint" href="/boekingen/{{ h.id }}?export=pdf" target="_blank" rel="noopener">PDF</a></h2>
+<dl class="facts">
+  <dt>{{ _("Boekdatum") }}</dt><dd>{{ fmt.date(h.transdate) }}</dd>
+  {% if h.name %}<dt>{{ _("Klant") if h.module == 'ar' else _("Leverancier") }}</dt><dd>{{ h.name }}</dd>{% endif %}
+  {% if h.description %}<dt>{{ _("Omschrijving") }}</dt><dd>{{ h.description }}</dd>{% endif %}
+  {% if h.duedate %}<dt>{{ _("Vervaldatum") }}</dt><dd>{{ fmt.date(h.duedate) }}</dd>{% endif %}
+  {% if h.amount is not none %}
+  <dt>{{ _("Bedrag") }}</dt><dd>{{ h.amount | amount(fmt.nf, precision) }} {{ h.curr or "" }}</dd>
+  <dt>{{ _("Betaald") }}</dt><dd>{{ h.paid | amount(fmt.nf, precision, "0") }}</dd>
+  {% endif %}
+  {% if h.curr and h.exchangerate and h.exchangerate != 1 %}<dt>{{ _("Koers") }}</dt><dd>{{ h.exchangerate }}</dd>{% endif %}
+  {% if h.department %}<dt>{{ _("Afdeling") }}</dt><dd>{{ h.department }}</dd>{% endif %}
+  {% if h.employee %}<dt>{{ _("Medewerker") }}</dt><dd>{{ h.employee }}</dd>{% endif %}
+  {% if not h.approved %}<dt>{{ _("Status") }}</dt><dd class="warn">{{ _("niet goedgekeurd") }}</dd>{% endif %}
+  {% if h.notes %}<dt>{{ _("Opmerkingen") }}</dt><dd class="prewrap">{{ h.notes }}</dd>{% endif %}
+</dl>
+{{ m.table(table, cell) }}
+{% if h.invoice %}<p class="muted small noprint">{{ _("Dit is een factuur met artikelen; wijzigen volgt in fase 3.") }}</p>{% endif %}
+{% endblock %}

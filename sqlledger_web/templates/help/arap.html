@@ -1,0 +1,31 @@
+{# Verkoop/Inkoop > Boeking toevoegen, Creditnota (HELP_ANALYSE golf 1, tekst 2) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Een factuur zonder artikelen boeken: u kiest zelf het bedrag en de omzet- of kostenrekening. Dit is het gewone scherm voor de meeste inkoopfacturen en voor diensten. Via {ar} of {ap} opent hetzelfde scherm voor een creditnota.", ar=hm("Verkoop", "Creditnota"), ap=hm("Inkoop", "Creditnota")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies bij {c} of {v} de relatie. Termijn, btw-rekeningen en de rekeningen van de vorige boeking voor deze relatie worden alvast ingevuld.", c=hl("Klant"), v=hl("Leverancier")) }}</li>
+  <li>{{ ht("Vul {n} en {d} in. Bij inkoop is dat het nummer en de datum op de factuur van de leverancier.", n=hl("Factuurnummer"), d=hl("Factuurdatum")) }}</li>
+  <li>{{ ht("Vul per regel het {b} in, de {a} (bijvoorbeeld omzet of kosten) en eventueel een {o}.", b=hl("Bedrag"), a=hl("Rekening"), o=hl("Omschrijving")) }}</li>
+  <li>{{ _("Controleer de btw-regels en het totaal eronder.") }}</li>
+  <li>{{ ht("Is er al betaald? Vul dat in onder {p}.", p=hl("Betalingen")) }}</li>
+  <li>{{ ht("Sleep de PDF van de factuur in het vak bij {a}.", a=hl("Bijlagen")) }}</li>
+  <li>{{ ht("Klik op {s}.", s=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f} op een regel: het bedrag zonder btw. Zet {t} aan als u bedragen inclusief btw invult.", f=hl("Bedrag"), t=hl("Btw inbegrepen")) }}</li>
+  <li>{{ ht("{f} (bij elke btw-regel): het programma rekent de btw uit. Zet het uit om het btw-bedrag van de factuur zelf over te nemen, bijvoorbeeld bij een afrondingsverschil.", f=hl("berekenen")) }}</li>
+  <li>{{ ht("{f}: deze btw-rekening staat niet bij de relatie, dus het programma rekent er geen btw voor uit.", f=hl("niet gekoppeld aan deze relatie")) }}</li>
+  <li>{{ ht("{a}, {b} en {c}: zoals bij de verkoop- en inkoopfactuur.", a=hl("Koers"), b=hl("Betaalkenmerk"), c=hl("Geblokkeerd (niet betalen)")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Vul bij een creditnota de bedragen positief in. Het programma weet zelf dat het om een creditnota gaat.") }}</li>
+  <li>{{ _("Regels zonder bedrag worden bij opslaan weggelaten.") }}</li>
+  <li>{{ ht("PDF en e-mail gebruiken de opgeslagen versie. {d} haalt ook de betalingen op de boeking weg en kunt u niet ongedaan maken.", d=hl("Verwijderen")) }}</li>
+  <li>{{ ht("Na het opslaan voegt u onder {b} nog een bestand toe met {t}, ook als de factuur in een afgesloten periode valt. De boeking zelf verandert daarbij niet.", b=hl("Bijlagen"), t=hl("Bijlage toevoegen")) }}</li>
+  <li>{{ ht("Opent u vanuit een overzicht een factuur met artikelen, dan komt u in {ar} of {ap} terecht.", ar=hm("Verkoop", "Verkoopfactuur"), ap=hm("Inkoop", "Inkoopfactuur")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: bij inkoop waarschuwt het programma als het factuurnummer al bestaat bij dezelfde leverancier.") }}</li>
+</ul>
+</details>

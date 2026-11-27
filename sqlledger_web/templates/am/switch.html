@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Ingebruikname") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Ingebruikname") }}</h2>{% if info %}<a class="button secondary" href="/beheer/ingebruikname/controleblad">{{ _("Controleblad") }}</a>{% endif %}</div>
+{% include "help/am_switch.html" %}
+{% if info %}
+<p>{{ _("Deze lijst helpt bij de overstap uit SQL-Ledger: wat moet kloppen voordat de app het enige boekhoudsysteem is. Wat de app zelf kan controleren, vinkt hij af; de rest vinkt u af of zet u op 'niet nodig'.") }}</p>
+<dl class="facts">
+  {% if info.kind in ("sl", "pg_dump", "app") %}
+  <dt>{{ _("Back-up") }}</dt><dd>{{ origin or "—" }}{% if info.version_from and info.version_from != info.version_to %}; {{ _("database bijgewerkt van {old} naar {new}").format(old=info.version_from, new=info.version_to) }}{% endif %}{% if info.skipped %}; <span class="warn">{{ _("{n} opdrachten overgeslagen").format(n=info.skipped) }}</span>{% endif %}</dd>
+  {% else %}<dt>{{ _("Herkomst") }}</dt><dd>{{ _("gekoppelde database (niet uit een back-up ingelezen)") }}</dd>{% endif %}
+  {% if info.last_transdate %}<dt>{{ _("Laatste boeking toen") }}</dt><dd>{{ info.last_transdate }}</dd>{% endif %}
+</dl>
+{% if items %}
+<section class="card dash-start switch-page">
+  {% with back="/beheer/ingebruikname", help=True %}{% include "dashboard/_switchlist.html" %}{% endwith %}
+  <form method="post" action="/dashboard/overstaplijst" class="inline">
+    <input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="back" value="/beheer/ingebruikname">
+    <button name="item" value="hidden" class="link small">{{ _("Lijst van het dashboard halen") }}</button>
+  </form>
+</section>
+{% else %}
+<p class="notice" role="status">{{ _("Alle punten zijn klaar of niet nodig, of de lijst is verborgen.") }}</p>
+<form method="post" action="/beheer/ingebruikname/aanzetten"><input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <button class="secondary">{{ _("Lijst weer tonen") }}</button></form>
+{% endif %}
+{% else %}
+<p>{{ _("Deze administratie is niet uit een back-up van SQL-Ledger ingelezen. Stapt u toch over uit SQL-Ledger (bijvoorbeeld met een gekoppelde database), zet dan de overstaplijst aan.") }}</p>
+<form method="post" action="/beheer/ingebruikname/aanzetten"><input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <button>{{ _("Overstaplijst aanzetten") }}</button></form>
+{% endif %}
+{% endblock %}

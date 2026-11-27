@@ -1,0 +1,24 @@
+{# Kas en bank > Vaste bankregels (HELP_ANALYSE golf 1, tekst 7) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Een vaste regel vertelt het programma hoe het een terugkerende bankregel boekt, zoals huur, bankkosten of een abonnement. Zo'n regel krijgt bij {m} dan vanzelf het goede voorstel.", m=hm("Kas en bank", "Bankregels verwerken")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul onder {n} in hoe het programma de bankregel herkent: {i}, een {t} uit de omschrijving, of allebei.", n=hl("Nieuwe vaste regel"), i=hl("Rekeningnummer tegenpartij"), t=hl("Trefwoord")) }}</li>
+  <li>{{ ht("Kies bij {r} of het om geld gaat dat binnenkomt ({a}), uitgaat ({b}) of {c}.", r=hl("Richting"), a=hl("bij"), b=hl("af"), c=hl("beide")) }}</li>
+  <li>{{ ht("Kies de {a}, bijvoorbeeld huisvestingskosten, en zo nodig de {t}.", a=hl("Tegenrekening"), t=hl("Btw")) }}</li>
+  <li>{{ ht("Vul eventueel een {o} in en klik op {s}.", o=hl("Omschrijving boeking"), s=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: geldt de regel voor één bankrekening of voor {a}.", f=hl("Bankrekening"), a=hl("alle")) }}</li>
+  <li>{{ ht("{f}: minstens 3 tekens die in de naam of omschrijving van de bankregel staan. Vult u ook een rekeningnummer in, dan moeten beide kloppen.", f=hl("Trefwoord")) }}</li>
+  <li>{{ ht("{f}: met een btw-rekening wordt het bankbedrag gezien als bedrag inclusief btw en gesplitst.", f=hl("Btw")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een vaste regel boekt niets vanzelf. Hij geeft alleen een voorstel.") }}</li>
+  <li>{{ ht("Makkelijker: vink bij het verwerken {a} aan, of kies {b} na het boeken.", a=hl("Opslaan als vaste regel"), b=hl("Vaste regel maken")) }}</li>
+  <li>{{ _("Een regel aanpassen kan niet. Verwijder hem en maak hem opnieuw.") }}</li>
+</ul>
+</details>

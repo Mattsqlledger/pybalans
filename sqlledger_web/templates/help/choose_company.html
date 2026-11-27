@@ -1,0 +1,16 @@
+{# Administratie kiezen, en wisselen in de kopregel (HELP_ANALYSE golf 3, tekst C16) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De administratie kiezen waarin u werkt. U ziet alleen de administraties waar u toegang toe hebt, met uw rol.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ _("Klik op een administratie.") }}</li>
+  <li>{{ ht("Wisselen kan ook altijd via de naam linksboven: daar staan de administraties die u {r} hebt, en {a} brengt u hier.", r=hl("Recent gebruikt"), a=hl("Alle tonen")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Met veel administraties verschijnt een zoekveld; zoeken kan op naam, code of databasenaam.") }}</li>
+  <li>{{ ht("{s}: de beheerder heeft de administratie op slot gezet ({m}). Alleen een beheerder kan hem dan nog openen.", s=hl("op slot"), m=hm("Beheer", "Afsluiten")) }}</li>
+  <li>{{ _("Ontbreekt een administratie, vraag dan de systeembeheerder om toegang.") }}</li>
+</ul>
+</details>

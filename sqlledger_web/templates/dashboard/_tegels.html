@@ -1,0 +1,30 @@
+<div class="dash-tiles-wrap">
+{% if result and result.r.fallback %}
+<p class="dash-note">{{ _("Laatste boekjaar met boekingen: {year} — de cijfers over het resultaat gaan over dat jaar.").format(year=result.r.label) }}</p>
+{% endif %}
+{% if result %}<p class="muted dash-sub">{{ _("Boekjaar {year} t/m {date} · vergeleken met dezelfde periode {prev}").format(year=result.r.label, date=v.date(result.r.todate), prev=result.r.prev_label) }}</p>{% endif %}
+<div class="dash-tiles">
+  {% if bank %}
+  <a class="tile" href="{{ bank.href }}"><span class="label">{{ _("Bank en kas") }}</span><span class="what">{{ _("Saldo betaalrekeningen") }}</span>
+    <span class="amount">{{ v.amount(bank.total) }}</span>
+    <span class="extra">{% if bank.open_lines %}{{ _("{n} bankregels te verwerken").format(n=bank.open_lines) if bank.open_lines != 1 else _("1 bankregel te verwerken") }}{% endif %}</span></a>
+  {% endif %}
+  {% if ar %}
+  <a class="tile" href="{{ ar.href }}"><span class="label">{{ _("Te ontvangen") }}</span><span class="what">{{ _("Openstaande verkoopfacturen") }}</span>
+    <span class="amount">{{ v.amount(ar.oi.total) }}</span>
+    <span class="extra{{ ' bad' if ar.oi.overdue_count }}">{% if ar.oi.overdue_count %}{{ _("{n} vervallen: {amount}").format(n=ar.oi.overdue_count, amount=v.amount(ar.oi.overdue)) }}{% else %}{{ _("niets vervallen") }}{% endif %}</span></a>
+  {% endif %}
+  {% if ap %}
+  <a class="tile" href="{{ ap.href }}"><span class="label">{{ _("Te betalen") }}</span><span class="what">{{ _("Openstaande inkoopfacturen") }}</span>
+    <span class="amount">{{ v.amount(ap.oi.total) }}</span>
+    <span class="extra{{ ' bad' if ap.oi.overdue_count }}">{% if ap.oi.overdue_count %}{{ _("{n} vervallen: {amount}").format(n=ap.oi.overdue_count, amount=v.amount(ap.oi.overdue)) }}{% elif ap.oi.soon_count %}{{ _("{n} vervalt binnen 7 dagen").format(n=ap.oi.soon_count) }}{% else %}{{ _("niets vervallen") }}{% endif %}</span></a>
+  {% endif %}
+  {% if result %}{% set r = result.r %}
+  <a class="tile" href="{{ result.href }}"><span class="label">{{ _("Resultaat") }}</span>
+    <span class="what">{{ _("{year} t/m {date}").format(year=r.label, date=v.date(r.todate)) }}</span>
+    <span class="amount">{{ v.amount(r.ytd.result) }}</span>
+    <span class="extra">{% if r.ytd.result > r.ytd_prev.result %}<span class="up">▲</span>{% elif r.ytd.result < r.ytd_prev.result %}<span class="down">▼</span>{% endif %}
+      {{ _("{year}: {amount}").format(year=r.prev_label, amount=v.amount(r.ytd_prev.result)) }}</span></a>
+  {% endif %}
+</div>
+</div>

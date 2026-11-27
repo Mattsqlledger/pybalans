@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Gebruiker verwijderen") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ target.login }}: {{ _("verwijderen") }}</h2><a href="/systeem/gebruikers/{{ target.id }}">{{ _("Terug") }}</a></div>
+<p class="notice warning" role="status">{{ _("De gebruiker {login} ({name}) heeft nog nooit ingelogd. Na verwijderen zijn de gebruiker, zijn toegang tot administraties en zijn eenmalige code weg. In het logboek blijft de login staan.").format(login=target.login, name=target.name or "—") }}</p>
+<form method="post" class="actions">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <button>{{ _("Ja, gebruiker verwijderen") }}</button>
+  <a class="button secondary" href="/systeem/gebruikers/{{ target.id }}">{{ _("Annuleren") }}</a>
+</form>
+{% endblock %}

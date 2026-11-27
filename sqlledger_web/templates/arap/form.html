@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+{% from "_docs.html" import doc_buttons, doc_status, doc_ready, variant_select with context %}
+{% import "_attach.html" as att with context %}
+{% block title %}{{ _(title) }}{% endblock %}
+{% block content %}
+{% set ro = readonly_reason is not none %}
+{% set can_repeat = can_edit and 'recurring' in (ctx.company.modules or []) %}
+{% set foreign = f.currency and f.currency != ch.defaultcurrency %}
+{% set dis = " disabled" if ro else "" %}
+{% set show_discount = not f.note and (f.cashdiscount or f.discount.amount) %}
+<div class="head">
+  <h2>{{ _(title) if not ro else _(k.note if f.note else k.title) }}
+    {% if f.id %}<span class="muted">{{ f.invnumber }}</span>{% endif %}
+    {% if ro %}<span class="tag">{{ _("alleen lezen") }}</span>{% endif %}</h2>
+  <p class="actions noprint">
+    {% if can_edit %}<a href="/{{ k.prefix }}/nieuw">{{ _("Nieuwe boeking") }}</a>
+    <a href="/{{ k.prefix }}/nieuw?creditnota=1">{{ _("Nieuwe creditnota") }}</a>{% endif %}
+    <a href="/rapporten/overzicht-{{ k.prefix }}">{{ _("Overzicht") }}</a>
+  </p>
+</div>
+{% include "help/arap.html" %}
+{% if ro %}<p class="notice">{{ _(readonly_reason) }}</p>{% endif %}
+{{ doc_ready(docs) }}
+{% if recurring %}
+{% set unit = {"days": N_("dagen"), "weeks": N_("weken"), "months": N_("maanden"), "years": N_("jaar")}.get(recurring.unit, recurring.unit) %}
+<p class="muted">{% if recurring.nextdate %}{{ _("Herhaalschema actief: elke {repeat} {unit}, volgende {nextdate}.").format(repeat=recurring.repeat, unit=_(unit), nextdate=recurring.nextdate) }}{% else %}{{ _("Herhaalschema afgelopen (geen volgende datum).") }}{% endif %} {% if can_repeat %}<a href="/herhalen/{{ f.id }}">{{ _("Schema bekijken of wijzigen") }}</a>{% endif %}</p>
+{% endif %}
+
+<form method="post" action="/{{ k.prefix }}" class="arapform" data-vc-url="/{{ k.prefix }}/relaties"
+      enctype="multipart/form-data">
+  <p class="error" role="alert" id="arap-error"{% if not calc_error %} hidden{% endif %}>{{ calc_error or "" }}</p>
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% for name in ["id", "type", "vc_id", "vc_shown", "oldtransdate", "oldduedate", "oldterms", "oldcurrency",
+                  "bank_accno"] %}
+  <input type="hidden" name="{{ name }}" value="{{ f[name] if f[name] is not none else '' }}">
+  {% endfor %}
+  <input type="hidden" name="checktax" value="{{ '1' if f.checktax else '' }}">
+  {% if not ch.paymentmethods %}<input type="hidden" name="paymentmethod_id" value="{{ f.paymentmethod_id }}">{% endif %}
+  {% if f.vc != "vendor" %}<input type="hidden" name="dcn" value="{{ f.dcn }}">{% endif %}
+
+  <fieldset class="glhead"{{ dis }}>
+    <label class="vc">{{ _(k.vc_label) }} *
+      <input name="vc_text" value="{{ f.vc_text }}" list="vclist" autocomplete="off" data-refresh data-vc
+             placeholder="{{ _('naam of nummer') }}"></label>
+    <datalist id="vclist" data-remote></datalist>
+    {% if info %}
+    <div class="facts">
+      <span>{{ [info.address1, info.address2, info.zipcode, info.city, info.country] | select | join(", ") }}</span>
+      <span id="arap-credit">{{ _("Kredietlimiet") }} {{ amount(info.creditlimit, "0") }} ·
+        {{ _("resterend") }} <span class="{{ 'neg' if info.creditremaining < 0 else '' }}">{{ amount(info.creditremaining, "0") }}</span></span>
+    </div>
+    {% endif %}
+    <label>{{ _("Factuurnummer") }}
+      {% if f.id and ch.lock_sinumber %}
+      <input value="{{ f.invnumber }}" readonly><input type="hidden" name="invnumber" value="{{ f.invnumber }}">
+      {% else %}
+      <input name="invnumber" value="{{ f.invnumber }}" maxlength="100" placeholder="{{ _('automatisch bij opslaan') }}">
+      {% endif %}
+    </label>
+    <label>{{ _("Factuurdatum") }} * <input type="date" name="transdate" value="{{ f.transdate }}" required data-refresh></label>
+    <label>{{ _("Termijn (dagen)") }} <input name="terms" value="{{ f.terms }}" class="num short" inputmode="numeric" data-refresh></label>
+    <label>{{ _("Vervaldatum") }} <input type="date" name="duedate" value="{{ f.duedate }}" data-refresh></label>
+    {% if show_discount %}
+    <label>{{ _("Korting % / dagen") }}
+      <span class="pair"><input name="cashdiscount" value="{{ f.cashdiscount }}" class="num short" inputmode="decimal" data-calc>
+      <input name="discountterms" value="{{ f.discountterms }}" class="num short" inputmode="numeric"></span></label>
+    {% else %}
+    <input type="hidden" name="cashdiscount" value="{{ f.cashdiscount }}"><input type="hidden" name="discountterms" value="{{ f.discountterms }}">
+    {% endif %}
+    <label>{{ _("Ordernummer") }} <input name="ordnumber" value="{{ f.ordnumber }}" maxlength="100"></label>
+    <label>{{ _("Inkoopordernummer") }} <input name="ponumber" value="{{ f.ponumber }}" maxlength="100"></label>
+    {% if ch.currencies|length > 1 %}
+    <label>{{ _("Valuta") }}
+      <select name="currency" data-refresh>
+        {% for c in ch.currencies %}<option{% if c == (f.currency or ch.defaultcurrency) %} selected{% endif %}>{{ c }}</option>{% endfor %}
+      </select></label>
+    {% if foreign %}<label>{{ _("Koers") }} * <input name="exchangerate" value="{{ f.exchangerate }}" class="num" inputmode="decimal"></label>{% endif %}
+    {% else %}<input type="hidden" name="currency" value="{{ f.currency }}">{% endif %}
+    {% if ch.departments %}
+    <label>{{ _("Afdeling") }}
+      <select name="department_id"><option value=""></option>
+        {% for d in ch.departments %}<option value="{{ d.id }}"{% if d.id|string == f.department_id %} selected{% endif %}>{{ d.description }}</option>{% endfor %}
+      </select></label>
+    {% endif %}
+    {% if ch.employees %}
+    <label>{{ _("Verkoper") if f.vc == "customer" else _("Medewerker") }}
+      <select name="employee_id"><option value=""></option>
+        {% for e in ch.employees %}<option value="{{ e.id }}"{% if e.id|string == f.employee_id %} selected{% endif %}>{{ e.name }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="employee_id" value="{{ f.employee_id }}">{% endif %}
+    {% if ch.paymentmethods %}
+    <label>{{ _("Betaalmethode") }}
+      <select name="paymentmethod_id"><option value=""></option>
+        {% for pm in ch.paymentmethods %}<option value="{{ pm.id }}"{% if pm.id|string == f.paymentmethod_id %} selected{% endif %}>{{ pm.description }}</option>{% endfor %}
+      </select></label>
+    {% endif %}
+    {% if f.vc == "vendor" %}
+    <label class="wide">{{ _("Betaalkenmerk") }} <input name="dcn" value="{{ f.dcn }}" maxlength="100"></label>
+    {% elif f.dcn %}
+    <p class="wide">{{ _("Betaalkenmerk") }}: {{ f.dcn }}</p>
+    {% endif %}
+    {{ variant_select(variants, f.language_code) }}
+    <label class="wide">{{ _("Omschrijving") }}
+      <textarea name="description" rows="{{ [f.description.count('\n') + 1, 4]|min }}">{{ f.description }}</textarea></label>
+    <label class="check"><input type="checkbox" name="onhold" value="1"{% if f.onhold %} checked{% endif %}> {{ _("Geblokkeerd (niet betalen)") }}</label>
+  </fieldset>
+
+  <datalist id="accounts">
+    {% for a in ch.line_accounts %}<option value="{{ a.accno }} {{ a.description }}" data-n="{{ a.accno }}" data-name="{{ a.description }}"></option>{% endfor %}
+  </datalist>
+  <div class="table-wrap">
+  <table class="list gllines araplines">
+    <thead><tr>
+      <th class="num">{{ _("Bedrag") }}</th><th>{{ _("Rekening") }}</th><th>{{ _("Omschrijving") }}</th>
+      {% if ch.projects %}<th>{{ _("Project") }}</th>{% endif %}
+    </tr></thead>
+    <tbody data-lines>
+    {% for ln in f.lines %}{% set i = loop.index %}
+      <tr data-line>
+        <td><input name="amount_{{ i }}" value="{{ ln.amount }}" class="num" inputmode="decimal" data-calc{{ dis }} aria-label="{{ _('Bedrag') }} {{ i }}"></td>
+        <td><input name="accno_{{ i }}" value="{{ ln.accno }}" list="accounts" class="acc" autocomplete="off"{{ dis }} aria-label="{{ _('Rekening') }} {{ i }}"></td>
+        <td><input name="description_{{ i }}" value="{{ ln.description }}"{{ dis }} aria-label="{{ _('Omschrijving') }} {{ i }}">
+            <input type="hidden" name="cleared_{{ i }}" value="{{ ln.cleared }}"></td>
+        {% if ch.projects %}
+        <td><select name="project_{{ i }}"{{ dis }} aria-label="{{ _('Project') }} {{ i }}"><option value=""></option>
+          {% for p in ch.projects %}<option value="{{ p.id }}"{% if p.id|string == ln.project_id %} selected{% endif %}>{{ p.projectnumber }}</option>{% endfor %}
+        </select></td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tbody id="arap-calc">
+      {% for t in f.taxes %}
+      <tr class="tax">
+        <td><input type="hidden" name="taxaccount" value="{{ t.accno }}">
+            <input name="tax_{{ t.accno }}" value="{{ t.amount }}" class="num" inputmode="decimal" data-calc data-tax{{ dis }}
+                   aria-label="{{ _('Btw') }} {{ t.accno }}"></td>
+        <td colspan="{{ 3 if ch.projects else 2 }}">
+          <label class="inline"><input type="checkbox" name="calctax_{{ t.accno }}" value="1"{% if t.calc %} checked{% endif %} data-calc{{ dis }}>
+          {{ _("berekenen") }}</label>
+          {{ t.accno }} {{ t.description }}{% if t.rate is not none %} {{ t.pct }}{% else %} <span class="muted">({{ _("niet gekoppeld aan deze relatie") }})</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+      <tr class="total">
+        <th class="num" data-invtotal>{{ amount(f.invtotal, "0") }}</th>
+        <td colspan="{{ 3 if ch.projects else 2 }}">
+          <select name="arap_accno" aria-label="{{ _('Debiteurenrekening') if f.vc == 'customer' else _('Crediteurenrekening') }}"{{ dis }}>
+            {% for a in ch.arap_accounts %}<option value="{{ a.accno }}"{% if a.accno == f.arap_accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+          </select>
+          {% if f.taxes %}<label class="inline"><input type="checkbox" name="taxincluded" value="1"{% if f.taxincluded %} checked{% endif %} data-calc{{ dis }}> {{ _("Btw inbegrepen") }}</label>{% endif %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <input type="hidden" name="rowcount" value="{{ f.lines|length }}" data-rowcount>
+
+  <label class="wide notes">{{ _("Notities") }}
+    <textarea name="notes" rows="{{ [f.notes.count('\n') + 1, 4]|min }}"{{ dis }}>{{ f.notes }}</textarea></label>
+  {% if info and info.notes %}<p class="muted small prewrap"><strong>{{ _("Notities relatie") }}:</strong> {{ info.notes }}</p>{% endif %}
+
+  {% if show_discount %}
+  <h3>{{ _("Contante korting") }} <span class="muted small">{{ _("beschikbaar {amount}").format(amount=amount(f.cd_available, "0")) }}</span></h3>
+  <div class="table-wrap">
+  <table class="list gllines">
+    <thead><tr><th>{{ _("Datum") }}</th><th>{{ _("Kenmerk") }}</th><th>{{ _("Memo") }}</th><th class="num">{{ _("Bedrag") }}</th>
+      {% if foreign %}<th>{{ _("Koers") }}</th>{% endif %}<th>{{ _("Rekening") }}</th></tr></thead>
+    <tbody><tr>
+      <td><input type="date" name="discount_datepaid" value="{{ f.discount.datepaid }}"{{ dis }}>
+          <input type="hidden" name="discount_olddatepaid" value="{{ f.discount.olddatepaid }}">
+          <input type="hidden" name="discount_cleared" value="{{ f.discount.cleared }}"></td>
+      <td><input name="discount_source" value="{{ f.discount.source }}" class="short"{{ dis }}></td>
+      <td><input name="discount_memo" value="{{ f.discount.memo }}"{{ dis }}></td>
+      <td><input name="discount_paid" value="{{ f.discount.amount }}" class="num" inputmode="decimal" data-calc{{ dis }} aria-label="{{ _('Korting') }}"></td>
+      {% if foreign %}<td><input name="discount_exchangerate" value="{{ f.discount.exchangerate }}" class="num short" inputmode="decimal"{{ dis }}></td>{% endif %}
+      <td><select name="discount_accno"{{ dis }}><option value=""></option>
+        {% for a in ch.discount_accounts %}<option value="{{ a.accno }}"{% if a.accno == f.discount.accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+      </select></td>
+    </tr></tbody>
+  </table>
+  </div>
+  {% endif %}
+
+  <h3>{{ _("Betalingen") }}</h3>
+  <div class="table-wrap">
+  <table class="list gllines">
+    <thead><tr><th>{{ _("Datum") }}</th><th>{{ _("Kenmerk") }}</th><th>{{ _("Memo") }}</th><th class="num">{{ _("Bedrag") }}</th>
+      {% if foreign %}<th>{{ _("Koers") }}</th>{% endif %}
+      {% if ch.paymentmethods %}<th>{{ _("Methode") }}</th>{% endif %}<th>{{ _("Rekening") }}</th></tr></thead>
+    <tbody data-pays>
+    {% for p in f.pays %}{% set i = loop.index %}
+      <tr data-pay>
+        <td><input type="date" name="datepaid_{{ i }}" value="{{ p.datepaid }}"{{ dis }} aria-label="{{ _('Datum') }} {{ i }}">
+            <input type="hidden" name="olddatepaid_{{ i }}" value="{{ p.olddatepaid }}">
+            <input type="hidden" name="paidcleared_{{ i }}" value="{{ p.cleared }}"></td>
+        <td><input name="source_{{ i }}" value="{{ p.source }}" class="short"{{ dis }} aria-label="{{ _('Kenmerk') }} {{ i }}"></td>
+        <td><input name="memo_{{ i }}" value="{{ p.memo }}"{{ dis }} aria-label="{{ _('Memo') }} {{ i }}"></td>
+        <td><input name="paid_{{ i }}" value="{{ p.amount }}" class="num" inputmode="decimal" data-calc data-paid{{ dis }} aria-label="{{ _('Bedrag') }} {{ i }}"></td>
+        {% if foreign %}<td><input name="exchangerate_{{ i }}" value="{{ p.exchangerate }}" class="num short" inputmode="decimal"{{ dis }} aria-label="{{ _('Koers') }} {{ i }}"></td>{% endif %}
+        {% if ch.paymentmethods %}
+        <td><select name="paymentmethod_{{ i }}"{{ dis }}><option value=""></option>
+          {% for pm in ch.paymentmethods %}<option value="{{ pm.id }}"{% if pm.id|string == p.paymentmethod_id %} selected{% endif %}>{{ pm.description }}</option>{% endfor %}
+        </select></td>
+        {% endif %}
+        <td><select name="paidaccno_{{ i }}"{{ dis }} aria-label="{{ _('Rekening') }} {{ i }}">
+          {% for a in ch.paid_accounts %}<option value="{{ a.accno }}"{% if a.accno == p.accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+        </select></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot id="arap-paid">
+      <tr class="total"><th colspan="3">{{ _("Betaald") }}</th><th class="num">{{ amount(f.totalpaid, "0") }}</th>
+        <td colspan="{{ 1 + (1 if foreign else 0) + (1 if ch.paymentmethods else 0) }}">
+        {% if f.outstanding > 0 %}<strong>{{ _("Openstaand") }}: {{ amount(f.outstanding) }}</strong>
+        {% elif f.outstanding < 0 %}<strong class="warn">{{ _("Te veel betaald") }}: {{ amount(-f.outstanding) }}</strong>{% endif %}
+        </td></tr>
+    </tfoot>
+  </table>
+  </div>
+  <input type="hidden" name="paidcount" value="{{ f.pays|length }}" data-paidcount>
+
+  {{ att.refs(f, ro) }}
+  {% if not f.id and not ro %}{{ att.pending(f) }}{% endif %}
+
+  {% if confirm == "duplicate" %}
+  <div class="confirm" role="alert">
+    <p><strong>{{ _("Factuurnummer {number} bestaat al bij deze leverancier").format(number=f.invnumber) }}</strong>
+      ({% for d in duplicates %}<a href="/{{ k.prefix }}/{{ d }}" target="_blank">{{ _("boeking {id}").format(id=d) }}</a>{{ ", " if not loop.last }}{% endfor %}).
+      {{ _("Toch opslaan?") }}</p>
+    <input type="hidden" name="dup_ok" value="1">
+    <button name="action" value="{{ next_action }}">{{ _("Ja, toch opslaan") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Terug") }}</button>
+  </div>
+  {% elif confirm == "post" %}
+  <div class="confirm" role="alert">
+    <input type="hidden" name="dup_ok" value="{{ '1' if f.dup_ok else '' }}">
+    <p><strong>{{ _("U wijzigt een bestaande boeking.") }}</strong> {{ _("De regels en betalingen worden vervangen door wat hierboven staat.") }}</p>
+    <button name="action" value="post_confirmed">{{ _("Ja, opslaan") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Terug") }}</button>
+  </div>
+  {% elif confirm == "delete" %}
+  <div class="confirm" role="alert">
+    <p><strong>{{ _("Boeking {number} verwijderen?").format(number=f.invnumber) }}</strong> {{ _("Ook de betalingen op deze boeking verdwijnen. Dit kan niet ongedaan gemaakt worden.") }}</p>
+    <button name="action" value="delete_confirmed" class="danger">{{ _("Ja, verwijderen") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Terug") }}</button>
+  </div>
+  {% elif not ro %}
+  <p class="actions glbuttons">
+    <button name="action" value="post">{{ _("Opslaan") }}</button>
+    {% if f.id %}<button name="action" value="post_as_new" class="secondary">{{ _("Opslaan als nieuw") }}</button>{% endif %}
+    <button name="action" value="new_number" class="secondary" formnovalidate>{{ _("Nieuw nummer") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate data-update>{{ _("Bijwerken") }}</button>
+    {% if can_repeat and f.id %}<a class="button secondary" href="/herhalen/{{ f.id }}">{{ _("Herhalen") }}</a>
+    {% elif can_repeat %}<button type="button" class="secondary" disabled title="{{ _('Sla de boeking eerst op') }}">{{ _("Herhalen") }}</button>{% endif %}
+    {% if not f.id %}<button name="action" value="post_pdf" class="secondary">{{ _("Opslaan en PDF") }}</button>{% endif %}
+    {{ doc_buttons(docs) }}
+    {% if f.id %}<button name="action" value="delete" class="secondary danger" formnovalidate>{{ _("Verwijderen") }}</button>
+    <button name="action" value="cancel" class="secondary" formnovalidate>{{ _("Sluiten") }}</button>{% endif %}
+  </p>
+  {% elif can_edit and f.id %}
+  <p class="actions">{{ doc_buttons(docs) }}
+    <a class="button secondary" href="/{{ k.prefix }}/nieuw?kopie={{ f.id }}">{{ _("Kopiëren naar nieuwe boeking") }}</a>
+    {% if can_repeat and not (trans and trans.batch) %}<a class="button secondary" href="/herhalen/{{ f.id }}">{{ _("Herhalen") }}</a>{% endif %}</p>
+  {% elif f.id %}
+  <p class="actions">{{ doc_buttons(docs, mail=False) }}</p>
+  {% endif %}
+{{ doc_status(docs) }}
+</form>
+{% if f.id %}
+{% set formname = ("credit_note" if f.note else "ar_transaction") if f.vc == "customer" else ("debit_note" if f.note else "ap_transaction") %}
+{{ att.saved(attachments, f.id, formname, can_edit) }}
+{% endif %}
+
+<template id="line-template">
+  <tr data-line>
+    <td><input name="amount_N" class="num" inputmode="decimal" data-calc aria-label="{{ _('Bedrag') }}"></td>
+    <td><input name="accno_N" list="accounts" class="acc" autocomplete="off" aria-label="{{ _('Rekening') }}"></td>
+    <td><input name="description_N" aria-label="{{ _('Omschrijving') }}"><input type="hidden" name="cleared_N"></td>
+    {% if ch.projects %}
+    <td><select name="project_N" aria-label="{{ _('Project') }}"><option value=""></option>
+      {% for p in ch.projects %}<option value="{{ p.id }}">{{ p.projectnumber }}</option>{% endfor %}
+    </select></td>
+    {% endif %}
+  </tr>
+</template>
+<template id="pay-template">
+  <tr data-pay>
+    <td><input type="date" name="datepaid_N" aria-label="{{ _('Datum') }}"><input type="hidden" name="olddatepaid_N"><input type="hidden" name="paidcleared_N"></td>
+    <td><input name="source_N" class="short" aria-label="{{ _('Kenmerk') }}"></td>
+    <td><input name="memo_N" aria-label="{{ _('Memo') }}"></td>
+    <td><input name="paid_N" class="num" inputmode="decimal" data-calc data-paid aria-label="{{ _('Bedrag') }}"></td>
+    {% if foreign %}<td><input name="exchangerate_N" class="num short" inputmode="decimal" aria-label="{{ _('Koers') }}"></td>{% endif %}
+    {% if ch.paymentmethods %}
+    <td><select name="paymentmethod_N"><option value=""></option>
+      {% for pm in ch.paymentmethods %}<option value="{{ pm.id }}">{{ pm.description }}</option>{% endfor %}
+    </select></td>
+    {% endif %}
+    <td><select name="paidaccno_N" aria-label="{{ _('Rekening') }}">
+      {% for a in ch.paid_accounts %}<option value="{{ a.accno }}"{% if a.accno == f.bank_accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+    </select></td>
+  </tr>
+</template>
+<script src="/static/arap.js" defer></script>
+<script src="/static/attach.js" defer></script>
+{% endblock %}

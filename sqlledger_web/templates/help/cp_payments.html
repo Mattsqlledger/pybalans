@@ -1,0 +1,29 @@
+{# Kas en bank > Ontvangsten (meerdere klanten) en Kas en bank > Betalingen (meerdere leveranciers) (HELP_ANALYSE golf 2, tekst 14) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Ontvangsten of betalingen van veel klanten of leveranciers in één keer boeken, bijvoorbeeld een reeks betalingen die u via de bank klaarzet. U ziet één regel per relatie met het totaal dat openstaat.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Controleer de {d} en kies de {r}.", d=hl("Datum"), r=hl("Betaalrekening")) }}</li>
+  <li>{{ ht("Wilt u minder relaties zien? Klap {f} open en kies bijvoorbeeld {v}.", f=hl("Filters"), v=hl("Vervaldatum tot en met")) }}</li>
+  <li>{{ ht("Vink de relaties aan. Bij {f} wordt het openstaande bedrag voorgesteld; pas het aan bij een deelbetaling.", f=hl("Betaald")) }}</li>
+  <li>{{ ht("Controleer het totaal onder de kolom {f}.", f=hl("Betaald")) }}</li>
+  <li>{{ ht("Klik op {b}. Daarna kunt u bovenaan per relatie een {s} maken met {v}, {p} of {m}.", b=hl("Boeken"), s=hl("Betalingsspecificatie"), v=hl("Voorbeeld"), p=hl("PDF"), m=hl("Mailen")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: wordt bij het aanvinken ingevuld met het volgende nummer van de betaalrekening, en loopt per relatie met één op.", f=hl("Kenmerk")) }}</li>
+  <li>{{ ht("{f}: contante korting die u krijgt of geeft als de posten op tijd en helemaal betaald worden.", f=hl("Korting mogelijk")) }}</li>
+  <li>{{ ht("{f}: verschijnt alleen als er een kortingsrekening is.", f=hl("Rekening contante korting")) }}</li>
+  <li>{{ ht("{v} en {k}: alleen als er meer valuta's zijn. U ziet dan alleen de posten in de gekozen valuta.", v=hl("Valuta"), k=hl("Koers")) }}</li>
+  <li>{{ ht("{f}: opent {o} of {b} voor die ene relatie, om zelf te kiezen welke facturen betaald zijn.", f=hl("per post"), o=hm("Kas en bank", "Ontvangst"), b=hm("Kas en bank", "Betaling")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Het bedrag wordt per relatie verdeeld: eerst de creditnota's, dan de oudste facturen. Korting komt alleen op een factuur die helemaal betaald wordt.") }}</li>
+  <li>{{ ht("Vult u meer in dan er openstaat, dan wordt het meerdere een vooruitontvangst of vooruitbetaling. Het scherm vraagt dat eerst; klik dan op {j} of {t}.", j=hl("Ja, boeken"), t=hl("Terug")) }}</li>
+  <li>{{ _("Het is alles of niets: lukt het bij één relatie niet, dan wordt er niets geboekt.") }}</li>
+  <li>{{ ht("Is intussen iets aan de posten veranderd, dan stelt het scherm het bedrag opnieuw voor en boekt het nog niet. Controleer het en klik opnieuw op {b}.", b=hl("Boeken")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: korting alleen bij een factuur die helemaal betaald wordt, en een rest wordt een vooruitbetaling bij de eigen relatie.") }}</li>
+</ul>
+</details>

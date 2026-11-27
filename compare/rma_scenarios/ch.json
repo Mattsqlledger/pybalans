@@ -1,0 +1,912 @@
+{
+ "config": {
+  "name": "Test Treuhand",
+  "login": "test"
+ },
+ "ops": [
+  {
+   "op": "sql",
+   "label": "basis: valuta, extra rekeningen, btw CH 8,1/2,6, magazijnen, bedrijfsgegevens",
+   "sql": [
+    "INSERT INTO curr (rn, curr, precision) VALUES (1,'CHF',2),(2,'EUR',2),(3,'USD',2) ON CONFLICT DO NOTHING",
+    "INSERT INTO chart (accno,description,charttype,category,link) VALUES ('11001','Debitoren','A','A','AR'),('11701','Vorsteuer','A','A','AP_tax:IC_taxpart:IC_taxservice'),('22100','MWST 8,1%','A','L','AR_tax:AP_tax:IC_taxpart:IC_taxservice'),('22101','MWST 2,6%','A','L','AR_tax:AP_tax:IC_taxpart:IC_taxservice'),('11103','Bank EUR','A','A','AR_paid:AP_paid')",
+    "UPDATE tax SET validto = '2023-12-31'",
+    "INSERT INTO tax (chart_id, rate, taxnumber, validfrom) SELECT id, 0.081, 'CHE-123.456.789 MWST', '2024-01-01' FROM chart WHERE accno='22100'",
+    "INSERT INTO tax (chart_id, rate, taxnumber, validfrom) SELECT id, 0.026, 'CHE-123.456.789 MWST', '2024-01-01' FROM chart WHERE accno='22101'",
+    "INSERT INTO defaults (fldname, fldvalue) VALUES ('company','Test Treuhand GmbH'),('address','Musterstrasse 1\n8000 Zürich'),('businessnumber','CHE-123.456.789'),('sinumber','1000'),('vinumber','5000'),('sonumber','S-1000'),('ponumber','P-1000'),('glnumber','G-1000'),('partnumber','A-100'),('customernumber','K-100'),('vendornumber','L-100'),('employeenumber','M-1')",
+    "INSERT INTO warehouse (description) VALUES ('Lager Zürich'), ('Lager Bern')",
+    "INSERT INTO exchangerate (curr, transdate, buy, sell) VALUES ('EUR','2025-01-15',0.9400,0.9500),('EUR','2025-02-10',0.9350,0.9450),('EUR','2025-03-05',0.9300,0.9400),('USD','2025-01-15',0.9000,0.9100),('EUR','2025-02-20',0,0.9420)",
+    "INSERT INTO financial_year (start_date, end_date, status) VALUES ('2025-01-01','2025-12-31','CURRENT_FINANCIAL_YEAR')",
+    "INSERT INTO department (description, role) VALUES ('Hauptsitz','P')"
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "bankrekening CS met QR-IBAN (am.pl)",
+   "script": "am.pl",
+   "start": "edit_bank",
+   "fields": {
+    "id": "~chart:accno=11102"
+   },
+   "steps": [
+    {
+     "set": {
+      "name": "Credit Suisse",
+      "iban": "CH9300762011623852957",
+      "bic": "CRESCHZZ80A",
+      "qriban": "CH4431999123000889012",
+      "address1": "Paradeplatz 8",
+      "city": "Zürich",
+      "zipcode": "8001",
+      "country": "CH",
+      "membernumber": "4711"
+     },
+     "do": "save_bank"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "klant Muster AG",
+   "script": "ct.pl",
+   "start": "add",
+   "fields": {
+    "db": "customer"
+   },
+   "steps": [
+    {
+     "set": {
+      "name": "Muster AG",
+      "address1": "Bahnhofstrasse 10",
+      "city": "Zürich",
+      "zipcode": "8001",
+      "country": "CH",
+      "email": "info@muster.invalid",
+      "terms": "30",
+      "iban": "CH9300762011623852957",
+      "bic": "POFICHBEXXX",
+      "income_accno": "#31005",
+      "reminderstop": "1",
+      "curr": "CHF",
+      "startdate": "2024-01-01",
+      "tax_22100": "1",
+      "tax_22101": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "klant1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "klant Dupont SARL (EUR)",
+   "script": "ct.pl",
+   "start": "add",
+   "fields": {
+    "db": "customer"
+   },
+   "steps": [
+    {
+     "set": {
+      "name": "Dupont SARL",
+      "address1": "Rue du Lac 5",
+      "city": "Genève",
+      "zipcode": "1201",
+      "country": "CH",
+      "curr": "EUR",
+      "discount": "5",
+      "terms": "10",
+      "iban": "CH5604835012345678009",
+      "bic": "CRESCHZZ80A",
+      "startdate": "2024-01-01",
+      "tax_22100": "1",
+      "tax_22101": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "klant2": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "leverancier Lieferant GmbH",
+   "script": "ct.pl",
+   "start": "add",
+   "fields": {
+    "db": "vendor"
+   },
+   "steps": [
+    {
+     "set": {
+      "name": "Lieferant GmbH",
+      "address1": "Industriestrasse 3",
+      "city": "Basel",
+      "zipcode": "4051",
+      "country": "CH",
+      "curr": "CHF",
+      "terms": "30",
+      "expense_accno": "#41001",
+      "payment_clearing_accno": "#11102",
+      "early_payment_discount": "2",
+      "iban": "CH4431999123000889012",
+      "bic": "UBSWCHZH80A",
+      "reminderstop": "1",
+      "startdate": "2024-01-01",
+      "tax_22100": "1",
+      "tax_22101": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "lev1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "leverancier Euro Supply GmbH (EUR)",
+   "script": "ct.pl",
+   "start": "add",
+   "fields": {
+    "db": "vendor"
+   },
+   "steps": [
+    {
+     "set": {
+      "name": "Euro Supply GmbH",
+      "address1": "Hauptstrasse 7",
+      "city": "München",
+      "zipcode": "80331",
+      "country": "DE",
+      "curr": "EUR",
+      "terms": "14",
+      "iban": "DE89370400440532013000",
+      "bic": "COBADEFFXXX",
+      "startdate": "2024-01-01",
+      "tax_22100": "1",
+      "tax_22101": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "lev2": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "medewerker met adres/rol/IBAN",
+   "script": "hr.pl",
+   "start": "add",
+   "fields": {
+    "db": "employee"
+   },
+   "steps": [
+    {
+     "set": {
+      "name": "Anna Beispiel",
+      "employeenumber": "M-7",
+      "address1": "Seeweg 2",
+      "city": "Luzern",
+      "zipcode": "6003",
+      "country": "CH",
+      "email": "anna@example.invalid",
+      "role": "manager",
+      "iban": "CH9300762011623852957",
+      "bic": "POFICHBEXXX",
+      "startdate": "2024-01-01"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "mdw1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "artikel A-100 Laptop",
+   "script": "ic.pl",
+   "start": "add",
+   "fields": {
+    "item": "part"
+   },
+   "steps": [
+    {
+     "set": {
+      "partnumber": "A-100",
+      "description": "Laptop",
+      "sellprice": "1200",
+      "lastcost": "800",
+      "listprice": "1300",
+      "unit": "Stk",
+      "weight": "2",
+      "IC_inventory": "#11121",
+      "IC_income": "#31001",
+      "IC_expense": "#41001",
+      "rop": "2",
+      "bin": "R1",
+      "IC_tax_22100": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "art1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "artikel A-101 Maus",
+   "script": "ic.pl",
+   "start": "add",
+   "fields": {
+    "item": "part"
+   },
+   "steps": [
+    {
+     "set": {
+      "partnumber": "A-101",
+      "description": "Maus",
+      "sellprice": "40",
+      "lastcost": "15",
+      "unit": "Stk",
+      "weight": "0.1",
+      "IC_inventory": "#11121",
+      "IC_income": "#31005",
+      "IC_expense": "#41005",
+      "IC_tax_22100": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "art2": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "dienst S-1 Beratung",
+   "script": "ic.pl",
+   "start": "add",
+   "fields": {
+    "item": "service"
+   },
+   "steps": [
+    {
+     "set": {
+      "partnumber": "S-1",
+      "description": "Beratung",
+      "sellprice": "150",
+      "unit": "h",
+      "IC_income": "#34001",
+      "IC_expense": "#44001",
+      "IC_tax_22100": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "dienst1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "boek B-200 (2,6 %)",
+   "script": "ic.pl",
+   "start": "add",
+   "fields": {
+    "item": "part"
+   },
+   "steps": [
+    {
+     "set": {
+      "partnumber": "B-200",
+      "description": "Fachbuch",
+      "sellprice": "60",
+      "lastcost": "35",
+      "unit": "Stk",
+      "IC_inventory": "#11121",
+      "IC_income": "#31005",
+      "IC_expense": "#41005",
+      "IC_tax_22101": "1"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "art3": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "assemblage K-1 Bürokit",
+   "script": "ic.pl",
+   "start": "add",
+   "fields": {
+    "item": "assembly"
+   },
+   "steps": [
+    {
+     "set": {
+      "partnumber": "K-1",
+      "description": "Bürokit",
+      "sellprice": "1250",
+      "unit": "Set",
+      "IC_income": "#31001",
+      "IC_tax_22100": "1"
+     },
+     "rows": "assembly_rows",
+     "lines": [
+      {
+       "partnumber": "A-100",
+       "qty": "1"
+      },
+      {
+       "partnumber": "A-101",
+       "qty": "1"
+      }
+     ],
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "ass1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "inkooporder Lieferant",
+   "script": "oe.pl",
+   "start": "add",
+   "fields": {
+    "type": "purchase_order",
+    "vc": "vendor"
+   },
+   "steps": [
+    {
+     "set": {
+      "vendor": "Lieferant GmbH",
+      "transdate": "2025-01-10",
+      "reqdate": "2025-01-20"
+     },
+     "do": "update"
+    },
+    {
+     "lines": [
+      {
+       "partnumber": "A-100",
+       "qty": "10",
+       "sellprice": "800"
+      },
+      {
+       "partnumber": "A-101",
+       "qty": "50",
+       "sellprice": "15"
+      },
+      {
+       "partnumber": "B-200",
+       "qty": "20",
+       "sellprice": "35"
+      }
+     ],
+     "do": "update"
+    },
+    {
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "po1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "inkoopfactuur uit inkooporder",
+   "script": "oe.pl",
+   "start": "edit",
+   "fields": {
+    "id": "$po1",
+    "type": "purchase_order",
+    "vc": "vendor"
+   },
+   "steps": [
+    {
+     "do": "invoice",
+     "set": {
+      "warehouse": "~~warehouse:description=Lager Zürich"
+     }
+    },
+    {
+     "script": "ir.pl",
+     "set": {
+      "invnumber": "R-5001",
+      "transdate": "2025-01-15"
+     },
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ],
+   "keep": {
+    "ir1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "transfer Zürich -> Bern (trf)",
+   "script": "trf.pl",
+   "start": "add",
+   "fields": {},
+   "steps": [
+    {
+     "set": {
+      "transdate": "2025-01-20",
+      "from_warehouse": "~~warehouse:description=Lager Zürich",
+      "to_warehouse": "~~warehouse:description=Lager Bern",
+      "description": "Umlagerung Filiale Bern",
+      "trfnumber": "T-1",
+      "department": "~~department:description=Hauptsitz"
+     },
+     "do": "update"
+    },
+    {
+     "lines": [
+      {
+       "partnumber": "A-100",
+       "qty": "3"
+      },
+      {
+       "partnumber": "A-101",
+       "qty": "10"
+      }
+     ],
+     "do": "update"
+    },
+    {
+     "do": "save"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "assemblage K-1 bouwen (build), 2 stuks",
+   "script": "ic.pl",
+   "start": "list_assemblies",
+   "fields": {
+    "partnumber": "K-1",
+    "sort": "partnumber"
+   },
+   "steps": [
+    {
+     "set": {
+      "qty_1": "2",
+      "reference": "Build 1",
+      "transdate": "2025-01-22",
+      "warehouse": "~~warehouse:description=Lager Zürich"
+     },
+     "do": "restock_assemblies"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "verkooporder Muster AG",
+   "script": "oe.pl",
+   "start": "add",
+   "fields": {
+    "type": "sales_order",
+    "vc": "customer"
+   },
+   "steps": [
+    {
+     "set": {
+      "customer": "Muster AG",
+      "transdate": "2025-02-01",
+      "reqdate": "2025-02-15",
+      "shipvia": "Post",
+      "ponumber": "PO-MA-77"
+     },
+     "do": "update"
+    },
+    {
+     "lines": [
+      {
+       "partnumber": "A-100",
+       "qty": "4",
+       "sellprice": "1200"
+      },
+      {
+       "partnumber": "S-1",
+       "qty": "3"
+      },
+      {
+       "partnumber": "K-1",
+       "qty": "1"
+      }
+     ],
+     "do": "update"
+    },
+    {
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "so1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "verkoopfactuur uit verkooporder (deels: 2 laptops)",
+   "script": "oe.pl",
+   "start": "edit",
+   "fields": {
+    "id": "$so1",
+    "type": "sales_order",
+    "vc": "customer"
+   },
+   "steps": [
+    {
+     "set": {
+      "warehouse": "~~warehouse:description=Lager Zürich",
+      "ship_1": "2",
+      "ship_2": "3",
+      "ship_3": "1"
+     },
+     "do": "invoice"
+    },
+    {
+     "script": "is.pl",
+     "set": {
+      "invnumber": "RE-2025-001",
+      "transdate": "2025-02-10"
+     },
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ],
+   "keep": {
+    "is1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "losse verkoopfactuur Dupont in EUR uit Lager Bern",
+   "script": "is.pl",
+   "start": "add",
+   "fields": {
+    "type": "invoice"
+   },
+   "steps": [
+    {
+     "set": {
+      "customer": "Dupont SARL",
+      "transdate": "2025-02-10"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "currency": "EUR",
+      "exchangerate": "0.935",
+      "warehouse": "~~warehouse:description=Lager Bern",
+      "invnumber": "RE-2025-002"
+     },
+     "do": "update"
+    },
+    {
+     "lines": [
+      {
+       "partnumber": "A-101",
+       "qty": "5",
+       "sellprice": "45"
+      },
+      {
+       "partnumber": "A-100",
+       "qty": "1",
+       "sellprice": "1350"
+      }
+     ],
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ],
+   "keep": {
+    "is2": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "verkoopfactuur boeken 2,6 % + dienst",
+   "script": "is.pl",
+   "start": "add",
+   "fields": {
+    "type": "invoice"
+   },
+   "steps": [
+    {
+     "set": {
+      "customer": "Muster AG",
+      "transdate": "2025-03-05",
+      "invnumber": "RE-2025-003"
+     },
+     "do": "update"
+    },
+    {
+     "lines": [
+      {
+       "partnumber": "B-200",
+       "qty": "4"
+      },
+      {
+       "partnumber": "S-1",
+       "qty": "1.5"
+      }
+     ],
+     "do": "update"
+    },
+    {
+     "do": "post",
+     "set": {
+      "warehouse": "~~warehouse:description=Lager Zürich"
+     }
+    }
+   ],
+   "keep": {
+    "is3": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "inkoopfactuur Euro Supply in EUR (los)",
+   "script": "ir.pl",
+   "start": "add",
+   "fields": {
+    "type": "invoice"
+   },
+   "steps": [
+    {
+     "set": {
+      "vendor": "Euro Supply GmbH",
+      "transdate": "2025-02-20"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "currency": "EUR",
+      "exchangerate": "0.942",
+      "warehouse": "~~warehouse:description=Lager Bern",
+      "invnumber": "ES-889"
+     },
+     "do": "update"
+    },
+    {
+     "lines": [
+      {
+       "partnumber": "A-101",
+       "qty": "20",
+       "sellprice": "14"
+      }
+     ],
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ],
+   "keep": {
+    "ir2": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "ontvangst Muster AG: RE-001 volledig, RE-003 deels (bank CHF)",
+   "script": "cp.pl",
+   "start": "payment",
+   "fields": {
+    "type": "receipt",
+    "vc": "customer",
+    "payment": "payment"
+   },
+   "steps": [
+    {
+     "set": {
+      "customer": "Muster AG",
+      "datepaid": "2025-03-10"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "AR_paid": "#11102",
+      "source": "KA 0310",
+      "memo": "Zahlung",
+      "checked_1": "1",
+      "paid_1": "4421.29",
+      "checked_2": "1",
+      "paid_2": "200"
+     },
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "ontvangst Dupont in EUR (andere koers, bank EUR)",
+   "script": "cp.pl",
+   "start": "payment",
+   "fields": {
+    "type": "receipt",
+    "vc": "customer",
+    "payment": "payment"
+   },
+   "steps": [
+    {
+     "set": {
+      "customer": "Dupont SARL",
+      "datepaid": "2025-03-05"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "currency": "EUR"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "AR_paid": "#11103",
+      "exchangerate": "0.93",
+      "source": "EUR-1",
+      "checked_1": "1",
+      "paid_1": "1617.44"
+     },
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "betaling Lieferant (CHF)",
+   "script": "cp.pl",
+   "start": "payment",
+   "fields": {
+    "type": "check",
+    "vc": "vendor",
+    "payment": "payment"
+   },
+   "steps": [
+    {
+     "set": {
+      "vendor": "Lieferant GmbH",
+      "datepaid": "2025-02-14"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "AP_paid": "#11102",
+      "source": "ZA 0214",
+      "checked_1": "1",
+      "paid_1": "10176.95"
+     },
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "memoriaal: onderhoud per bank",
+   "script": "gl.pl",
+   "start": "add",
+   "fields": {},
+   "steps": [
+    {
+     "set": {
+      "transdate": "2025-03-31",
+      "reference": "G-2025-01",
+      "description": "Unterhalt Büro",
+      "accno_1": "#61901",
+      "debit_1": "500",
+      "memo_1": "Reparatur",
+      "accno_2": "#11102",
+      "credit_2": "500"
+     },
+     "do": "post"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "jaarafsluiting 2025 (financial_year)",
+   "script": "am.pl",
+   "start": "yearend",
+   "fields": {},
+   "steps": [
+    {
+     "set": {
+      "fromdate": "2025-01-01",
+      "todate": "2025-12-31",
+      "accno": "#28295",
+      "reference": "JA-2025",
+      "description": "Jahresabschluss 2025"
+     },
+     "do": "generate_yearend"
+    }
+   ]
+  },
+  {
+   "op": "sql",
+   "label": "koersen 2026",
+   "sql": [
+    "INSERT INTO exchangerate (curr, transdate, buy, sell) VALUES ('EUR','2026-01-15',0.9280,0.9390)"
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "verkoopfactuur 2026 Dupont in EUR",
+   "script": "is.pl",
+   "start": "add",
+   "fields": {
+    "type": "invoice"
+   },
+   "steps": [
+    {
+     "set": {
+      "customer": "Dupont SARL",
+      "transdate": "2026-01-15"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "currency": "EUR",
+      "exchangerate": "0.928",
+      "warehouse": "~~warehouse:description=Lager Bern",
+      "invnumber": "RE-2026-001"
+     },
+     "do": "update"
+    },
+    {
+     "lines": [
+      {
+       "partnumber": "A-100",
+       "qty": "1",
+       "sellprice": "1350"
+      }
+     ],
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ],
+   "keep": {
+    "is4": "id"
+   }
+  }
+ ],
+ "always": {
+  "department": "~~department:description=Hauptsitz"
+ }
+}

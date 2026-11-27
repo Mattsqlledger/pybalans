@@ -1,0 +1,26 @@
+{# Rapporten > Bijlagen (HELP_ANALYSE golf 4, tekst C1) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Alle bijlagen van deze administratie op één plek: de PDF's en foto's bij boekingen, facturen, orders, offertes, klanten, leveranciers en artikelen. U zoekt een bestand terug en opent het, of gaat naar de boeking waar het bij hoort.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul een deel van de naam in bij {o}, of een nummer of naam bij {g}. Kies zo nodig een {s}.", o=hl("Omschrijving of bestandsnaam"), g=hl("Gekoppeld aan"), s=hl("Soort")) }}</li>
+  <li>{{ ht("Klik op {z}. De nieuwste bijlagen staan bovenaan.", z=hl("Zoeken")) }}</li>
+  <li>{{ ht("Klik op de bestandsnaam om het bestand te bekijken, of op {d}.", d=hl("downloaden")) }}</li>
+  <li>{{ ht("Klik in de kolom {g} op het nummer om de boeking, order of relatie te openen.", g=hl("Gekoppeld aan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{g}: het nummer of de naam van de boeking, order, offerte, klant, leverancier of het artikel waar het bestand bij hangt.", g=hl("Gekoppeld aan")) }}</li>
+  <li>{{ ht("{v} en {t}: de dag waarop het bestand is toegevoegd, niet de boekdatum. Bestanden uit SQL-Ledger hebben die datum niet; ze staan onderaan en vallen weg zodra u hier een datum invult. Het aantal dat wegvalt staat dan boven de lijst; met {g} ziet u ze er toch bij.", v=hl("Toegevoegd van"), t=hl("tot en met"), g=hl("Tonen")) }}</li>
+  <li>{{ ht("{s}: {l} is een bestand uit SQL-Ledger dat nergens aan hangt. {o} hangt aan iets waarvoor dit programma geen scherm heeft.", s=hl("Soort"), l=hl("Los document (zonder koppeling)"), o=hl("Overig (uit SQL-Ledger)")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een bestand dat bij meer dan één record hangt, bijvoorbeeld bij een order en de factuur die eruit kwam, staat er één keer per record.") }}</li>
+  <li>{{ _("U ziet geen vertrouwelijke bijlagen van anderen, en geen bijlagen van modules die uit staan.") }}</li>
+  <li>{{ ht("Een vertrouwelijke bijlage hoort bij de medewerker die hem toevoegde, niet bij de gebruiker. Wie de medewerker is, staat bij {m} (kolom {f}). Krijgt een gebruiker een andere medewerker, dan vraagt de app of zijn vertrouwelijke bijlagen meegaan.", m=hm("Systeem", "Gebruikers"), f=hl("Medewerker")) }}</li>
+  <li>{{ ht("Een bijlage toevoegen of verwijderen doet u op het scherm van de boeking, order of relatie zelf. Alleen een los document kan de beheerder hier met {v} weggooien.", v=hl("verwijderen")) }}</li>
+  <li>{{ _("Er worden hoogstens 1.000 bijlagen getoond, de nieuwste eerst. Verfijn anders de zoekopdracht.") }}</li>
+</ul>
+</details>

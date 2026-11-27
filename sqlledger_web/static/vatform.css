@@ -1,0 +1,58 @@
+/* Btw-aangifteformulier in de opmaak van de Belastingdienst (scherm en PDF). Het formulier is "papier": vaste
+   kleuren, ook in donkere modus. */
+.vatform { position: relative; max-width: 46rem; background: #fdece4; color: #2a2a5a; padding: 1rem 1.2rem 1.4rem;
+  font: 0.86rem/1.35 "Helvetica Neue", Helvetica, Arial, sans-serif; border: 1px solid #f0c9b6; }
+.vatform a { color: inherit; text-decoration: none; }
+.vatform a:hover .field { outline: 2px solid #e5622e; }
+.vatform .bar { background: #e5622e; color: #fff; font-weight: 700; padding: .2rem .5rem; margin: 0 0 .4rem; }
+.vatform .intro { margin: 0 0 .8rem; font-size: .8rem; }
+.vatform .sec { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; margin: .9rem 0 .3rem; }
+.vatform .sec h4 { background: #f2a582; margin: 0; padding: .15rem .5rem; font-size: .82rem; flex: 0 1 58%; }
+.vatform .sec .hint { font-size: .74rem; font-style: italic; }
+.vatform .cols { display: grid; grid-template-columns: 1fr 9.5rem 9.5rem; gap: .5rem; font-size: .74rem; margin-left: 2rem; }
+.vatform .row { display: grid; grid-template-columns: 2rem 1fr 9.5rem 9.5rem; gap: .5rem; align-items: center; margin: .22rem 0; }
+.vatform .nr { font-weight: 600; }
+.vatform .cell { display: flex; align-items: center; gap: .25rem; }
+.vatform .cell::before { content: "€"; font-size: .8rem; }
+.vatform .cell.empty::before { content: ""; }
+.vatform .field { flex: 1; background: #fff; border: 1px solid #d9b3a3; text-align: right; padding: .12rem .4rem;
+  min-height: 1.45rem; font-variant-numeric: tabular-nums; color: #111; }
+.vatform .row.total .field { font-weight: 700; }
+.vatform .note { font-size: .72rem; font-style: italic; }
+.vatform .boxes5g { display: flex; flex-direction: column; gap: .15rem; font-size: .8rem; }
+.vatform .tick { display: inline-block; width: .9rem; height: .9rem; border: 1px solid #d9b3a3; background: #fff;
+  text-align: center; line-height: .85rem; font-size: .75rem; margin-right: .3rem; color: #111; }
+.vatform .status { margin-top: 1rem; font-size: .76rem; }
+.vatform .watermark { position: absolute; left: 0; right: 0; top: 42%; text-align: center; font-size: 4.2rem;
+  font-weight: 700; color: rgba(90, 90, 90, .22); transform: rotate(-24deg); pointer-events: none; }
+@media (max-width: 40rem) {
+  .vatform { padding: .7rem; font-size: .8rem; }
+  .vatform .cols { display: none; }
+  .vatform .row { grid-template-columns: 1.8rem 1fr; }
+  .vatform .row .cell { grid-column: 2; }
+  .vatform .row .cell.empty { display: none; }
+  .vatform .row .cell[data-label]::before { content: attr(data-label) " €"; font-size: .7rem; white-space: nowrap; }
+  .vatform .sec { flex-direction: column; align-items: flex-start; }
+  .vatform .watermark { font-size: 2.6rem; }
+}
+@media print { .vatform { border: 0; max-width: none; } }
+.vatform .sec h4 .n { display: inline-block; width: 1.6rem; }
+/* VAT Return (VK): zwart-wit zoals het HMRC-formulier, één kolom, ponden */
+.vatform.gb { background: #fff; color: #0b0c0c; border-color: #b1b4b6; }
+.vatform.gb .bar { background: #0b0c0c; }
+.vatform.gb .row { grid-template-columns: 2rem 1fr 10.5rem; }
+.vatform.gb .nr { background: #0b0c0c; color: #fff; text-align: center; padding: .1rem 0; }
+.vatform.gb .cell::before { content: "£"; }
+.vatform.gb .field { border-color: #0b0c0c; }
+.vatform.gb .tick { border-color: #0b0c0c; }
+.vatform.gb a:hover .field { outline-color: #1d70b8; }
+@media (max-width: 40rem) { .vatform.gb .row .cell[data-label]::before { content: "£"; } }
+/* Periodieke btw-aangifte België: sober blauw-grijs, één kolom, euro zonder centen */
+.vatform.be { background: #f4f7fb; color: #1b2a41; border-color: #b9c6d8; }
+.vatform.be .bar { background: #2b4a7a; }
+.vatform.be .sec h4 { background: #c9d6ea; flex-basis: 100%; }
+.vatform.be .row { grid-template-columns: 2.4rem 1fr 10.5rem; }
+.vatform.be .nr { background: #2b4a7a; color: #fff; text-align: center; padding: .1rem 0; border-radius: 2px; }
+.vatform.be .field { border-color: #8fa3c0; }
+.vatform.be a:hover .field { outline-color: #2b4a7a; }
+@media (max-width: 40rem) { .vatform.be .row { grid-template-columns: 2.2rem 1fr; } .vatform.be .row .cell[data-label]::before { content: "€"; } }

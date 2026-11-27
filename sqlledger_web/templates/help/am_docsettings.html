@@ -1,0 +1,29 @@
+{# Beheer > Documentinstellingen (HELP_ANALYSE golf 3, tekst B10) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Wat er op uw documenten staat: btw-nummer, bankrekening, eigen teksten en welke kolommen de regels hebben. Zonder HTML-kennis. Leeg of standaard betekent: zoals de standaardsjablonen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul onder {b} het {n} in. Naam, adres en KvK-nummer wijzigt u in {m}.", b=hl("Bedrijf"), n=hl("Btw-nummer"), m=hm("Beheer", "Instellingen")) }}</li>
+  <li>{{ ht("Kies onder {b} welke rekening op het document komt.", b=hl("Bank")) }}</li>
+  <li>{{ ht("Kies bij {t} de taal en vul de teksten in.", t=hl("Taal van de documenten:")) }}</li>
+  <li>{{ ht("Kies onder {k} per soort document hoe elk veld getoond wordt.", k=hl("Kolommen")) }}</li>
+  <li>{{ ht("Klik op {o} en bekijk het resultaat via de links onder {v}.", o=hl("Opslaan"), v=hl("Voorbeeld")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: de rekening van de boeking (van de laatste betaling, anders die op de factuur), of altijd één vaste rekening. Alleen rekeningen met een IBAN kunt u kiezen.", f=hl("Bankrekening op het document")) }}</li>
+  <li>{{ _("Het vinkje bij Betaalzin onder facturen: de zin met vervaldatum en IBAN onder de factuur.") }}</li>
+  <li>{{ ht("{f}: een kleine regel met uw eigen adres boven dat van de klant. Leeg veld {e} = uw bedrijfsnaam.", f=hl("Retouradresregel boven het adres (voor een vensterenvelop)"), e=hl("Eigen retouradresregel")) }}</li>
+  <li>{{ ht("{f}: vervangt de standaard voetregel (bedrijfsnaam, KvK, btw-nummer, IBAN, e-mail, website).", f=hl("Voettekst")) }}</li>
+  <li>{{ ht("Per documentsoort: {s}, {o} en bij brieven een {i}. De grijze voorbeeldtekst is de standaard.", s=hl("Slottekst"), o=hl("Opmerking onder de totalen"), i=hl("Inleidende tekst")) }}</li>
+  <li>{{ ht("{w} per veld: {k}, {a} (alleen als een regel het veld heeft), {r} of {n}. Met {e} geeft u de kolom een andere kop.", w=hl("Weergave"), k=hl("Kolom"), a=hl("Kolom als ingevuld"), r=hl("Regel onder de omschrijving"), n=hl("Niet tonen"), e=hl("Eigen naam")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Teksten en eigen kolomnamen gelden per taal. Sla op voordat u van taal wisselt, anders bent u uw wijzigingen kwijt.") }}</li>
+  <li>{{ _("Het voorbeeld gebruikt het laatste document van die soort en zet niets op geprint.") }}</li>
+  <li>{{ ht("Staat {f} uit in {m}, dan ziet u ook uw eigen voettekst niet.", f=hl("Voetregel tonen"), m=hm("Beheer", "Huisstijl")) }}</li>
+  <li>{{ ht("Logo, kleur en lettertype stelt u in bij {m}.", m=hm("Beheer", "Huisstijl")) }}</li>
+</ul>
+</details>

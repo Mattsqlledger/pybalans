@@ -1,0 +1,21 @@
+<!doctype html>
+{#- Btw-aangifteformulier als PDF (zelfde opmaak als het scherm, zonder links) -#}
+<html lang="{{ lang() }}">
+<head>
+<meta charset="utf-8">
+<title>{{ form.title }}</title>
+<style>
+  @page { size: A4 portrait; margin: 12mm;
+    @bottom-left { content: "{{ printed }}"; font: 7pt "Helvetica Neue", Helvetica, Arial, sans-serif; color: #555; } }
+  body { margin: 0; }
+  {{ css | safe }}
+  html { font-size: 9.5pt; }
+  .vatform { max-width: none; font-size: 8.5pt; padding: 5mm 7mm 6mm; }
+  .vatform .row { margin: .12rem 0; }
+  .vatform .sec { margin: .6rem 0 .25rem; }
+</style>
+</head>
+<body>
+{% include part %}
+</body>
+</html>

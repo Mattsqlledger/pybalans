@@ -1,0 +1,18 @@
+{#- VAT Return (VK, boxes 1–9) in de opmaak van het HMRC-formulier, voor het scherm en de PDF. form: zie
+    routes_vat.gb_form_data. De boxteksten zijn de officiële Engelse (BL10), de vertaling staat eronder. -#}
+<div class="vatform gb">
+  {% if form.draft %}<div class="watermark">{{ _("Proefafdruk") }}</div>{% endif %}
+  <div class="bar">{{ form.bar }}</div>
+  <p class="intro">{{ form.title }}<br>{{ form.company }}{% if form.taxnumber %} · {{ form.vrn }}{% endif %}<br>{{ form.period_text }}</p>
+  {% for r in form.rows %}
+  <div class="row{% if r.code in ('3', '5') %} total{% endif %}">
+    <span class="nr">{{ r.code }}</span>
+    <span>{{ r.text }}{% if r.label and lang() != "en" %}<br><span class="note">{{ r.label }}</span>{% endif %}
+      {% if r.code == '5' %}<span class="boxes5g">
+        <span><span class="tick">{{ "×" if form.pay else "" }}</span>{{ _("te betalen") }}</span>
+        <span><span class="tick">{{ "" if form.pay else "×" }}</span>{{ _("terug te vragen") }}</span></span>{% endif %}</span>
+    <span class="cell" data-label="£">{% if r.link %}<a href="{{ r.link }}" class="field">{{ r.value }}</a>{% else %}<span class="field">{{ r.value }}</span>{% endif %}</span>
+  </div>
+  {% endfor %}
+  <p class="status">{{ form.status }}</p>
+</div>

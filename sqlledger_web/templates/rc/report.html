@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% import "reports/_macros.html" as m with context %}
+{% block title %}{{ _("Afgeletterde posten") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Afgeletterde posten") }}</h2>
+  {% if can_reconcile %}
+  <p class="actions noprint"><a href="/afletteren{% if s.rekening %}?{{ s.params() }}{% endif %}">{{ _("Afletteren") }}</a></p>
+  {% endif %}
+</div>
+{% include "help/rc_report.html" %}
+<p class="muted small noprint">{{ _("Regels met een afletterdatum in de periode.") }}</p>
+{% set action = "/afletteren/rapport" %}{% set tot_label = N_("Tot en met") %}
+{% include "rc/_select.html" %}
+{% if table %}
+<div class="report-head">
+  <div><strong>{{ company_name or ctx.company.name }}</strong>
+    <div class="muted">{{ _("{fromdate} t/m {todate}").format(fromdate=s.van or "…", todate=s.tot or "…") }}</div></div>
+  <div class="actions noprint">
+    <a class="button secondary" href="/afletteren/rapport?{{ s.params(export='csv') }}">CSV</a>
+    <a class="button secondary" href="/afletteren/rapport?{{ s.params(export='xlsx') }}">Excel</a>
+    <a class="button secondary" href="/afletteren/rapport?{{ s.params(export='pdf') }}" target="_blank" rel="noopener">PDF</a>
+    <button type="button" class="secondary" data-print>{{ _("Afdrukken") }}</button>
+  </div>
+</div>
+{{ m.table(table, cell) }}
+{% endif %}
+<script src="/static/reports.js" defer></script>
+{% endblock %}

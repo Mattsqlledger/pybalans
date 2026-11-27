@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Inloggen") }}{% endblock %}
+{% block tagline %}{% include "_tagline.html" %}{% endblock %}
+{% block plain %}
+<form method="post" action="/login" class="stack">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <label>{{ _("Login") }} <input name="login" value="{{ login }}" autocomplete="username" autofocus required></label>
+  <label>{{ _("Wachtwoord") }} <input type="password" name="password" autocomplete="current-password" required></label>
+  <button>{{ _("Inloggen") }}</button>
+</form>
+<p class="small"><a href="/activeren">{{ _("Code ontvangen van de beheerder?") }}</a></p>
+{% endblock %}

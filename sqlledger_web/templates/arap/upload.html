@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% import "_attach.html" as att with context %}
+{% block title %}{{ _("Inkoopfactuur uploaden") }}{% endblock %}
+{% block content %}
+{% set foreign = u.currency and u.currency != ch.defaultcurrency %}
+<div class="head">
+  <h2>{{ _("Inkoopfactuur uploaden") }}</h2>
+  <p class="actions noprint">
+    <a href="/inkoop/nieuw">{{ _("Gewone inkoopboeking") }}</a>
+    <a href="/rapporten/overzicht-inkoop">{{ _("Overzicht") }}</a>
+  </p>
+</div>
+{% include "help/apupload.html" %}
+{% if posted %}
+<p class="notice" role="status">{{ _("Geboekt:") }} <a href="/inkoop/{{ posted.id }}">{{ _("inkoopboeking {number}").format(number=posted.invnumber) }}</a>
+  · {{ posted.name }} · {{ amount(posted.amount) }}. {{ _("Sleep de volgende factuur in het vak.") }}</p>
+{% endif %}
+
+<div class="upload-grid{% if u.token %} has-file{% endif %}">
+<form method="post" action="/inkoop/uploaden" class="uploadform" enctype="multipart/form-data"
+      data-vc-url="/inkoop/relaties">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="token" value="{{ u.token }}">
+  <input type="hidden" name="vc_id" value="{{ u.vc_id or '' }}">
+  <input type="hidden" name="vc_shown" value="{{ u.vc_shown }}">
+  <input type="hidden" name="oldtransdate" value="{{ u.oldtransdate }}">
+  <input type="hidden" name="terms" value="{{ u.terms }}">
+
+  {% if u.token %}
+  <p class="uploadfile"><strong>{{ u.filename }}</strong>
+    <a href="/bijlage/tijdelijk/{{ u.token }}" target="_blank" rel="noopener">{{ _("openen in nieuw tabblad") }}</a>
+    <button name="action" value="discard" class="link" formnovalidate>{{ _("ander bestand") }}</button></p>
+  {% if dups %}{{ att.dupwarn(dups, u.token, u.file_ok) }}{% endif %}
+  {% else %}
+  {{ att.dropzone("bestand", "[data-upload]") }}
+  <p class="actions"><button name="action" value="upload" class="secondary" formnovalidate data-upload>{{ _("Uploaden") }}</button></p>
+  {% endif %}
+
+  <fieldset class="glhead">
+    <legend>{{ _("Factuur") }}</legend>
+    <label class="wide">{{ _("Leverancier") }} *
+      <input name="vc_text" value="{{ u.vc_text }}" list="vclist" autocomplete="off" data-refresh data-vc
+             placeholder="{{ _('naam of nummer') }}"></label>
+    <label>{{ _("Factuurdatum") }} * <input type="date" name="transdate" value="{{ u.transdate }}" data-refresh></label>
+    <label>{{ _("Factuurnummer") }} * <input name="invnumber" value="{{ u.invnumber }}" maxlength="100"></label>
+    <label>{{ _("Totaalbedrag incl. btw") }} *
+      <input name="total" value="{{ u.total }}" class="num" inputmode="decimal" data-calc></label>
+  </fieldset>
+
+  <fieldset class="glhead">
+    <legend>{{ _("Voorstel (aan te passen)") }}</legend>
+    <label class="wide">{{ _("Kostenrekening") }} *
+      <input name="expense" value="{{ u.expense }}" list="accounts" class="acc" autocomplete="off"></label>
+    {% if s and expense_accno and expense_accno == s.expense_accno %}
+    <p class="wide muted small">
+      {% if s.expense_source == "vast" %}{{ _("Vaste kostenrekening van deze leverancier.") }}
+      {% else %}{{ _("Kostenrekening van de laatste boeking van deze leverancier.") }}
+        {% if s.several_lines %}<strong>{{ _("Die boeking had meer kostenregels; dit is de grootste. Splitsen kan in Volledig scherm.") }}</strong>{% endif %}
+      {% endif %}</p>
+    {% elif s and not s.expense_accno and not u.expense %}
+    <p class="wide muted small">{{ _("Geen vaste kostenrekening en geen eerdere boeking: kies zelf een kostenrekening.") }}</p>
+    {% endif %}
+    <label class="wide">{{ _("Btw") }}
+      <select name="tax_accno" data-calc>
+        {% if not u.tax_accno %}<option value="" selected>{{ _("— kies —") }}</option>{% endif %}
+        {% for t in ch.taxes %}<option value="{{ t.accno }}"{% if t.accno == u.tax_accno %} selected{% endif %}>{{ t.accno }} {{ t.description }} {{ t.pct }}</option>{% endfor %}
+        <option value="{{ NO_TAX }}"{% if u.tax_accno == NO_TAX %} selected{% endif %}>{{ _("geen btw") }}</option>
+      </select></label>
+    {% if s and s.several_taxes and u.tax_accno == s.tax_accno %}
+    <p class="wide muted small"><strong>{{ _("De laatste boeking had meer btw-rekeningen; dit is de grootste. Splitsen kan in Volledig scherm.") }}</strong></p>
+    {% endif %}
+    <div id="upload-calc" class="wide calcrow">
+      <input type="hidden" name="tax_auto" value="{{ u.tax_auto }}">
+      {% if u.tax_accno and u.tax_accno != NO_TAX %}
+      <label>{{ _("Btw-bedrag") }} <input name="tax" value="{{ u.tax }}" class="num" inputmode="decimal" data-calc></label>
+      {% else %}<input type="hidden" name="tax" value="">{% endif %}
+      <div class="ro"><span class="ro-label">{{ _("Netto") }}</span><span class="ro-value num"><strong data-net>{{ amount(u.net) }}</strong></span>
+        {% if u.tax and u.tax != u.tax_auto %}<span class="ro-help muted small">{{ _("btw zelf ingevuld; het netto past zich aan") }}</span>{% endif %}</div>
+    </div>
+    <label>{{ _("Vervaldatum") }} <input type="date" name="duedate" value="{{ u.duedate }}"></label>
+    <label>{{ _("Crediteurenrekening") }}
+      <select name="arap_accno">
+        {% for a in ch.arap_accounts %}<option value="{{ a.accno }}"{% if a.accno == u.arap_accno %} selected{% endif %}>{{ a.accno }} {{ a.description }}</option>{% endfor %}
+      </select></label>
+    <input type="hidden" name="currency" value="{{ u.currency }}">
+    {% if foreign %}
+    <p>{{ _("Valuta") }}: <strong>{{ u.currency }}</strong></p>
+    <label>{{ _("Koers") }} * <input name="exchangerate" value="{{ u.exchangerate }}" class="num" inputmode="decimal"></label>
+    {% else %}<input type="hidden" name="exchangerate" value="">{% endif %}
+    {% if ch.departments %}
+    <label>{{ _("Afdeling") }}
+      <select name="department_id"><option value=""></option>
+        {% for d in ch.departments %}<option value="{{ d.id }}"{% if d.id|string == u.department_id %} selected{% endif %}>{{ d.description }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="department_id" value="{{ u.department_id }}">{% endif %}
+    <label class="wide">{{ _("Omschrijving (optioneel)") }} <input name="description" value="{{ u.description }}"></label>
+  </fieldset>
+
+  {% if confirm == "duplicate" %}
+  <div class="confirm" role="alert">
+    <p><strong>{{ _("Factuurnummer {number} bestaat al bij deze leverancier").format(number=u.invnumber) }}</strong>
+      ({% for d in duplicates %}<a href="/inkoop/{{ d }}" target="_blank">{{ _("boeking {id}").format(id=d) }}</a>{{ ", " if not loop.last }}{% endfor %}).
+      {{ _("Toch boeken?") }}</p>
+    <input type="hidden" name="dup_ok" value="1">
+    <button name="action" value="post">{{ _("Ja, toch boeken") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Terug") }}</button>
+  </div>
+  {% else %}
+  <p class="actions glbuttons">
+    <button name="action" value="post">{{ _("Boeken") }}</button>
+    <button name="action" value="full" class="secondary">{{ _("Volledig scherm") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate data-update>{{ _("Bijwerken") }}</button>
+  </p>
+  {% endif %}
+</form>
+
+<div class="upload-preview">
+  {% if u.token and u.is_image %}
+  <img src="/bijlage/tijdelijk/{{ u.token }}" alt="{{ u.filename }}">
+  {% elif u.token %}
+  <iframe src="/bijlage/tijdelijk/{{ u.token }}#view=FitH&amp;navpanes=0" title="{{ u.filename }}"></iframe>
+  {% else %}
+  <p class="muted">{{ _("De factuur verschijnt hier na het uploaden.") }}</p>
+  {% endif %}
+</div>
+</div>
+
+<datalist id="vclist" data-remote></datalist>
+<datalist id="accounts">
+  {% for a in ch.expense_accounts %}<option value="{{ a.accno }} {{ a.description }}" data-n="{{ a.accno }}" data-name="{{ a.description }}"></option>{% endfor %}
+</datalist>
+<script src="/static/attach.js" defer></script>
+<script src="/static/upload.js" defer></script>
+{% endblock %}

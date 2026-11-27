@@ -1,0 +1,23 @@
+{# Beheer > Valuta (HELP_ANALYSE golf 3, tekst A9) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De valuta's waarin u factureert of boekt. De bovenste is uw standaardvaluta: alle bedragen in de boekhouding staan daarin, en koersen zijn ten opzichte daarvan.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul onder {v} de {c} in, bijvoorbeeld USD, en klik op {b}.", v=hl("Valuta toevoegen"), c=hl("Code (3 letters)"), b=hl("Toevoegen")) }}</li>
+  <li>{{ ht("Daarna voert u de koersen in bij {m}.", m=hm("Beheer", "Koersen")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: met de pijltjes zet u een valuta hoger of lager in de keuzelijsten. De standaardvaluta blijft altijd bovenaan.", f=hl("Volgorde")) }}</li>
+  <li>{{ ht("{f}: alleen ter informatie, overgenomen uit SQL-Ledger. PyBalans rekent in elke valuta met de {p} van {m}.", f=hl("Decimalen"), p=hl("Precisie (decimalen)"), m=hm("Beheer", "Instellingen")) }}</li>
+  <li>{{ ht("{f}: waar de valuta voorkomt, zoals bij relaties of boekingen.", f=hl("Gebruik")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("{b} kan alleen zolang er nog niets geboekt is en er geen koersen zijn. Relaties en artikelprijzen in de oude standaardvaluta gaan na uw bevestiging mee.", b=hl("Standaardvaluta maken")) }}</li>
+  <li>{{ ht("{b} ziet u alleen bij een valuta die nergens gebruikt wordt.", b=hl("Verwijderen")) }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: omhoog of omlaag schuiven verandert nooit de standaardvaluta.") }}</li>
+  <li>{{ _("Anders dan in SQL-Ledger: de decimalen per valuta zijn niet te wijzigen en tellen niet mee bij het rekenen. Een valuta zonder decimalen, zoals de Japanse yen, wordt dus ook op de algemene precisie afgerond.") }}</li>
+</ul>
+</details>

@@ -1,0 +1,21 @@
+{# Systeem > Gebruikers (HELP_ANALYSE golf 3, tekst C1) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Alle gebruikers van deze installatie, met hun administraties en rol. Hier maakt u een nieuwe gebruiker of opent u een gebruiker om toegang, rol en beveiliging te regelen. Alleen de systeembeheerder ziet het menu {m}.", m=hm("Systeem")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Klik op {b} om iemand toe te voegen.", b=hl("Nieuwe gebruiker")) }}</li>
+  <li>{{ _("Klik op een login om de gebruiker te openen.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: per administratie de rol tussen haakjes.", f=hl("Administraties")) }}</li>
+  <li>{{ ht("{f}: {a} (met 2FA als tweestapsverificatie aan staat), {w} (nog geen wachtwoord gekozen), {g} (te vaak een fout wachtwoord of fout 2FA-code) of {u}.", f=hl("Status"), a=hl("actief"), w=hl("wacht op code"), g=hl("geblokkeerd"), u=hl("uit")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("Een gebruiker die al eens heeft ingelogd, zet u uit (vinkje {f} bij de gebruiker): hij kan niet meer inloggen en verliest zijn toegang tot de administraties; het logboek blijft compleet. Alleen een gebruiker die nog nooit heeft ingelogd, bijvoorbeeld omdat hij verkeerd is aangemaakt, kunt u verwijderen met {b}.", f=hl("Actief"), b=hl("Gebruiker verwijderen")) }}</li>
+  <li>{{ ht("Uitgezette gebruikers staan niet in de lijst. Klik op {l} om ze te zien.", l=hl("Ook uitgezette gebruikers tonen")) }}</li>
+  <li>{{ _("Een login van een verwijderde gebruiker kunt u opnieuw gebruiken; de app waarschuwt dan eerst, omdat het logboek beide gebruikers onder dezelfde login toont.") }}</li>
+</ul>
+</details>

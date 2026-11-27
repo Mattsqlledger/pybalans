@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "_file.html" import filepick with context %}
+{% block title %}{{ _("Bankafschrift inlezen") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Bankafschrift inlezen") }}</h2>
+  <p class="actions noprint">
+    <a href="/bank/regels">{{ _("Bankregels verwerken") }}</a>
+    <a href="/bank/afschriften">{{ _("Ingelezen afschriften") }}</a>
+    <a href="/bank/vaste-regels">{{ _("Vaste regels") }}</a>
+  </p>
+</div>
+{% include "help/bank_import.html" %}
+
+{% if result %}
+<section>
+  {% for s in result.statements %}
+  <h3>{{ _("Rekening") }} {{ s.chart_accno }}{% if s.account %} · {{ s.account }}{% endif %}
+    {% if s.statement_ref %}<span class="muted small">{{ _("afschrift") }} {{ s.statement_ref }}</span>{% endif %}</h3>
+  <dl class="facts">
+    <dt>{{ _("Formaat") }}</dt><dd>{{ "CAMT.053" if s.format == "camt053" else "MT940" }}{% if s.iban_saved %} · <strong>{{ _("rekeningnummer opgeslagen bij deze rekening") }}</strong>{% endif %}</dd>
+    <dt>{{ _("Periode") }}</dt><dd>{{ s.begindate or "" }} – {{ s.enddate or "" }}</dd>
+    <dt>{{ _("Beginsaldo") }}</dt><dd>{{ amount(s.beginbalance) }} {{ s.currency or "" }}</dd>
+    <dt>{{ _("Eindsaldo") }}</dt><dd>{{ amount(s.endbalance) }} {{ s.currency or "" }}
+      {% if s.beginbalance is not none and s.endbalance is not none %}<span class="tag">{{ _("saldocontrole klopt") }}</span>{% endif %}</dd>
+    <dt>{{ _("Regels") }}</dt><dd>{{ s.lines_total }} · {{ _("nieuw") }} {{ s.lines_new }} · {{ _("overgeslagen") }} {{ s.lines_skipped }}</dd>
+  </dl>
+  {% for w in s.warnings %}<p class="notice warning" role="alert">{{ libmsg(w) }}</p>{% endfor %}
+  {% if s.skipped %}
+  <details class="more"><summary>{{ _("Overgeslagen regels (al eerder ingelezen)") }}</summary>
+    <div class="table-wrap"><table class="list">
+      <thead><tr><th>{{ _("Datum") }}</th><th class="num">{{ _("Bedrag") }}</th><th>{{ _("Tegenpartij") }}</th><th>{{ _("Omschrijving") }}</th></tr></thead>
+      <tbody>{% for l in s.skipped %}<tr><td>{{ l.bookdate }}</td><td class="num">{{ amount(l.amount) }}</td><td>{{ l.name or "" }}</td><td>{{ l.description or "" }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </details>
+  {% endif %}
+  {% if s.lines_new %}<p><a class="button" href="/bank/regels?rekening={{ s.chart_accno }}">{{ _("Regels verwerken") }}</a></p>{% endif %}
+  {% endfor %}
+</section>
+{% endif %}
+
+<form method="post" action="/bank/inlezen" enctype="multipart/form-data" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <p class="muted small">{{ _("CAMT.053 (XML) of MT940 van ING, Rabobank, ABN AMRO, Triodos, bunq, Knab e.a., maximaal {mb} MB.").format(mb=max_mb) }}
+    {{ _("Regels die al eerder zijn ingelezen worden overgeslagen; er wordt nog niets geboekt.") }}</p>
+  <label>{{ _("Bestand") }} * {{ filepick("bestand", ".xml,.940,.sta,.mt940,.txt,.swi", required=True) }}</label>
+  <label{% if choose %} class="warn"{% endif %}>{{ _("Bankrekening") }}
+    <select name="rekening"{% if choose %} required autofocus{% endif %}>
+      <option value="">{{ _("automatisch (via het rekeningnummer)") }}</option>
+      {% for a in accounts %}<option value="{{ a.accno }}"{% if a.accno == chosen %} selected{% endif %}>{{ a.accno }} {{ a.description }}{% if a.iban %} · {{ a.iban }}{% endif %}</option>{% endfor %}
+    </select></label>
+  {% if choose %}<p class="muted small">{{ _("Het rekeningnummer van het afschrift wordt bij de gekozen rekening opgeslagen; de volgende keer gaat het vanzelf.") }}</p>{% endif %}
+  <p><button>{{ _("Inlezen") }}</button></p>
+</form>
+{% endblock %}

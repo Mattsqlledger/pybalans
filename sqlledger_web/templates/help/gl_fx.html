@@ -1,0 +1,23 @@
+{# Kas en bank > Koersverschilboeking (HELP_ANALYSE golf 2, tekst 16) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("De waarde in euro van een rekening in vreemde valuta aanpassen, bijvoorbeeld een dollarrekening aan het eind van het jaar omrekenen tegen de koers van dat moment. Het bedrag in de vreemde valuta blijft gelijk; alleen de waarde in uw eigen valuta verandert.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Vul de {d} en een {o} in.", d=hl("Boekdatum"), o=hl("Omschrijving")) }}</li>
+  <li>{{ ht("Kies op de eerste regel de {r} in vreemde valuta, vul het verschil in bij {d} (waarde omhoog) of {c} (waarde omlaag) en zet in de kolom FX het vinkje aan.", r=hl("Rekening"), d=hl("Debet"), c=hl("Credit")) }}</li>
+  <li>{{ _("Kies op de tweede regel de rekening voor koersverschillen en vul hetzelfde bedrag aan de andere kant in. Laat het vinkje daar uit.") }}</li>
+  <li>{{ ht("Klik op {b}.", b=hl("Opslaan")) }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ _("Kolom FX: de regel wijzigt alleen de waarde in uw eigen valuta, niet het bedrag in vreemde valuta.") }}</li>
+  <li>{{ _("Bedragen vult u in uw eigen valuta in; een keuze voor valuta of koers is er hier niet.") }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een regel met het FX-vinkje is meteen afgeletterd.") }}</li>
+  <li>{{ _("Zet het vinkje niet op alle regels. Een boeking waarin alle regels FX zijn, opent later als een lege memoriaalboeking.") }}</li>
+  <li>{{ ht("Verder werkt het scherm als {m}: nummer, wijzigen, verwijderen en afgesloten periode gaan hetzelfde.", m=hm("Grootboek", "Memoriaal")) }}</li>
+</ul>
+</details>

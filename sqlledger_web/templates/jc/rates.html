@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Interne tarieven") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Interne tarieven") }}</h2></div>
+{% include "help/jc_rates.html" %}
+<p class="muted small">{{ _("Intern uurtarief per medewerker, vanaf een datum. Een tijdkaart krijgt bij opslaan het interne tarief van de toewijzing, anders dit tarief van de medewerker, anders de kostprijs van de dienst; daarna blijft het vast.") }}</p>
+{% if can_edit %}
+<form method="post" action="/uren/tarieven" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <h3>{{ _("Tarief toevoegen") }}</h3>
+  <div class="grid">
+    <label>{{ _("Medewerker") }} * <select name="employee_id" required><option value=""></option>{% for e in links.employees %}<option value="{{ e.id }}"{% if e.id|string == f.employee_id %} selected{% endif %}>{{ e.name }}</option>{% endfor %}</select></label>
+    <label>{{ _("Geldig vanaf") }} * <input type="date" name="validfrom" value="{{ f.validfrom }}" required></label>
+    <label>{{ _("Intern tarief per uur") }} * <input name="rate" value="{{ f.rate }}" class="num" inputmode="decimal" required></label>
+    <label>{{ _("Notities") }} <input name="notes" value="{{ f.notes }}"></label>
+  </div>
+  <p class="muted small">{{ _("Dezelfde medewerker en datum nog eens = het tarief van die datum wijzigen. Al opgeslagen tijdkaarten houden hun tarief.") }}</p>
+  <p class="actions"><button name="action" value="save">{{ _("Opslaan") }}</button></p>
+</form>
+{% endif %}
+<div class="table-wrap"><table class="list">
+  <thead><tr><th>{{ _("Medewerker") }}</th><th>{{ _("Geldig vanaf") }}</th><th class="num">{{ _("Intern tarief per uur") }}</th><th>{{ _("Notities") }}</th>{% if can_edit %}<th><span class="visually-hidden">{{ _("Verwijderen") }}</span></th>{% endif %}</tr></thead>
+  <tbody>{% for r in rows %}<tr><td>{{ r.employee or "" }}{% if r.id in current %} <span class="tag">{{ _("huidig") }}</span>{% endif %}</td><td>{{ r.validfrom | userdate(ctx.user.dateformat) }}</td>
+    <td class="num">{{ r.rate | amount(ctx.user.numberformat, 2) }}</td><td>{{ r.notes or "" }}</td>
+    {% if can_edit %}<td><form method="post" action="/uren/tarieven" class="inline"><input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="id" value="{{ r.id }}">
+      <button name="action" value="delete" class="danger secondary small"
+        data-confirm="{{ _('Intern tarief van {name} vanaf {date} verwijderen?').format(name=r.employee or '', date=r.validfrom | userdate(ctx.user.dateformat)) }}">{{ _("Verwijderen") }}</button></form></td>{% endif %}</tr>
+  {% else %}<tr><td colspan="{{ 5 if can_edit else 4 }}" class="muted">{{ _("Nog geen interne tarieven.") }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Artikelgroepen") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Artikelgroepen") }}</h2>
+  <p class="actions noprint"><a href="/artikelen">{{ _("Artikelen zoeken") }}</a></p>
+</div>
+{% include "help/ic_groups.html" %}
+<div class="table-wrap">
+<table class="list">
+  <thead><tr><th>{{ _("Groep") }}</th><th>{{ _("Code") }}</th><th class="num">{{ _("Artikelen") }}</th>{% if can_edit %}<th></th>{% endif %}</tr></thead>
+  <tbody>
+  {% for g in groups %}
+  {% if can_edit and edit_id == g.id %}
+  <tr><td colspan="4">
+    <form method="post" action="/artikelen-groepen" class="inline-form">
+      <input type="hidden" name="csrf" value="{{ ctx.csrf }}"><input type="hidden" name="id" value="{{ g.id }}">
+      <input name="partsgroup" value="{{ g.partsgroup }}" aria-label="{{ _('Groep') }}" required>
+      <input name="code" value="{{ g.code or '' }}" class="short" aria-label="{{ _('Code') }}">
+      <button name="action" value="save">{{ _("Opslaan") }}</button>
+      {% if not g.used %}<button name="action" value="delete" class="secondary danger">{{ _("Verwijderen") }}</button>{% endif %}
+      <a href="/artikelen-groepen">{{ _("Annuleren") }}</a>
+    </form></td></tr>
+  {% else %}
+  <tr><td>{{ g.partsgroup }}</td><td>{{ g.code or "" }}</td>
+    <td class="num"><a href="/artikelen?run=1&amp;status=all&amp;partsgroup_id={{ g.id }}">{{ g.used }}</a></td>
+    {% if can_edit %}<td><a href="/artikelen-groepen?bewerk={{ g.id }}">{{ _("wijzigen") }}</a></td>{% endif %}</tr>
+  {% endif %}
+  {% else %}
+  <tr><td colspan="4" class="muted">{{ _("Nog geen groepen.") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if can_edit %}
+<form method="post" action="/artikelen-groepen" class="report-form">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <div class="filters">
+    <label>{{ _("Nieuwe groep") }} <input name="partsgroup" required></label>
+    <label>{{ _("Code") }} <input name="code" class="short"></label>
+  </div>
+  <div class="actions"><button name="action" value="save">{{ _("Toevoegen") }}</button></div>
+</form>
+{% endif %}
+{% endblock %}

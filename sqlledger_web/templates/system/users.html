@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Gebruikers") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ _("Gebruikers") }}</h2><a class="button" href="/systeem/gebruikers/nieuw">{{ _("Nieuwe gebruiker") }}</a></div>
+{% include "help/sys_users.html" %}
+{% if inactive %}<p class="small">{% if show_all %}<a href="/systeem/gebruikers">{{ _("Uitgezette gebruikers verbergen") }}</a>{% else %}<a href="/systeem/gebruikers?uit=1">{{ _("Ook uitgezette gebruikers tonen") }} ({{ inactive }})</a>{% endif %}</p>{% endif %}
+<div class="table-wrap"><table class="list">
+<thead><tr><th>{{ _("Login") }}</th><th>{{ _("Naam") }}</th><th>{{ _("Administraties") }}</th><th>{{ _("Status") }}</th><th>{{ _("Laatst ingelogd") }}</th></tr></thead>
+<tbody>
+{% for u in users %}
+<tr>
+  <td><a href="/systeem/gebruikers/{{ u.id }}">{{ u.login }}</a>{% if u.is_sysadmin %} <span class="tag">{{ _("systeembeheer") }}</span>{% endif %}</td>
+  <td>{{ u.name }}</td>
+  <td class="small">{{ u.companies or "—" }}</td>
+  <td>{% if not u.active %}<span class="warn">{{ _("uit") }}</span>
+      {% elif u.locked_until and u.locked_until > now %}<span class="warn">{{ _("geblokkeerd") }}</span>
+      {% elif not u.password_hash %}<span class="muted">{{ _("wacht op code") }}</span>
+      {% else %}{{ _("actief") }}{% if u.totp_secret %} · 2FA{% endif %}{% endif %}</td>
+  <td class="small">{{ u.last_login.strftime("%Y-%m-%d %H:%M") if u.last_login else "—" }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table></div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{# Afdelingen en projecten > Interne tarieven (HELP_ANALYSE golf 4, tekst B10) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Wat een uur van een medewerker het bedrijf kost. Daarmee rekent het rapport {m} de kostwaarde en de marge uit. Er wordt niets mee geboekt.", m=hm("Uren per project")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies onder {t} de {m}.", t=hl("Tarief toevoegen"), m=hl("Medewerker")) }}</li>
+  <li>{{ ht("Vul {g} en het {i} in en klik op {b}.", g=hl("Geldig vanaf"), i=hl("Intern tarief per uur"), b=hl("Opslaan")) }}</li>
+  <li>{{ ht("Verandert het tarief, voeg dan een nieuwe regel toe met een latere datum. Het label {h} staat bij het tarief dat vandaag geldt.", h=hl("huidig")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Een tijdkaart krijgt bij opslaan eerst het interne tarief van de toewijzing, anders dit tarief, anders de kostprijs van de dienst. Daarna blijft het vast.") }}</li>
+  <li>{{ _("Dezelfde medewerker met dezelfde datum nog eens opslaan, wijzigt het tarief van die datum.") }}</li>
+  <li>{{ ht("Een tarief wijzigen of verwijderen verandert al opgeslagen tijdkaarten niet. {b} vraagt eerst om bevestiging.", b=hl("Verwijderen")) }}</li>
+</ul>
+</details>

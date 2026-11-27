@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Vertrouwelijke bijlagen") }}{% endblock %}
+{% block content %}
+<div class="head"><h2>{{ target.login }}: {{ _("andere medewerker") }}</h2><a href="/systeem/gebruikers/{{ target.id }}">{{ _("Terug") }}</a></div>
+<p class="notice warning" role="status">{{ _("Vertrouwelijke bijlagen horen bij een medewerkerlogin, niet bij de gebruiker. Met een andere medewerker ziet deze gebruiker de bijlagen onder de oude login niet meer.") }}</p>
+<form method="post" action="/systeem/gebruikers/{{ target.id }}" class="stack wide">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  <input type="hidden" name="moves" value="1">
+  {% for k, v in fields %}<input type="hidden" name="{{ k }}" value="{{ v }}">
+  {% endfor %}
+  <fieldset>
+  <legend>{{ _("Vertrouwelijke bijlagen") }}</legend>
+  {% for ch in changes %}
+  <p><strong>{{ ch.company }}</strong>: {{ _("medewerker") }} {{ ch.old }} → {{ ch.new }}<br>
+  <label class="check"><input type="checkbox" name="move_{{ ch.company_id }}" value="1" checked> {{ _("{n} vertrouwelijke bijlagen onder login {login} meeverhuizen naar {new}").format(n=ch.count, login=ch.old, new=ch.new) }}</label></p>
+  {% endfor %}
+  </fieldset>
+  <p class="muted small">{{ _("Zonder vinkje blijven de bijlagen onder de oude login staan: alleen wie later die medewerker is, ziet ze.") }}</p>
+  <div class="actions"><button>{{ _("Opslaan") }}</button>
+    <a class="button secondary" href="/systeem/gebruikers/{{ target.id }}">{{ _("Annuleren") }}</a></div>
+</form>
+{% endblock %}

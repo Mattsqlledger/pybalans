@@ -1,0 +1,19 @@
+{# Afdelingen en projecten > Mijn uren en Maandstaat (HELP_ANALYSE golf 4, tekst B5) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ ht("Uren schrijven per maand: een rij per project en dienst, een kolom per dag. Bij {u} zijn het uw eigen uren; bij {m} kiest de boekhouder een medewerker.", u=hm("Mijn uren"), m=hm("Maandstaat")) }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Bij {s}: kies de {f}. Kies zo nodig een andere {m} en klik op {t}, of gebruik {v} en {n}.", s=hm("Maandstaat"), f=hl("Medewerker"), m=hl("Maand"), t=hl("Tonen"), v=hl("vorige maand"), n=hl("volgende maand")) }}</li>
+  <li>{{ _("Vul per dag het aantal uren in, bijvoorbeeld 7,5. Leeg of 0 is geen uren.") }}</li>
+  <li>{{ ht("Klik op {b}. Alleen gewijzigde dagen worden opgeslagen; elke dag wordt een tijdkaart.", b=hl("Opslaan")) }}</li>
+  <li>{{ ht("Met {b} maakt u een urenstaat van de maand, met ruimte om voor akkoord te tekenen. Werkt u op meer projecten, dan staan eronder links voor een urenstaat per project.", b=hl("Urenstaat (PDF)")) }}</li>
+</ol>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ ht("U ziet alleen de projecten en diensten die bij {t} aan de medewerker zijn toegewezen voor deze maand (plus rijen waar al uren op staan). Ontbreekt er een, vraag dan de boekhouder.", t=hm("Toewijzingen")) }}</li>
+  <li>{{ ht("Een grijze dag is niet te wijzigen: de uren staan al op een verkooporder, de dag valt in een afgesloten periode, of er staan meer tijdkaarten op die dag (die wijzigt de boekhouder via {t}).", t=hm("Tijdkaarten")) }}</li>
+  <li>{{ ht("Een urenschrijver ziet alleen {u}. Staat er dat uw login niet aan een medewerker is gekoppeld, dan regelt de systeembeheerder dat in {g} (kolom {k}).", u=hm("Mijn uren"), g=hm("Systeem", "Gebruikers"), k=hl("Medewerker")) }}</li>
+  <li>{{ ht("Projecten met het label {i} worden niet gefactureerd.", i=hl("intern")) }}</li>
+</ul>
+</details>

@@ -1,0 +1,136 @@
+<!doctype html>
+{#- Standaardopmaak documenten (fase 4, D3): opbouw van de LaTeX-sjablonen van SQL-Ledger
+    (kop met bedrijf en telefoon, lijn, adresblok, titel met nummer/datum rechts, regels, totalen rechts,
+    tekst onderaan), A4, adres op de plek van een vensterenvelop (links, 45 mm van boven). -#}
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<title>{% block title %}{% endblock %}</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 24mm 20mm;
+    @bottom-left { content: element(pagefooter); }
+    @bottom-right { content: "{{ t('Pagina') }} " counter(page) " {{ t('van') }} " counter(pages);
+                    font: 8pt "Helvetica Neue", Helvetica, Arial, sans-serif; color: #555; }
+  }
+  * { box-sizing: border-box; }
+  body { font: 9.5pt/1.35 "Helvetica Neue", Helvetica, Arial, sans-serif; color: #111; margin: 0; }
+  .head { display: flex; justify-content: space-between; align-items: flex-end;
+          border-bottom: 0.6pt solid #111; padding-bottom: 2mm; }
+  .head .company { font-size: 10pt; }
+  .head .company strong { font-size: 12pt; }
+  .head img { max-height: 22mm; max-width: 70mm; display: block; margin-bottom: 2mm; }
+  .head table td { padding: 0 0 0 4mm; text-align: right; font-size: 8.5pt; }
+  .head table td:first-child { color: #555; }
+  .parties { display: flex; justify-content: space-between; margin-top: 8mm; min-height: 32mm; }
+  .addr { width: 85mm; }
+  .addr .return { font-size: 6.5pt; color: #555; border-bottom: 0.3pt solid #999; margin-bottom: 1.5mm; }
+  .shipto { width: 70mm; font-size: 8.5pt; }
+  .shipto h4, .meta h4 { margin: 0 0 1mm; font-size: 8pt; text-transform: uppercase; letter-spacing: .04em; color: #555; }
+  .titlebar { margin-top: 12mm; display: flex; justify-content: space-between; align-items: flex-start; }
+  .titlebar h1 { font-size: 15pt; letter-spacing: .25em; margin: 0; text-transform: uppercase; }
+  .titlebar table td { padding: 0 0 0.6mm 4mm; vertical-align: top; }
+  .titlebar table td:first-child { font-weight: bold; padding-left: 0; }
+  table.lines { width: 100%; border-collapse: collapse; margin-top: 7mm; }
+  table.lines thead { display: table-header-group; }
+  table.lines th { text-align: left; font-weight: bold; border-bottom: 0.6pt solid #111; padding: 1.2mm 1.5mm; }
+  table.lines td { padding: 1.1mm 1.5mm; vertical-align: top; border-bottom: 0.3pt solid #ddd; }
+  table.lines tr { page-break-inside: avoid; }
+  table.lines .r { text-align: right; white-space: nowrap; }
+  table.lines .num { white-space: nowrap; }
+  table.lines .group td { font-weight: bold; border-bottom: none; padding-top: 2.5mm; }
+  table.lines .subtotal td { font-style: italic; }
+  .note { font-size: 8pt; color: #444; }
+  .totals { margin-top: 1mm; border-top: 1.6pt solid #111; display: flex; justify-content: flex-end;
+            page-break-inside: avoid; }
+  .totals table { border-collapse: collapse; min-width: 75mm; margin-top: 2mm; }
+  .totals td { padding: 0.8mm 1.5mm; }
+  .totals td.r { text-align: right; white-space: nowrap; }
+  .totals tr.grand td { font-weight: bold; border-top: 0.6pt solid #111; }
+  .currency { text-align: right; margin-top: 2mm; }
+  .notes { margin-top: 6mm; }
+  .docnote { margin-top: 3mm; }
+  table.lines.dense { font-size: 7.5pt; }
+  table.lines.dense th, table.lines.dense td { padding: 1mm 0.8mm; }
+  table.lines.dense td.r, table.lines.dense th.r { padding-left: 0.5mm; }
+  table.lines.weights { width: auto; min-width: 110mm; margin-top: 6mm; page-break-inside: avoid; }
+  table.lines.weights tr.grand td { font-weight: bold; border-top: 0.6pt solid #111; border-bottom: none; }
+  .closing { margin-top: 10mm; text-align: center; font-weight: bold; page-break-inside: avoid; }
+  .payinfo { margin-top: 6mm; padding: 2.5mm 3mm; border: 0.6pt solid #111; page-break-inside: avoid; }
+  table.lines tr.bom td { font-size: 8.5pt; color: #333; border-bottom: none; padding-top: 0; }
+  table.lines td.indent { padding-left: 6mm; }
+  table.lines th.check, table.lines td.check { width: 7mm; }
+  .box { display: inline-block; width: 3.5mm; height: 3.5mm; border: 0.6pt solid #111; }
+  .intro { margin: 6mm 0 0; }
+  table.sign { margin-top: 12mm; border-collapse: collapse; page-break-inside: avoid; }
+  table.sign td { padding: 3mm 2mm 1mm 0; }
+  table.sign td:last-child { width: 70mm; border-bottom: 0.4pt solid #111; }
+  #pagefooter { position: running(pagefooter); font-size: 7.5pt; color: #555; }
+</style>
+{%- if style.set %}
+{#- Huisstijl (Beheer > Huisstijl, HS12 A): kop één rij van vaste hoogte, adresblok op de vensterplek (45 mm). -#}
+<style>
+  {{ style.font_face }}
+  body, #pagefooter { font-family: {{ style.font }}; }
+  @page { @bottom-right { font-family: {{ style.font }}; } }
+  .head { height: 25.7mm; align-items: flex-end; gap: 6mm; padding-bottom: 1.5mm; border-bottom-color: {{ style.color }}; }
+  .head.blank { border-bottom: none; }
+  .head .company { font-size: 9pt; line-height: 1.3; flex: 1 1 auto; }
+  .head .company strong { font-size: 11pt; }
+  .head .logo { flex: 0 0 auto; line-height: 0; }
+  .head.pos-center { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; gap: 0; }
+  .head.pos-center .logo { padding: 0 4mm; }
+  .head.pos-center table { justify-self: end; margin-left: auto; }
+  .head img { max-height: {{ style.logo_height }}mm; max-width: {{ style.logo_width }}mm; margin: 0; display: inline-block; }
+  .head table { flex: 0 0 auto; }
+  .parties { margin-top: 1.3mm; }
+  {%- if style.address_pos == 'right' %}
+  .parties { flex-direction: row-reverse; }
+  {%- endif %}
+  .titlebar h1 { color: {{ style.color }}; }
+  table.lines th { color: {{ style.color }}; border-bottom-color: {{ style.color }}; }
+  .totals { border-top-color: {{ style.color }}; }
+  .totals tr.grand td, table.lines.weights tr.grand td { border-top-color: {{ style.color }}; }
+  .payinfo { border-color: {{ style.color }}; }
+</style>
+{%- endif %}
+</head>
+<body>
+<div id="pagefooter">{% if style.set and not style.show_footer %}{% else %}{% block footer %}{% if doc.footer %}{{ doc.footer }}{% else %}{{ company }}{% if businessnumber %} · {{ t('KvK') }} {{ businessnumber }}{% endif %}{% if doc.taxnumber %} · {{ t('Btw-nummer') }} {{ doc.taxnumber }}{% endif %}{% if iban %} · {% if doc.bankname %}{{ doc.bankname }} {% endif %}IBAN {{ iban }}{% if bic %} · BIC {{ bic }}{% endif %}{% endif %}{% if companyemail %} · {{ companyemail }}{% endif %}{% if companywebsite %} · {{ companywebsite }}{% endif %}{% endif %}{% endblock %}{% endif %}</div>
+{% if style.set %}
+<div class="head pos-{{ style.logo_pos }}{% if not style.show_head %} blank{% endif %}">
+  {%- if style.show_head %}
+  {%- if logo and style.logo_pos == 'left' %}
+  <div class="logo"><img src="{{ logo }}" alt=""></div>
+  {%- endif %}
+  <div class="company"><strong>{{ company }}</strong><br>{{ address|lines|join('\n')|nl2br }}</div>
+  {%- if logo and style.logo_pos == 'center' %}
+  <div class="logo"><img src="{{ logo }}" alt=""></div>
+  {%- endif %}
+  <table>
+    {% if tel %}<tr><td>{{ t('Telefoon') }}</td><td>{{ tel }}</td></tr>{% endif %}
+    {% if fax %}<tr><td>Fax</td><td>{{ fax }}</td></tr>{% endif %}
+    {% if companyemail %}<tr><td>E-mail</td><td>{{ companyemail }}</td></tr>{% endif %}
+  </table>
+  {%- if logo and style.logo_pos == 'right' %}
+  <div class="logo"><img src="{{ logo }}" alt=""></div>
+  {%- endif %}
+  {%- endif %}
+</div>
+{% else -%}
+<div class="head">
+  <div class="company">
+    {% if logo %}<img src="{{ logo }}" alt="">{% endif %}
+    <strong>{{ company }}</strong><br>{{ address|lines|join('\n')|nl2br }}
+  </div>
+  <table>
+    {% if tel %}<tr><td>{{ t('Telefoon') }}</td><td>{{ tel }}</td></tr>{% endif %}
+    {% if fax %}<tr><td>Fax</td><td>{{ fax }}</td></tr>{% endif %}
+    {% if companyemail %}<tr><td>E-mail</td><td>{{ companyemail }}</td></tr>{% endif %}
+  </table>
+</div>
+{% endif -%}
+{% block body %}{% endblock %}
+</body>
+</html>

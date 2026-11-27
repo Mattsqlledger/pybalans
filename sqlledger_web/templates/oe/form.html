@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% from "_docs.html" import doc_buttons, doc_status, doc_ready, variant_select with context %}
+{% import "_attach.html" as att with context %}
+{% block title %}{{ _(title) }}{% endblock %}
+{% block content %}
+{% set ro = readonly_reason is not none %}
+{% set foreign = f.currency and f.currency != ch.defaultcurrency %}
+{% set dis = " disabled" if ro else "" %}
+{% set can_repeat = can_edit and 'recurring' in (ctx.company.modules or []) and f.type in ("sales_order", "purchase_order") %}
+<div class="head">
+  <h2>{{ _(title) if not ro else _(k.title) }}
+    {% if f.id %}<span class="muted">{{ f.number }}</span>{% endif %}
+    {% if f.backorder %}<span class="tag">{{ _("nabestelling") }}</span>{% endif %}
+    {% if o and o.aa_id %}<span class="tag">{{ _("gefactureerd") }}</span>{% elif o and o.closed %}<span class="tag">{{ _("gesloten") }}</span>{% endif %}
+    {% if ro %}<span class="tag">{{ _("alleen lezen") }}</span>{% endif %}</h2>
+  <p class="actions noprint">
+    {% if can_edit %}<a href="/{{ k.prefix }}/nieuw">{{ _(k.new) }}</a>{% endif %}
+    <a href="/{{ k.list }}">{{ _("Overzicht") }}</a>
+  </p>
+</div>
+{% include "help/oe_form.html" %}
+{% if ro %}<p class="notice">{{ _(readonly_reason) }}</p>{% endif %}
+{{ doc_ready(docs) }}
+{% if recurring %}
+{% set unit = {"days": N_("dagen"), "weeks": N_("weken"), "months": N_("maanden"), "years": N_("jaar")}.get(recurring.unit, recurring.unit) %}
+<p class="muted">{% if recurring.nextdate %}{{ _("Herhaalschema actief: elke {repeat} {unit}, volgende {nextdate}.").format(repeat=recurring.repeat, unit=_(unit), nextdate=recurring.nextdate) }}{% else %}{{ _("Herhaalschema afgelopen (geen volgende datum).") }}{% endif %} {% if can_repeat and repeatable %}<a href="/herhalen/{{ f.id }}">{{ _("Schema bekijken of wijzigen") }}</a>{% endif %}</p>
+{% endif %}
+{% if source %}<p class="notice" role="status">{{ _("Omgezet uit {number}; die wordt gesloten zodra u dit opslaat.").format(number=source.quonumber or source.ordnumber) }}</p>{% endif %}
+{% if links.from or links.to %}
+<p class="muted small">
+  {% for l in links.from %}{% set pre = kinds["sales_quotation" if l.quotation and l.customer_id else ("request_quotation" if l.quotation else ("sales_order" if l.customer_id else "purchase_order"))].prefix %}
+    {{ _("Nabestelling van") if l.kind == "backorder" else _("Uit") }} <a href="/{{ pre }}/{{ l.from_id }}">{{ l.quonumber if l.quotation else l.ordnumber }}</a>.
+  {% endfor %}
+  {% for l in links.to %}
+    {% if l.kind == "invoice" %}{{ _("Gefactureerd") }}: <a href="/{{ invoice_prefix }}/{{ l.to_id }}">{{ l.invnumber or l.to_id }}</a>.
+    {% elif l.ordnumber or l.quonumber %}{% set pre = kinds["sales_quotation" if l.quotation and l.customer_id else ("request_quotation" if l.quotation else ("sales_order" if l.customer_id else "purchase_order"))].prefix %}
+      {{ _("Nabestelling") if l.kind == "backorder" else _("Omgezet naar") }}: <a href="/{{ pre }}/{{ l.to_id }}">{{ l.quonumber if l.quotation else l.ordnumber }}</a>.{% endif %}
+  {% endfor %}
+  {% if o and o.aa_id and not links.to %}{{ _("Gefactureerd") }}: <a href="/{{ invoice_prefix }}/{{ o.aa_id }}">{{ o.invnumber or o.aa_id }}</a>.{% endif %}
+</p>
+{% elif o and o.aa_id %}
+<p class="muted small">{{ _("Gefactureerd") }}: <a href="/{{ invoice_prefix }}/{{ o.aa_id }}">{{ o.invnumber or o.aa_id }}</a>.</p>
+{% endif %}
+
+<form method="post" action="/{{ k.prefix }}" class="arapform isform" data-vc-url="/{{ 'verkoop' if f.vc == 'customer' else 'inkoop' }}/relaties"
+      data-item-url="/{{ k.prefix }}/artikelen" enctype="multipart/form-data">
+  <p class="error" role="alert" id="is-error"{% if not calc_error %} hidden{% endif %}>{{ calc_error or "" }}</p>
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% for name in ["id", "vc_id", "vc_shown", "oldtransdate", "oldterms", "oldcurrency",
+                  "warehouse_id", "source_id", "ordnumber" if f.quotation else "quonumber"] %}
+  <input type="hidden" name="{{ name }}" value="{{ f[name] if f[name] is not none else '' }}">
+  {% endfor %}
+  {% if f.backorder %}<input type="hidden" name="backorder" value="1">{% endif %}
+
+  <fieldset class="glhead"{{ dis }}>
+    <label class="vc">{{ _(vc_label) }} *
+      <input name="vc_text" value="{{ f.vc_text }}" list="vclist" autocomplete="off" data-refresh data-vc
+             placeholder="{{ _('naam of nummer') }}"></label>
+    <datalist id="vclist" data-remote></datalist>
+    {% if info %}
+    <div class="facts">
+      <span>{{ [info.address1, info.address2, info.zipcode, info.city, info.country] | select | join(", ") }}</span>
+    </div>
+    {% endif %}
+    <label>{{ _(k.number) }}
+      <input name="{{ 'quonumber' if f.quotation else 'ordnumber' }}" value="{{ f.number }}" maxlength="100" placeholder="{{ _('automatisch bij opslaan') }}"></label>
+    <label>{{ _(k.date) }} * <input type="date" name="transdate" value="{{ f.transdate }}" required data-refresh></label>
+    {% if f.type != "request_quotation" %}
+    <label>{{ _("Termijn (dagen)") }} <input name="terms" value="{{ f.terms }}" class="num short" inputmode="numeric" data-refresh></label>
+    {% else %}<input type="hidden" name="terms" value="0">{% endif %}
+    <label>{{ _(k.reqdate) }} <input type="{{ 'date' if not f.reqdate or isodate(f.reqdate) else 'text' }}" name="reqdate" value="{{ f.reqdate }}"></label>
+    {% if f.quotation and f.ordnumber %}<p>{{ _("Ordernummer") }}: {{ f.ordnumber }}</p>{% endif %}
+    {% if not f.quotation and f.quonumber %}<p>{{ _("Offertenummer") }}: {{ f.quonumber }}</p>{% endif %}
+    <label>{{ _("Inkoopordernummer") }} <input name="ponumber" value="{{ f.ponumber }}" maxlength="100"></label>
+    {% if ch.currencies|length > 1 %}
+    <label>{{ _("Valuta") }}
+      <select name="currency" data-refresh>
+        {% for c in ch.currencies %}<option{% if c == (f.currency or ch.defaultcurrency) %} selected{% endif %}>{{ c }}</option>{% endfor %}
+      </select></label>
+    {% if foreign %}<label>{{ _("Koers") }} * <input name="exchangerate" value="{{ f.exchangerate }}" class="num" inputmode="decimal" data-calc></label>{% endif %}
+    {% else %}<input type="hidden" name="currency" value="{{ f.currency }}">{% endif %}
+    {% if ch.departments %}
+    <label>{{ _("Afdeling") }}
+      <select name="department_id"><option value=""></option>
+        {% for d in ch.departments %}<option value="{{ d.id }}"{% if d.id|string == f.department_id %} selected{% endif %}>{{ d.description }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="department_id" value="{{ f.department_id }}">{% endif %}
+    {% if ch.employees %}
+    <label>{{ _("Verkoper") if f.vc == "customer" else _("Medewerker") }}
+      <select name="employee_id"><option value=""></option>
+        {% for e in ch.employees %}<option value="{{ e.id }}"{% if e.id|string == f.employee_id %} selected{% endif %}>{{ e.name }}</option>{% endfor %}
+      </select></label>
+    {% else %}<input type="hidden" name="employee_id" value="{{ f.employee_id }}">{% endif %}
+    {{ variant_select(variants, f.language_code) }}
+    <label class="wide">{{ _("Omschrijving") }}
+      <textarea name="description" rows="{{ [f.description.count('\n') + 1, 4]|min }}">{{ f.description }}</textarea></label>
+  </fieldset>
+
+  <datalist id="itemlist" data-remote></datalist>
+  <div class="table-wrap">
+  <table class="list gllines araplines islines">
+    <thead><tr>
+      <th>{{ _("Artikel") }}</th><th>{{ _("Omschrijving") }}</th><th class="num">{{ _("Aantal") }}</th><th>{{ _("Eenheid") }}</th>
+      <th class="num">{{ _("Prijs") }}</th><th class="num">{{ _("Korting %") }}</th><th class="num">{{ _("Bedrag") }}</th>
+      <th>{{ _("Leverdatum") }}</th><th>{{ _("Serienummer") }}</th>
+      {% if ch.projects %}<th>{{ _("Project") }}</th>{% endif %}
+    </tr></thead>
+    <tbody data-lines>
+    {% for ln in f.lines %}{% set i = loop.index %}
+      <tr data-line>
+        <td><input name="item_{{ i }}" value="{{ ln.item_text }}" list="itemlist" class="acc" autocomplete="off" data-refresh data-item{{ dis }}
+                   placeholder="{{ _('nummer of omschrijving') }}" aria-label="{{ _('Artikel') }} {{ i }}">
+            <input type="hidden" name="item_shown_{{ i }}" value="{{ ln.item_shown }}">
+            <input type="hidden" name="parts_id_{{ i }}" value="{{ ln.parts_id or '' }}">
+            <input type="hidden" name="line_id_{{ i }}" value="{{ ln.id }}">
+            {% for n in ["ordernumber", "ponumber", "itemnotes", "cost", "vendor", "vendor_id", "lineitemdetail", "ship"] %}<input type="hidden" name="{{ n }}_{{ i }}" value="{{ ln[n] }}">{% endfor %}</td>
+        <td><input name="description_{{ i }}" value="{{ ln.description }}"{{ dis }} aria-label="{{ _('Omschrijving') }} {{ i }}"></td>
+        <td><input name="qty_{{ i }}" value="{{ ln.qty }}" class="num short" inputmode="decimal" data-calc{{ dis }} aria-label="{{ _('Aantal') }} {{ i }}">
+            {% if ln.ship and ln.ship not in ("0", "") and o and (o.closed or o.aa_id) %}<br><span class="muted small">{{ _("gefactureerd {qty}").format(qty=ln.ship) }}</span>{% endif %}</td>
+        <td><input name="unit_{{ i }}" value="{{ ln.unit }}" class="tiny" maxlength="5"{{ dis }} aria-label="{{ _('Eenheid') }} {{ i }}"></td>
+        <td><input name="sellprice_{{ i }}" value="{{ ln.sellprice }}" class="num" inputmode="decimal" data-calc{{ dis }} aria-label="{{ _('Prijs') }} {{ i }}"></td>
+        <td><input name="discount_{{ i }}" value="{{ ln.discount }}" class="num tiny" inputmode="decimal" data-calc{{ dis }} aria-label="{{ _('Korting %') }} {{ i }}"></td>
+        <td class="num" data-lt="{{ i }}">{{ amount(ln.linetotal) if ln.parts_id else "" }}</td>
+        <td><input type="{{ 'date' if not ln.deliverydate or isodate(ln.deliverydate) else 'text' }}" name="deliverydate_{{ i }}" value="{{ ln.deliverydate }}"{{ dis }} aria-label="{{ _('Leverdatum') }} {{ i }}"></td>
+        <td><input name="serialnumber_{{ i }}" value="{{ ln.serialnumber }}" class="short"{{ dis }} aria-label="{{ _('Serienummer') }} {{ i }}"></td>
+        {% if ch.projects %}
+        <td><select name="project_{{ i }}"{{ dis }} aria-label="{{ _('Project') }} {{ i }}"><option value=""></option>
+          {% for p in ch.projects %}<option value="{{ p.id }}"{% if p.id|string == ln.project_id %} selected{% endif %}>{{ p.projectnumber }}</option>{% endfor %}
+        </select></td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tbody id="is-calc">
+      {% if not f.taxincluded %}
+      <tr class="tax"><td colspan="6" class="num">{{ _("Subtotaal") }}</td><td class="num">{{ amount(f.subtotal, "0") }}</td>
+        <td colspan="{{ 3 if ch.projects else 2 }}"></td></tr>
+      {% endif %}
+      {% for t in f.taxes %}
+      <tr class="tax"><td colspan="6" class="num">{{ _("Btw") }} {{ t.accno }} {{ t.description }} {{ t.pct }}</td>
+        <td class="num">{{ amount(t.amount) }}</td><td colspan="{{ 3 if ch.projects else 2 }}"></td></tr>
+      {% endfor %}
+      <tr class="total"><th colspan="6" class="num">{{ _("Totaal") }}{% if f.taxincluded %} <span class="muted small">({{ _("inclusief btw") }})</span>{% endif %}</th>
+        <th class="num" data-invtotal>{{ amount(f.total, "0") }}</th>
+        <td colspan="{{ 3 if ch.projects else 2 }}">
+          <label class="inline"><input type="checkbox" name="taxincluded" value="1"{% if f.taxincluded %} checked{% endif %} data-calc{{ dis }}> {{ _("Btw inbegrepen") }}</label>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <input type="hidden" name="rowcount" value="{{ f.lines|length }}" data-rowcount>
+  <p class="issum" id="is-sum">{% if not f.taxincluded %}{{ _("Subtotaal") }} {{ amount(f.subtotal, "0") }}{% for t in f.taxes %} · {{ _("Btw") }} {{ t.pct }} {{ amount(t.amount) }}{% endfor %} · {% endif %}<strong>{{ _("Totaal") }} {{ amount(f.total, "0") }}</strong></p>
+
+  <label class="wide notes">{{ _("Notities") }}
+    <textarea name="notes" rows="{{ [f.notes.count('\n') + 1, 4]|min }}"{{ dis }}>{{ f.notes }}</textarea></label>
+  <label class="wide notes">{{ _("Interne notities") }}
+    <textarea name="intnotes" rows="{{ [f.intnotes.count('\n') + 1, 4]|min }}"{{ dis }}>{{ f.intnotes }}</textarea></label>
+  {% if info and info.notes %}<p class="muted small prewrap"><strong>{{ _("Notities relatie") }}:</strong> {{ info.notes }}</p>{% endif %}
+
+  {% set has_shipto = f.shipto.values()|select|list %}
+  {% if not ro or has_shipto or f.shippingpoint or f.shipvia or f.waybill %}
+  <details class="more"{% if has_shipto %} open{% endif %}>
+    <summary>{{ _("Afleveradres en verzending") }}</summary>
+    <fieldset class="glhead"{{ dis }}>
+      {% set labels = {"name": N_("Naam"), "address1": N_("Adres"), "address2": N_("Adres 2"), "city": N_("Plaats"),
+                       "state": N_("Provincie"), "zipcode": N_("Postcode"), "country": N_("Land"), "contact": N_("Contactpersoon"),
+                       "phone": N_("Telefoon"), "fax": N_("Fax"), "email": N_("E-mail")} %}
+      {% for fld in shipto_fields %}
+      <label>{{ _(labels[fld]) }} <input name="shipto{{ fld }}" value="{{ f.shipto.get(fld, '') }}" maxlength="64"></label>
+      {% endfor %}
+      <label>{{ _("Verzendpunt") }} <input name="shippingpoint" value="{{ f.shippingpoint }}" maxlength="100"></label>
+      <label>{{ _("Verzonden via") }} <input name="shipvia" value="{{ f.shipvia }}" maxlength="100"></label>
+      <label>{{ _("Vrachtbrief") }} <input name="waybill" value="{{ f.waybill }}" maxlength="100"></label>
+      {% if f.shipto.get("recurring") %}<input type="hidden" name="shiptorecurring" value="1">{% endif %}
+    </fieldset>
+  </details>
+  {% else %}
+  {% for fld in shipto_fields %}<input type="hidden" name="shipto{{ fld }}" value="{{ f.shipto.get(fld, '') }}">{% endfor %}
+  {% endif %}
+
+  {{ att.refs(f, ro) }}
+  {% if not f.id and not ro %}{{ att.pending(f) }}{% endif %}
+
+  {% if confirm == "delete" %}
+  <div class="confirm" role="alert">
+    <p><strong>{{ _("{kind} {number} verwijderen?").format(kind=_(k.title), number=f.number) }}</strong> {{ _("Dit kan niet ongedaan gemaakt worden.") }}</p>
+    <button name="action" value="delete_confirmed" class="danger">{{ _("Ja, verwijderen") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate>{{ _("Terug") }}</button>
+  </div>
+  {% elif not ro %}
+  <p class="actions glbuttons">
+    <button name="action" value="save">{{ _("Opslaan") }}</button>
+    {% if f.id %}<button name="action" value="save_as_new" class="secondary">{{ _("Opslaan als nieuw") }}</button>{% endif %}
+    <button name="action" value="new_number" class="secondary" formnovalidate>{{ _("Nieuw nummer") }}</button>
+    <button name="action" value="update" class="secondary" formnovalidate data-update>{{ _("Bijwerken") }}</button>
+    {% if can_repeat and repeatable %}<a class="button secondary" href="/herhalen/{{ f.id }}">{{ _("Herhalen") }}</a>
+    {% elif can_repeat and not f.id %}<button type="button" class="secondary" disabled title="{{ _('Sla de order eerst op') }}">{{ _("Herhalen") }}</button>{% endif %}
+    {% if not f.id %}<button name="action" value="save_pdf" class="secondary">{{ _("Opslaan en PDF") }}</button>{% endif %}
+    {{ doc_buttons(docs) }}
+    {% if f.id %}<button name="action" value="delete" class="secondary danger" formnovalidate>{{ _("Verwijderen") }}</button>
+    <button name="action" value="cancel" class="secondary" formnovalidate>{{ _("Sluiten") }}</button>{% endif %}
+  </p>
+  {% if conversions %}
+  <p class="actions glbuttons">
+    <span class="muted">{{ _("Opslaan en omzetten naar") }}:</span>
+    {% for c in conversions %}<button name="action" value="{{ c.action }}" class="secondary">{{ c.label }}</button>{% endfor %}
+  </p>
+  {% endif %}
+  {% elif can_edit and f.id %}
+  {% set reopen = o and o.closed and not o.aa_id and not o.locked
+     and not (f.quotation and links.to | selectattr("kind", "in", ["order", "invoice"]) | list) %}
+  <p class="actions">{{ doc_buttons(docs) }}
+    {% if reopen %}<button name="action" value="reopen" class="secondary" formnovalidate>{{ _("Heropenen") }}</button>{% endif %}
+    {% if can_repeat and repeatable %}<a class="button secondary" href="/herhalen/{{ f.id }}">{{ _("Herhalen") }}</a>{% endif %}</p>
+  {% elif f.id %}
+  <p class="actions">{{ doc_buttons(docs, mail=False) }}</p>
+  {% endif %}
+{{ doc_status(docs) }}
+</form>
+{% if f.id %}{{ att.saved(attachments, f.id, f.type, can_edit) }}{% endif %}
+
+<template id="line-template">
+  <tr data-line>
+    <td><input name="item_N" list="itemlist" class="acc" autocomplete="off" data-refresh data-item placeholder="{{ _('nummer of omschrijving') }}" aria-label="{{ _('Artikel') }}">
+        <input type="hidden" name="item_shown_N"><input type="hidden" name="parts_id_N"><input type="hidden" name="line_id_N"></td>
+    <td><input name="description_N" aria-label="{{ _('Omschrijving') }}"></td>
+    <td><input name="qty_N" class="num short" inputmode="decimal" data-calc aria-label="{{ _('Aantal') }}"></td>
+    <td><input name="unit_N" class="tiny" maxlength="5" aria-label="{{ _('Eenheid') }}"></td>
+    <td><input name="sellprice_N" class="num" inputmode="decimal" data-calc aria-label="{{ _('Prijs') }}"></td>
+    <td><input name="discount_N" class="num tiny" inputmode="decimal" data-calc aria-label="{{ _('Korting %') }}"></td>
+    <td class="num" data-lt="N"></td>
+    <td><input type="date" name="deliverydate_N" aria-label="{{ _('Leverdatum') }}"></td>
+    <td><input name="serialnumber_N" class="short" aria-label="{{ _('Serienummer') }}"></td>
+    {% if ch.projects %}
+    <td><select name="project_N" aria-label="{{ _('Project') }}"><option value=""></option>
+      {% for p in ch.projects %}<option value="{{ p.id }}">{{ p.projectnumber }}</option>{% endfor %}
+    </select></td>
+    {% endif %}
+  </tr>
+</template>
+<script src="/static/is.js" defer></script>
+<script src="/static/attach.js" defer></script>
+{% endblock %}

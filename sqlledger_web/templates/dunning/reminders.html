@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Aanmaningen") }}{% endblock %}
+{% block content %}
+<div class="head">
+  <h2>{{ _("Aanmaningen") }}</h2>
+  <a class="button secondary" href="/rapporten/aanmaningen?run=1&amp;asof={{ f.asof.isoformat() }}">{{ _("Als lijst (CSV/Excel)") }}</a>
+</div>
+{% include "help/dunning.html" %}
+<p class="muted small">{{ _("Per klant en valuta één brief met alle vervallen facturen; tegoeden (creditnota's) worden verrekend. Het niveau van de brief is het hoogste volgende niveau van de aangevinkte facturen (1 herinnering, 2 tweede herinnering, 3 aanmaning). PDF en Mailen leggen dat niveau per factuur vast; Voorbeeld legt niets vast.") }}</p>
+
+<form method="get" action="/aanmaningen" class="report-form">
+  <div class="filters">
+    <label>{{ _("Peildatum") }} <input type="date" name="asof" value="{{ f.asof.isoformat() }}"></label>
+    <label>{{ _("Klant") }} <input name="name" value="{{ f.name }}"></label>
+    <label>{{ _("Klantnummer") }} <input name="vcnumber" value="{{ f.vcnumber }}"></label>
+    <label>{{ _("Minimaal dagen vervallen") }} <input type="number" min="0" name="min_days" value="{{ f.min_days }}"></label>
+    {% if departments %}<label>{{ _("Afdeling") }} <select name="department_id"><option value="">{{ _("Alle") }}</option>
+      {% for d in departments %}<option value="{{ d.id }}"{% if d.id == f.department_id %} selected{% endif %}>{{ d.description }}</option>{% endfor %}</select></label>{% endif %}
+  </div>
+  <div class="actions"><button>{{ _("Toon") }}</button></div>
+</form>
+
+{% include "dunning/_results.html" %}
+
+<form method="post" action="/aanmaningen">
+  <input type="hidden" name="csrf" value="{{ ctx.csrf }}">
+  {% for k, v in f.hidden() %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+  <div class="table-wrap">
+  <table class="list">
+    <thead><tr><th>{% if letters %}<input type="checkbox" data-check-all="item" aria-label="{{ _('alles selecteren') }}">{% endif %}</th><th>{{ _("Factuur") }}</th><th>{{ _("Datum") }}</th><th>{{ _("Vervaldatum") }}</th>
+      <th class="num">{{ _("Dagen") }}</th><th class="num">{{ _("Openstaand") }}</th><th>{{ _("Niveau nu") }}</th><th>{{ _("Wordt") }}</th></tr></thead>
+    {% for l in letters %}
+    <tbody>
+      <tr class="subtotal">
+        <td colspan="5"><strong>{{ l.name }}</strong>{% if l.customernumber %} ({{ l.customernumber }}){% endif %}
+          · {{ l.curr }}
+          · {% if emails.get(l.vc_id) %}<span class="muted addr">{{ emails.get(l.vc_id) }}</span>{% else %}<span class="tag">{{ _("geen e-mailadres") }}</span>{% endif %}</td>
+        <td class="num"><strong>{{ l.total | amount(ctx.user.numberformat) }}</strong></td>
+        <td colspan="2"><span class="tag">{{ _(doctypes_label(l.formname)) }}</span></td>
+      </tr>
+      {% for i in l.items %}
+      <tr>
+        <td><input type="checkbox" name="item" value="{{ i.id }}"{% if checked is none or i.id in checked %} checked{% endif %}
+                   aria-label="{{ _('Opnemen') }} {{ i.invnumber }}"></td>
+        <td><a href="/boekingen/{{ i.id }}">{{ i.invnumber }}</a></td>
+        <td>{{ fmtdate(i.transdate) }}</td><td>{{ fmtdate(i.duedate) }}</td>
+        <td class="num">{{ i.days }}</td>
+        <td class="num">{{ i.due | amount(ctx.user.numberformat) }}</td>
+        <td>{% if can_send %}<input type="hidden" name="cur_{{ i.id }}" value="{{ i.level }}">
+            <select name="set_{{ i.id }}" aria-label="{{ _('Niveau') }} {{ i.invnumber }}">
+              {% for n in range(0, 4) %}<option value="{{ n }}"{% if n == i.level %} selected{% endif %}>{{ n if n else "–" }}</option>{% endfor %}
+            </select>{% else %}{{ i.level or "–" }}{% endif %}</td>
+        <td>{{ i.next_level }}<input type="hidden" name="lvl_{{ i.id }}" value="{{ i.next_level }}"></td>
+      </tr>
+      {% endfor %}
+      {% for i in l.credits %}
+      <tr class="muted">
+        <td></td><td><a href="/boekingen/{{ i.id }}">{{ i.invnumber }}</a></td>
+        <td>{{ fmtdate(i.transdate) }}</td><td colspan="2">{{ _("te verrekenen") }}</td>
+        <td class="num">{{ i.due | amount(ctx.user.numberformat) }}</td><td colspan="2"></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    {% else %}
+    <tbody><tr><td colspan="8" class="muted">{{ _("Geen vervallen facturen op deze peildatum.") }}</td></tr></tbody>
+    {% endfor %}
+  </table>
+  </div>
+  {% if letters %}
+  <p class="actions">
+    <button name="action" value="preview" formtarget="_blank" class="secondary">{{ _("Voorbeeld") }}</button>
+    {% if can_send %}
+    <button name="action" value="pdf" formtarget="_blank">{{ _("PDF") }}</button>
+    <button name="action" value="mail">{{ _("Mailen") }}</button>
+    <button name="action" value="levels" class="secondary">{{ _("Niveau opslaan") }}</button>
+    {% endif %}
+  </p>
+  {% endif %}
+</form>
+<script src="/static/docs.js" defer></script>
+{% endblock %}

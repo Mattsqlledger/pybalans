@@ -1,0 +1,8 @@
+Officiële XML-schema's van ISO 20022 (Customer Credit Transfer Initiation), ongewijzigd overgenomen voor de
+controle van het SEPA-betaalbestand (sqlledger/sepa.py, SP10).
+
+- pain.001.001.03.xsd — ISO 20022 berichtenarchief
+  (https://www.iso20022.org/catalogue-messages/iso-20022-messages-archive?search=pain.001.001.03)
+- pain.001.001.09.xsd — https://www.iso20022.org/sites/default/files/documents/messages/pain/schemas/pain.001.001.09.xsd
+
+ISO 20022-berichtdefinities zijn vrij te gebruiken (zie https://www.iso20022.org).

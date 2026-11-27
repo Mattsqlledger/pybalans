@@ -1,0 +1,255 @@
+{
+ "config": {
+  "name": "Test DE",
+  "login": "test"
+ },
+ "ops": [
+  {
+   "op": "sql",
+   "label": "basis DE: EUR, USt 19/7 %, bedrijfsgegevens, boekjaar",
+   "sql": [
+    "INSERT INTO curr (rn, curr, precision) VALUES (1,'EUR',2),(2,'CHF',2) ON CONFLICT DO NOTHING",
+    "DELETE FROM curr WHERE curr NOT IN ('EUR','CHF')",
+    "UPDATE curr SET rn = CASE curr WHEN 'EUR' THEN 1 ELSE 2 END",
+    "UPDATE chart SET description = 'Umsatzsteuer 19%' WHERE accno = '1776'",
+    "UPDATE chart SET description = 'Abziehbare Vorsteuer 19%' WHERE accno = '1576'",
+    "INSERT INTO chart (accno,description,charttype,category,link) VALUES ('1771','Umsatzsteuer 7%','A','L','AR_tax:IC_taxpart:IC_taxservice'),('8300','Erlöse 7% USt','A','I','AR_amount:IC_sale'),('8401','Erlöse 19% USt','A','I','AR_amount:IC_sale:IC_income')",
+    "UPDATE tax SET validto = '2019-12-31'",
+    "INSERT INTO tax (chart_id, rate, taxnumber, validfrom) SELECT id, 0.19, 'DE123456789', '2020-01-01' FROM chart WHERE accno IN ('1776','1576')",
+    "INSERT INTO tax (chart_id, rate, taxnumber, validfrom) SELECT id, 0.07, 'DE123456789', '2020-01-01' FROM chart WHERE accno IN ('1771','1571')",
+    "INSERT INTO defaults (fldname, fldvalue) VALUES ('company','Test Handel GmbH'),('address','Teststraße 1\n10115 Berlin'),('businessnumber','DE123456789'),('sinumber','2000'),('vinumber','6000'),('partnumber','D-100'),('customernumber','DK-1'),('vendornumber','DL-1')",
+    "INSERT INTO financial_year (start_date, end_date, status) VALUES ('2025-01-01','2025-12-31','CURRENT_FINANCIAL_YEAR')",
+    "INSERT INTO warehouse (description) VALUES ('Lager Berlin')"
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "Kunde Beispiel KG",
+   "script": "ct.pl",
+   "start": "add",
+   "fields": {
+    "db": "customer"
+   },
+   "steps": [
+    {
+     "set": {
+      "name": "Beispiel KG",
+      "address1": "Alexanderplatz 1",
+      "city": "Berlin",
+      "zipcode": "10178",
+      "country": "DE",
+      "terms": "14",
+      "iban": "DE89370400440532013000",
+      "bic": "COBADEFFXXX",
+      "income_accno": "#8401",
+      "tax_1776": "1",
+      "tax_1771": "1",
+      "startdate": "2024-01-01"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "k1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "Lieferant Großhandel AG",
+   "script": "ct.pl",
+   "start": "add",
+   "fields": {
+    "db": "vendor"
+   },
+   "steps": [
+    {
+     "set": {
+      "name": "Großhandel AG",
+      "address1": "Hafenstraße 9",
+      "city": "Hamburg",
+      "zipcode": "20457",
+      "country": "DE",
+      "terms": "30",
+      "expense_accno": "#4700",
+      "early_payment_discount": "3",
+      "tax_1576": "1",
+      "tax_1571": "1",
+      "startdate": "2024-01-01"
+     },
+     "do": "save"
+    }
+   ],
+   "keep": {
+    "l1": "id"
+   }
+  },
+  {
+   "op": "screen",
+   "label": "Artikel D-100 (19 %)",
+   "script": "ic.pl",
+   "start": "add",
+   "fields": {
+    "item": "part"
+   },
+   "steps": [
+    {
+     "set": {
+      "partnumber": "D-100",
+      "description": "Werkzeugkoffer",
+      "sellprice": "89",
+      "lastcost": "50",
+      "unit": "Stk",
+      "IC_inventory": "#7140",
+      "IC_income": "#8401",
+      "IC_expense": "#4700",
+      "IC_tax_1776": "1",
+      "IC_tax_1576": "1"
+     },
+     "do": "save"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "Artikel D-200 Buch (7 %)",
+   "script": "ic.pl",
+   "start": "add",
+   "fields": {
+    "item": "part"
+   },
+   "steps": [
+    {
+     "set": {
+      "partnumber": "D-200",
+      "description": "Handbuch",
+      "sellprice": "25",
+      "lastcost": "12",
+      "unit": "Stk",
+      "IC_inventory": "#7140",
+      "IC_income": "#8300",
+      "IC_expense": "#4700",
+      "IC_tax_1771": "1",
+      "IC_tax_1571": "1"
+     },
+     "do": "save"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "Eingangsrechnung Großhandel",
+   "script": "ir.pl",
+   "start": "add",
+   "fields": {
+    "type": "invoice"
+   },
+   "steps": [
+    {
+     "set": {
+      "vendor": "Großhandel AG",
+      "transdate": "2025-04-01"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "invnumber": "GH-1001",
+      "warehouse": "~~warehouse:description=Lager Berlin"
+     },
+     "do": "update"
+    },
+    {
+     "lines": [
+      {
+       "partnumber": "D-100",
+       "qty": "20",
+       "sellprice": "50"
+      },
+      {
+       "partnumber": "D-200",
+       "qty": "30",
+       "sellprice": "12"
+      }
+     ],
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "Ausgangsrechnung Beispiel KG",
+   "script": "is.pl",
+   "start": "add",
+   "fields": {
+    "type": "invoice"
+   },
+   "steps": [
+    {
+     "set": {
+      "customer": "Beispiel KG",
+      "transdate": "2025-04-10"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "invnumber": "2025-001",
+      "warehouse": "~~warehouse:description=Lager Berlin"
+     },
+     "do": "update"
+    },
+    {
+     "lines": [
+      {
+       "partnumber": "D-100",
+       "qty": "5"
+      },
+      {
+       "partnumber": "D-200",
+       "qty": "10"
+      }
+     ],
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ]
+  },
+  {
+   "op": "screen",
+   "label": "Zahlungseingang Beispiel KG",
+   "script": "cp.pl",
+   "start": "payment",
+   "fields": {
+    "type": "receipt",
+    "vc": "customer",
+    "payment": "payment"
+   },
+   "steps": [
+    {
+     "set": {
+      "customer": "Beispiel KG",
+      "datepaid": "2025-04-20"
+     },
+     "do": "update"
+    },
+    {
+     "set": {
+      "AR_paid": "#1200",
+      "source": "Bank 0420",
+      "checked_1": "1",
+      "paid_1": "797.05"
+     },
+     "do": "update"
+    },
+    {
+     "do": "post"
+    }
+   ]
+  }
+ ]
+}

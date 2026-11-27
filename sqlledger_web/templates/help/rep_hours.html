@@ -1,0 +1,24 @@
+{# Afdelingen en projecten > Uren per project, rapport (HELP_ANALYSE golf 4, tekst B11) #}
+<details class="help"><summary>{{ _("Hoe werkt het?") }}</summary>
+<h4>{{ _("Waarvoor") }}</h4>
+<p>{{ _("Per project de geschreven uren, wat ze kosten en wat ze opbrengen.") }}</p>
+<h4>{{ _("Zo doet u het") }}</h4>
+<ol>
+  <li>{{ ht("Kies de periode en zo nodig de {s} en een {p}.", s=hl("Soort project"), p=hl("Project")) }}</li>
+  <li>{{ ht("Kies bij {i} {a} of {b} (met een subtotaal per project).", i=hl("Indeling"), a=hl("Per project"), b=hl("Per project en medewerker")) }}</li>
+  <li>{{ _("Klik op een projectnummer om de tijdkaarten erachter te zien.") }}</li>
+</ol>
+<h4>{{ _("Velden") }}</h4>
+<ul>
+  <li>{{ ht("{f}: uren maal het interne tarief. {g} is de kostwaarde gedeeld door de uren.", f=hl("Kostwaarde"), g=hl("Gem. intern tarief")) }}</li>
+  <li>{{ ht("{f}: uren maal de prijs op de tijdkaart, zonder korting van de order.", f=hl("Verkoopwaarde")) }}</li>
+  <li>{{ ht("{o} en {n}: wat al via {m} op een order staat, en wat nog niet.", o=hl("Uren op order"), n=hl("Uren nog niet op order"), m=hm("Verkooporders uit uren")) }}</li>
+  <li>{{ ht("{f}: verkoopwaarde min kostwaarde. Bij interne projecten blijven verkoopwaarde, order-uren en marge leeg.", f=hl("Marge")) }}</li>
+</ul>
+<h4>{{ _("Let op") }}</h4>
+<ul>
+  <li>{{ _("Tijdkaarten zonder vastgelegd intern tarief (uit SQL-Ledger of van vóór deze versie) rekent het rapport met het tarief op de datum van de uren; boven het rapport staat hoeveel dat er zijn.") }}</li>
+  <li>{{ _("Niet ingedeelde projecten tellen mee zoals klantprojecten.") }}</li>
+  {% include "help/_report_common.html" %}
+</ul>
+</details>
