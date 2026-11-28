@@ -14,6 +14,19 @@ upgraded by SQL-Ledger 4.x can be linked, but 4.x is **not supported** (use at y
 
 PyBalans is not affiliated with or endorsed by DWS Systems Inc., the maker of SQL-Ledger. See [`NOTICE.md`](NOTICE.md).
 
+[![PyBalans dashboard – click for the 2-minute demo on YouTube](docs/images/dashboard.png)](https://www.youtube.com/watch?v=sJrrHXZSLnw)
+
+*Click the image for a 2-minute demo on YouTube. All names and figures in the screenshots are made up.*
+
+| | |
+|---|---|
+| ![Reading an SQL-Ledger backup](docs/images/sql-ledger-import.png) | ![Processing bank statement lines](docs/images/bank-statement.png) |
+| Reading an SQL-Ledger backup: the check report | Processing bank statement lines with proposals |
+| ![Profit and loss with chart](docs/images/profit-and-loss.png) | ![Sales invoice as PDF](docs/images/invoice-pdf.png) |
+| Profit and loss, with chart | A sales invoice as PDF |
+| ![Dashboard in German](docs/images/dashboard-de.png) | |
+| The same dashboard in German | |
+
 ## Status
 
 Version 1.4.0. Made by Matthijs Havinga and used by the author for their own bookkeeping since October 2026, after moving
